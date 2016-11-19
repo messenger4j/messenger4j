@@ -31,21 +31,11 @@ For more information on the Facebook Messenger Platform refer to the [official d
 
 To add a dependency on messenger4j using Maven, use the following:
 
-```xml
-<dependency>
-  <groupId>org.messenger4j</groupId>
-  <artifactId>messenger4j</artifactId>
-  <version>0.6.0</version>
-</dependency>
-```
+*coming soon*
 
 To add a dependency using Gradle:
 
-```
-dependencies {
-  compile 'org.messenger4j:messenger4j:0.6.0'
-}
-```
+*coming soon*
 
 ## Examples
 #### Receiving
