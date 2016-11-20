@@ -28,6 +28,7 @@ For more information on the Facebook Messenger Platform refer to the [official d
 * 150 kB JAR
 
 ## Binaries
+To add a dependency on messenger4j using Maven, use the following:
 
 ```xml
 <dependency>
