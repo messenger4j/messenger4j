@@ -285,7 +285,7 @@ public class MessengerReceiveClientTest {
                 "    \"object\": \"page\",\n" +
                 "    \"entry\": [{\n" +
                 "        \"id\": \"PAGE_ID\",\n" +
-                "        \"time\": 1458692752478,\n" +
+                "        \"time\": 1480114700424,\n" +
                 "        \"messaging\": [{\n" +
                 "            \"sender\": {\n" +
                 "                \"id\": \"PAGE_ID\"\n" +
@@ -293,12 +293,14 @@ public class MessengerReceiveClientTest {
                 "            \"recipient\": {\n" +
                 "                \"id\": \"USER_ID\"\n" +
                 "            },\n" +
-                "            \"timestamp\": 1457764197627,\n" +
+                "            \"timestamp\": 1480114700296,\n" +
                 "            \"message\": {\n" +
                 "                \"is_echo\": true,\n" +
-                "                \"app_id\": \"1517776481860111\",\n" +
+                "                \"app_id\": 1517776481860111,\n" +
                 "                \"metadata\": \"DEVELOPER_DEFINED_METADATA_STRING\",\n" +
-                "                \"mid\": \"mid.1457764197618:41d102a3e1ae206a38\"\n" +
+                "                \"mid\": \"mid.1457764197618:41d102a3e1ae206a38\",\n" +
+                "                \"seq\": 282,\n" +
+                "                \"text\": \"hello, text message world!\"\n" +
                 "            }\n" +
                 "        }]\n" +
                 "    }]\n" +
@@ -316,7 +318,7 @@ public class MessengerReceiveClientTest {
 
         assertThat(echoMessageEvent.getSender().getId(), equalTo("PAGE_ID"));
         assertThat(echoMessageEvent.getRecipient().getId(), equalTo("USER_ID"));
-        assertThat(echoMessageEvent.getTimestamp(), equalTo(new Date(1457764197627L)));
+        assertThat(echoMessageEvent.getTimestamp(), equalTo(new Date(1480114700296L)));
         assertThat(echoMessageEvent.getAppId(), equalTo("1517776481860111"));
         assertThat(echoMessageEvent.getMetadata(), equalTo("DEVELOPER_DEFINED_METADATA_STRING"));
         assertThat(echoMessageEvent.getMid(), equalTo("mid.1457764197618:41d102a3e1ae206a38"));
