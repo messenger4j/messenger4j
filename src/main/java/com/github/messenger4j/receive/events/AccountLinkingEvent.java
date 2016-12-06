@@ -54,7 +54,7 @@ public final class AccountLinkingEvent extends TimestampedEvent {
         return new AccountLinkingEvent(senderId, recipientId, timestamp, accountLinkingStatus, authorizationCode);
     }
 
-    private AccountLinkingEvent(String senderId, String recipientId, Date timestamp, AccountLinkingStatus status,
+    public AccountLinkingEvent(String senderId, String recipientId, Date timestamp, AccountLinkingStatus status,
                                 String authorizationCode) {
 
         super(senderId, recipientId, timestamp);

@@ -64,7 +64,7 @@ public final class MessageDeliveredEvent extends Event {
         return new MessageDeliveredEvent(senderId, recipientId, watermark, mids);
     }
 
-    private MessageDeliveredEvent(String senderId, String recipientId, Date watermark, List<String> mids) {
+    public MessageDeliveredEvent(String senderId, String recipientId, Date watermark, List<String> mids) {
         super(senderId, recipientId);
         this.watermark = watermark;
         this.mids = mids == null ? null : Collections.unmodifiableList(mids);

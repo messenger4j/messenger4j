@@ -43,7 +43,7 @@ public final class FallbackEvent extends Event {
         return new FallbackEvent(senderId, recipientId);
     }
 
-    private FallbackEvent(String senderId, String recipientId) {
+    public FallbackEvent(String senderId, String recipientId) {
         super(senderId, recipientId);
     }
 

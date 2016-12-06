@@ -52,7 +52,7 @@ public final class EchoMessageEvent extends MessageEvent {
         return new EchoMessageEvent(senderId, recipientId, timestamp, mid, appId, metadata);
     }
 
-    private EchoMessageEvent(String senderId, String recipientId, Date timestamp, String mid, String appId,
+    public EchoMessageEvent(String senderId, String recipientId, Date timestamp, String mid, String appId,
                              String metadata) {
 
         super(senderId, recipientId, timestamp, mid);

@@ -54,7 +54,7 @@ public final class QuickReplyMessageEvent extends CommonTextMessageEvent {
         return new QuickReplyMessageEvent(senderId, recipientId, timestamp, mid, text, quickReply);
     }
 
-    private QuickReplyMessageEvent(String senderId, String recipientId, Date timestamp, String mid, String text,
+    public QuickReplyMessageEvent(String senderId, String recipientId, Date timestamp, String mid, String text,
                                    QuickReply quickReply) {
 
         super(senderId, recipientId, timestamp, mid, text);
@@ -101,7 +101,7 @@ public final class QuickReplyMessageEvent extends CommonTextMessageEvent {
             return new QuickReply(payload);
         }
 
-        private QuickReply(String payload) {
+        public QuickReply(String payload) {
             this.payload = payload;
         }
 

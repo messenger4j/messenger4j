@@ -70,7 +70,7 @@ public final class AttachmentMessageEvent extends MessageEvent {
         return new AttachmentMessageEvent(senderId, recipientId, timestamp, mid, attachments);
     }
 
-    private AttachmentMessageEvent(String senderId, String recipientId, Date timestamp, String mid,
+    public AttachmentMessageEvent(String senderId, String recipientId, Date timestamp, String mid,
                                    List<Attachment> attachments) {
 
         super(senderId, recipientId, timestamp, mid);
@@ -131,7 +131,7 @@ public final class AttachmentMessageEvent extends MessageEvent {
             return new Attachment(attachmentType, payload);
         }
 
-        private Attachment(AttachmentType type, Payload payload) {
+        public Attachment(AttachmentType type, Payload payload) {
             this.type = type;
             this.payload = payload;
         }
@@ -221,7 +221,7 @@ public final class AttachmentMessageEvent extends MessageEvent {
      * @see Attachment
      * @since 0.6.0
      */
-    static final class UnsupportedPayload extends Payload {
+    public static final class UnsupportedPayload extends Payload {
 
         @Override
         public boolean isUnsupportedPayload() {
@@ -263,7 +263,7 @@ public final class AttachmentMessageEvent extends MessageEvent {
             return new BinaryPayload(url);
         }
 
-        private BinaryPayload(String url) {
+        public BinaryPayload(String url) {
             this.url = url;
         }
 
@@ -320,7 +320,7 @@ public final class AttachmentMessageEvent extends MessageEvent {
             return new LocationPayload(latitude, longitude);
         }
 
-        private LocationPayload(Double latitude, Double longitude) {
+        public LocationPayload(Double latitude, Double longitude) {
             this.coordinates = new Coordinates(latitude, longitude);
         }
 

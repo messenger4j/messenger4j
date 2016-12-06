@@ -48,7 +48,7 @@ public final class PostbackEvent extends TimestampedEvent {
         return new PostbackEvent(senderId, recipientId, timestamp, payload);
     }
 
-    private PostbackEvent(String senderId, String recipientId, Date timestamp, String payload) {
+    public PostbackEvent(String senderId, String recipientId, Date timestamp, String payload) {
         super(senderId, recipientId, timestamp);
         this.payload = payload;
     }

@@ -47,7 +47,7 @@ public final class MessageReadEvent extends TimestampedEvent {
         return new MessageReadEvent(senderId, recipientId, timestamp, watermark);
     }
 
-    private MessageReadEvent(String senderId, String recipientId, Date timestamp, Date watermark) {
+    public MessageReadEvent(String senderId, String recipientId, Date timestamp, Date watermark) {
         super(senderId, recipientId, timestamp);
         this.watermark = watermark;
     }
