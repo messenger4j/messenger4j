@@ -21,9 +21,11 @@ import com.github.messenger4j.send.QuickReply;
 import com.github.messenger4j.send.Recipient;
 import com.github.messenger4j.send.SenderAction;
 import com.github.messenger4j.send.buttons.Button;
+import com.github.messenger4j.send.buttons.UrlButton;
 import com.github.messenger4j.send.http.MessengerHttpClient;
 import com.github.messenger4j.send.templates.ButtonTemplate;
 import com.github.messenger4j.send.templates.GenericTemplate;
+import com.github.messenger4j.send.templates.ListTemplate;
 import com.github.messenger4j.send.templates.ReceiptTemplate;
 import java.util.List;
 import org.junit.Before;
@@ -325,6 +327,87 @@ public class MessengerSendClientTest {
                 "\"state\":\"CA\",\"country\":\"US\"},\"summary\":{\"total_cost\":56.14,\"total_tax\":6.19," +
                 "\"shipping_cost\":4.95,\"subtotal\":75.00},\"adjustments\":[{\"name\":\"New Customer Discount\"," +
                 "\"amount\":20.00},{\"name\":\"$10 Off Coupon\",\"amount\":10.00}],\"template_type\":\"receipt\"}}}}";
+        verify(mockHttpClient).executePost(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+    }
+
+    @Test
+    public void shouldSendListTemplateMessage() throws Exception {
+        //given
+        final String recipientId = "USER_ID";
+
+        final ListTemplate listTemplate = ListTemplate.newBuilder(ListTemplate.TopElementStyle.LARGE)
+                .buttons(Button.newListBuilder().addPostbackButton("View More", "payload").toList().build())
+                .addElements()
+                    .addElement("Classic T-Shirt Collection")
+                    .subtitle("See all our colors")
+                    .imageUrl("https://peterssendreceiveapp.ngrok.io/img/collection.png")
+                    .buttons(Button.newListBuilder()
+                            .addUrlButton("View", "https://peterssendreceiveapp.ngrok.io/collection")
+                            .webviewHeightRatio(UrlButton.WebviewHeightRatio.TALL).toList().build())
+                    .defaultAction("https://peterssendreceiveapp.ngrok.io/shop_collection")
+                        .webviewHeightRatio(UrlButton.WebviewHeightRatio.TALL)
+                        .build()
+                    .build()
+                    .addElement("Classic White T-Shirt")
+                    .subtitle("100% Cotton, 200% Comfortable")
+                    .imageUrl("https://peterssendreceiveapp.ngrok.io/img/white-t-shirt.png")
+                    .buttons(Button.newListBuilder()
+                            .addUrlButton("Shop Now", "https://peterssendreceiveapp.ngrok.io/shop?item=100")
+                            .webviewHeightRatio(UrlButton.WebviewHeightRatio.TALL).toList().build())
+                    .defaultAction("https://peterssendreceiveapp.ngrok.io/view?item=100")
+                        .webviewHeightRatio(UrlButton.WebviewHeightRatio.TALL)
+                        .build()
+                    .build()
+                    .addElement("Classic Blue T-Shirt")
+                    .subtitle("100% Cotton, 200% Comfortable")
+                    .imageUrl("https://peterssendreceiveapp.ngrok.io/img/blue-t-shirt.png")
+                    .buttons(Button.newListBuilder()
+                            .addUrlButton("Shop Now", "https://peterssendreceiveapp.ngrok.io/shop?item=101")
+                            .webviewHeightRatio(UrlButton.WebviewHeightRatio.TALL).toList().build())
+                    .defaultAction("https://peterssendreceiveapp.ngrok.io/view?item=101")
+                        .webviewHeightRatio(UrlButton.WebviewHeightRatio.TALL)
+                        .build()
+                    .build()
+                    .addElement("Classic Black T-Shirt")
+                    .subtitle("100% Cotton, 200% Comfortable")
+                    .imageUrl("https://peterssendreceiveapp.ngrok.io/img/black-t-shirt.png")
+                    .buttons(Button.newListBuilder()
+                            .addUrlButton("Shop Now", "https://peterssendreceiveapp.ngrok.io/shop?item=102")
+                            .webviewHeightRatio(UrlButton.WebviewHeightRatio.TALL).toList().build())
+                    .defaultAction("https://peterssendreceiveapp.ngrok.io/view?item=102")
+                        .webviewHeightRatio(UrlButton.WebviewHeightRatio.TALL)
+                        .build()
+                    .build()
+                .done()
+                .build();
+
+        //when
+        messengerSendClient.sendTemplate(recipientId, listTemplate);
+
+        //then
+        final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},\"message\":{\"attachment\":{\"type\":\"template\"," +
+                "\"payload\":{\"top_element_style\":\"large\",\"buttons\":[{\"payload\":\"payload\",\"title\":\"View More\"," +
+                "\"type\":\"postback\"}],\"elements\":[{\"title\":\"Classic T-Shirt Collection\"," +
+                "\"subtitle\":\"See all our colors\",\"image_url\":\"https://peterssendreceiveapp.ngrok.io/img/collection.png\"," +
+                "\"buttons\":[{\"url\":\"https://peterssendreceiveapp.ngrok.io/collection\",\"webview_height_ratio\":\"tall\"," +
+                "\"title\":\"View\",\"type\":\"web_url\"}],\"default_action\":{\"type\":\"web_url\"," +
+                "\"url\":\"https://peterssendreceiveapp.ngrok.io/shop_collection\",\"webview_height_ratio\":\"tall\"}}," +
+                "{\"title\":\"Classic White T-Shirt\",\"subtitle\":\"100% Cotton, 200% Comfortable\"," +
+                "\"image_url\":\"https://peterssendreceiveapp.ngrok.io/img/white-t-shirt.png\"," +
+                "\"buttons\":[{\"url\":\"https://peterssendreceiveapp.ngrok.io/shop?item\\u003d100\",\"webview_height_ratio\":\"tall\"," +
+                "\"title\":\"Shop Now\",\"type\":\"web_url\"}],\"default_action\":{\"type\":\"web_url\"," +
+                "\"url\":\"https://peterssendreceiveapp.ngrok.io/view?item\\u003d100\",\"webview_height_ratio\":\"tall\"}}," +
+                "{\"title\":\"Classic Blue T-Shirt\",\"subtitle\":\"100% Cotton, 200% Comfortable\"," +
+                "\"image_url\":\"https://peterssendreceiveapp.ngrok.io/img/blue-t-shirt.png\"," +
+                "\"buttons\":[{\"url\":\"https://peterssendreceiveapp.ngrok.io/shop?item\\u003d101\",\"webview_height_ratio\":\"tall\"," +
+                "\"title\":\"Shop Now\",\"type\":\"web_url\"}],\"default_action\":{\"type\":\"web_url\"," +
+                "\"url\":\"https://peterssendreceiveapp.ngrok.io/view?item\\u003d101\",\"webview_height_ratio\":\"tall\"}}," +
+                "{\"title\":\"Classic Black T-Shirt\",\"subtitle\":\"100% Cotton, 200% Comfortable\"," +
+                "\"image_url\":\"https://peterssendreceiveapp.ngrok.io/img/black-t-shirt.png\"," +
+                "\"buttons\":[{\"url\":\"https://peterssendreceiveapp.ngrok.io/shop?item\\u003d102\",\"webview_height_ratio\":\"tall\"," +
+                "\"title\":\"Shop Now\",\"type\":\"web_url\"}],\"default_action\":{\"type\":\"web_url\"," +
+                "\"url\":\"https://peterssendreceiveapp.ngrok.io/view?item\\u003d102\",\"webview_height_ratio\":\"tall\"}}]," +
+                "\"template_type\":\"list\"}}}}";
         verify(mockHttpClient).executePost(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 

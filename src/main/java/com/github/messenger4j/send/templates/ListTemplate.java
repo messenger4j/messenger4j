@@ -2,6 +2,7 @@ package com.github.messenger4j.send.templates;
 
 import com.github.messenger4j.internal.Assert;
 import com.github.messenger4j.send.buttons.Button;
+import com.github.messenger4j.send.buttons.UrlButton;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
@@ -64,9 +65,12 @@ public final class ListTemplate extends Template {
                 '}';
     }
 
+    /**
+     * @since 0.6.2
+     */
     public static final class Builder {
 
-        public static final int BUTTONS_LIMIT = 1;
+        private static final int BUTTONS_LIMIT = 1;
         private final TopElementStyle topElementStyle;
 
         private List<Button> buttons;
@@ -94,12 +98,16 @@ public final class ListTemplate extends Template {
 
         public ListTemplate build() {
             Assert.notNullOrEmpty(this.elements, "elements");
-            Assert.isTrue(topElementStyle == TopElementStyle.COMPACT || elements.get(0).imageUrl != null,
-                    "topStyleElement must be compact or first element must have an imageUrl");
+            if (topElementStyle == TopElementStyle.LARGE) {
+                Assert.notNullOrBlank(elements.get(0).imageUrl, "imageUrl");
+            }
             return new ListTemplate(this);
         }
     }
 
+    /**
+     * @since 0.6.2
+     */
     public static final class Element {
 
         private final String title;
@@ -109,7 +117,6 @@ public final class ListTemplate extends Template {
         private final List<Button> buttons;
         @SerializedName("default_action")
         private final DefaultAction defaultAction;
-
 
         private Element(Builder builder) {
             this.title = builder.title;
@@ -147,6 +154,9 @@ public final class ListTemplate extends Template {
                     '}';
         }
 
+        /**
+         * @since 0.6.2
+         */
         public static final class ListBuilder {
 
             private final List<Element> elements;
@@ -170,13 +180,20 @@ public final class ListTemplate extends Template {
                 return this.listTemplateBuilder.elements(Collections.unmodifiableList(new ArrayList<>(this.elements)));
             }
 
-            public void addElementToList(Element element) {
+            private void addElementToList(Element element) {
                 this.elements.add(element);
             }
         }
 
+        /**
+         * @since 0.6.2
+         */
         public static final class Builder {
+
             private static final int BUTTONS_LIMIT = 1;
+            private static final int TITLE_CHARACTER_LIMIT = 80;
+            private static final int SUBTITLE_CHARACTER_LIMIT = 80;
+
             private final String title;
             private final ListBuilder listBuilder;
             private String subtitle;
@@ -185,11 +202,13 @@ public final class ListTemplate extends Template {
             private DefaultAction defaultAction;
 
             public Builder(String title, ListBuilder listBuilder) {
+                Assert.lengthNotGreaterThan(title, TITLE_CHARACTER_LIMIT, "title");
                 this.title = title;
                 this.listBuilder = listBuilder;
             }
 
             public Builder subtitle(String subtitle) {
+                Assert.lengthNotGreaterThan(title, SUBTITLE_CHARACTER_LIMIT, "subtitle");
                 this.subtitle = subtitle;
                 return this;
             }
@@ -222,29 +241,20 @@ public final class ListTemplate extends Template {
 
         }
 
+        /**
+         * @since 0.6.2
+         */
         public static final class DefaultAction {
 
             private final Button.ButtonType type;
             private final String url;
             @SerializedName("webview_height_ratio")
-            private final WebviewHeightRatio webviewHeightRatio;
+            private final UrlButton.WebviewHeightRatio webviewHeightRatio;
 
             public DefaultAction(Builder builder) {
                 this.url = builder.url;
                 this.webviewHeightRatio = builder.webviewHeightRatio;
                 this.type = Button.ButtonType.URL;
-            }
-
-            public enum WebviewHeightRatio {
-
-                @SerializedName("compact")
-                COMPACT,
-
-                @SerializedName("tall")
-                TALL,
-
-                @SerializedName("full")
-                FULL
             }
 
             @Override
@@ -271,17 +281,20 @@ public final class ListTemplate extends Template {
                         '}';
             }
 
+            /**
+             * @since 0.6.2
+             */
             public static final class Builder {
                 private final String url;
                 private final Element.Builder elementBuilder;
-                private WebviewHeightRatio webviewHeightRatio;
+                private UrlButton.WebviewHeightRatio webviewHeightRatio;
 
                 public Builder(String url, Element.Builder builder) {
                     this.url = url;
                     elementBuilder = builder;
                 }
 
-                public Builder webviewHeightRatio(WebviewHeightRatio webviewHeightRatio) {
+                public Builder webviewHeightRatio(UrlButton.WebviewHeightRatio webviewHeightRatio) {
                     this.webviewHeightRatio = webviewHeightRatio;
                     return this;
                 }

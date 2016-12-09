@@ -1,6 +1,7 @@
 package com.github.messenger4j.send.templates;
 
 import com.github.messenger4j.send.buttons.Button;
+import com.github.messenger4j.send.buttons.UrlButton;
 import org.junit.Test;
 
 public class ListTemplateTest {
@@ -15,7 +16,7 @@ public class ListTemplateTest {
                     .imageUrl("http://example.com/1.png")
                     .buttons(Button.newListBuilder().addUrlButton("t1", "http://example.com/1").toList().build())
                         .defaultAction("http://example.com/1a")
-                        .webviewHeightRatio(ListTemplate.Element.DefaultAction.WebviewHeightRatio.COMPACT)
+                        .webviewHeightRatio(UrlButton.WebviewHeightRatio.COMPACT)
                         .build()
                     .build()
                     .addElement("title2")
@@ -37,7 +38,7 @@ public class ListTemplateTest {
                     .imageUrl("http://example.com/1.png")
                     .buttons(Button.newListBuilder().addUrlButton("t1", "http://example.com/1").toList().build())
                         .defaultAction("http://example.com/1a")
-                        .webviewHeightRatio(ListTemplate.Element.DefaultAction.WebviewHeightRatio.COMPACT)
+                        .webviewHeightRatio(UrlButton.WebviewHeightRatio.COMPACT)
                         .build()
                     .build()
                 .done()
