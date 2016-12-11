@@ -1,6 +1,7 @@
 package com.github.messenger4j.receive.callers;
 
 import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_ATTACHMENTS;
+import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_IS_ECHO;
 import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_MESSAGE;
 import static com.github.messenger4j.internal.JsonHelper.hasProperty;
 
@@ -29,7 +30,8 @@ public final class AttachmentMessageEventHandlerCaller extends EventHandlerCalle
 
     @Override
     boolean isResponsible(JsonObject messagingEvent) {
-        return hasProperty(messagingEvent, PROP_MESSAGE, PROP_ATTACHMENTS);
+        return hasProperty(messagingEvent, PROP_MESSAGE, PROP_ATTACHMENTS) &&
+                !hasProperty(messagingEvent, PROP_MESSAGE, PROP_IS_ECHO);
     }
 
     @Override

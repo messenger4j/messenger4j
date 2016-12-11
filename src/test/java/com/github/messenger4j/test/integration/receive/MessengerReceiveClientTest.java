@@ -279,7 +279,7 @@ public class MessengerReceiveClientTest {
     }
 
     @Test
-    public void shouldHandleEchoMessageEvent() throws Exception {
+    public void shouldHandleTextEchoMessageEvent() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -322,6 +322,50 @@ public class MessengerReceiveClientTest {
         assertThat(echoMessageEvent.getAppId(), equalTo("1517776481860111"));
         assertThat(echoMessageEvent.getMetadata(), equalTo("DEVELOPER_DEFINED_METADATA_STRING"));
         assertThat(echoMessageEvent.getMid(), equalTo("mid.1457764197618:41d102a3e1ae206a38"));
+
+        verifyZeroInteractions(mockAttachmentMessageEventHandler, mockOptInEventHandler,
+                mockQuickReplyMessageEventHandler, mockTextMessageEventHandler, mockPostbackEventHandler,
+                mockAccountLinkingEventHandler, mockMessageReadEventHandler, mockMessageDeliveredEventHandler,
+                mockFallbackEventHandler);
+    }
+
+    @Test
+    public void shouldHandleTemplateEchoMessageEvent() throws Exception {
+        //given
+        final String payload = "{\"object\":\"page\",\"entry\":[{\"id\":\"171999997131834678\",\"time\":1480120722215," +
+                "\"messaging\":[{\"sender\":{\"id\":\"17175299999834678\"},\"recipient\":{\"id\":\"1256299999730577\"}," +
+                "\"timestamp\":1480120402725,\"message\":{\"is_echo\":true,\"app_id\":1559999994822905," +
+                "\"mid\":\"mid.1480199999925:83392d9f65\",\"seq\":294,\"attachments\":[{\"title\":\"Samsung Gear VR, " +
+                "Oculus Rift\",\"url\":null,\"type\":\"template\",\"payload\":{\"template_type\":\"receipt\"," +
+                "\"recipient_name\":\"Peter Chang\",\"order_number\":\"order-505.0\",\"currency\":\"USD\"," +
+                "\"timestamp\":1428444852,\"payment_method\":\"Visa 1234\",\"summary\":{\"total_cost\":626.66," +
+                "\"total_tax\":57.67,\"subtotal\":698.99,\"shipping_cost\":20}," +
+                "\"address\":{\"city\":\"Menlo Park\",\"country\":\"US\",\"postal_code\":\"94025\",\"state\":\"CA\"," +
+                "\"street_1\":\"1 Hacker Way\",\"street_2\":\"\"},\"elements\":[{\"title\":\"Samsung Gear VR\"," +
+                "\"quantity\":1,\"image_url\":" +
+                "\"https:\\/\\/raw.githubusercontent.com\\/fbsamples\\/messenger-platform-samples\\/master\\/node\\" +
+                "/public\\/assets\\/gearvrsq.png\",\"price\":99.99,\"subtitle\":\"Frost White\"},{\"title\":" +
+                "\"Oculus Rift\",\"quantity\":1,\"image_url\":\"https:\\/\\/raw.githubusercontent.com\\/fbsamples\\" +
+                "/messenger-platform-samples\\/master\\/node\\/public\\/assets\\/riftsq.png\",\"price\":599," +
+                "\"subtitle\":\"Includes: headset, sensor, remote\"}],\"adjustments\":[{\"name\":\"New Customer Discount\"," +
+                "\"amount\":-50},{\"name\":\"$100 Off Coupon\",\"amount\":-100}]}}]}}]}]}";
+
+        final MessengerReceiveClient messengerReceiveClient = builder.disableSignatureVerification().build();
+
+        //when
+        messengerReceiveClient.processCallbackPayload(payload);
+
+        //then
+        final ArgumentCaptor<EchoMessageEvent> argument = ArgumentCaptor.forClass(EchoMessageEvent.class);
+        verify(mockEchoMessageEventHandler).handle(argument.capture());
+        final EchoMessageEvent echoMessageEvent = argument.getValue();
+
+        assertThat(echoMessageEvent.getSender().getId(), equalTo("17175299999834678"));
+        assertThat(echoMessageEvent.getRecipient().getId(), equalTo("1256299999730577"));
+        assertThat(echoMessageEvent.getTimestamp(), equalTo(new Date(1480120402725L)));
+        assertThat(echoMessageEvent.getAppId(), equalTo("1559999994822905"));
+        assertThat(echoMessageEvent.getMetadata(), is(nullValue()));
+        assertThat(echoMessageEvent.getMid(), equalTo("mid.1480199999925:83392d9f65"));
 
         verifyZeroInteractions(mockAttachmentMessageEventHandler, mockOptInEventHandler,
                 mockQuickReplyMessageEventHandler, mockTextMessageEventHandler, mockPostbackEventHandler,
