@@ -1,6 +1,6 @@
 package com.github.messenger4j.send;
 
-import com.github.messenger4j.internal.Assert;
+import com.github.messenger4j.internal.PreConditions;
 import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
@@ -84,7 +84,7 @@ public final class Recipient {
         private final String recipientId;
 
         private RecipientIdBuilder(String recipientId) {
-            Assert.notNullOrBlank(recipientId, "recipientId");
+            PreConditions.notNullOrBlank(recipientId, "recipientId");
             this.recipientId = recipientId;
         }
 
@@ -101,7 +101,7 @@ public final class Recipient {
         private final String phoneNumber;
 
         private PhoneNumberBuilder(String phoneNumber) {
-            Assert.notNullOrBlank(phoneNumber, "phoneNumber");
+            PreConditions.notNullOrBlank(phoneNumber, "phoneNumber");
             this.phoneNumber = phoneNumber;
         }
 

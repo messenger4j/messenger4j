@@ -1,6 +1,6 @@
 package com.github.messenger4j.send;
 
-import com.github.messenger4j.internal.Assert;
+import com.github.messenger4j.internal.PreConditions;
 import com.github.messenger4j.send.http.MessengerHttpClient;
 
 /**
@@ -13,7 +13,7 @@ public final class MessengerSendClientBuilder {
     MessengerHttpClient httpClient;
 
     public MessengerSendClientBuilder(String pageAccessToken) {
-        Assert.notNullOrBlank(pageAccessToken, "pageAccessToken");
+        PreConditions.notNullOrBlank(pageAccessToken, "pageAccessToken");
         this.pageAccessToken = pageAccessToken;
     }
 

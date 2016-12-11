@@ -2,7 +2,7 @@ package com.github.messenger4j.send;
 
 import com.github.messenger4j.exceptions.MessengerApiException;
 import com.github.messenger4j.exceptions.MessengerIOException;
-import com.github.messenger4j.internal.Assert;
+import com.github.messenger4j.internal.PreConditions;
 import com.github.messenger4j.send.http.MessengerHttpClient;
 import com.github.messenger4j.send.templates.Template;
 import com.google.gson.Gson;
@@ -258,7 +258,7 @@ final class MessengerSendClientImpl implements MessengerSendClient {
     }
 
     private void checkBinaryAttachmentTypeUsageWithQuickReplies(BinaryAttachment binaryAttachment) {
-        Assert.isTrue(binaryAttachment.getType().equals(BinaryAttachment.Type.IMAGE), "quickReplies just work with " +
+        PreConditions.isTrue(binaryAttachment.getType().equals(BinaryAttachment.Type.IMAGE), "quickReplies just work with " +
                 "text message, image attachments and templates");
     }
 

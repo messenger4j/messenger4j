@@ -1,6 +1,6 @@
 package com.github.messenger4j.send;
 
-import com.github.messenger4j.internal.Assert;
+import com.github.messenger4j.internal.PreConditions;
 import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -137,11 +137,11 @@ public final class QuickReply {
         private final ListBuilder listBuilder;
 
         private TextBuilder(String title, String payload, ListBuilder listBuilder) {
-            Assert.notNullOrBlank(title, "title");
-            Assert.lengthNotGreaterThan(title, TITLE_CHARACTER_LIMIT, "title");
+            PreConditions.notNullOrBlank(title, "title");
+            PreConditions.lengthNotGreaterThan(title, TITLE_CHARACTER_LIMIT, "title");
 
-            Assert.notNullOrBlank(payload, "payload");
-            Assert.lengthNotGreaterThan(payload, PAYLOAD_CHARACTER_LIMIT, "payload");
+            PreConditions.notNullOrBlank(payload, "payload");
+            PreConditions.lengthNotGreaterThan(payload, PAYLOAD_CHARACTER_LIMIT, "payload");
 
             this.contentType = ContentType.TEXT;
             this.title = title;
@@ -150,7 +150,7 @@ public final class QuickReply {
         }
 
         public TextBuilder imageUrl(String imageUrl) {
-            Assert.notNullOrBlank(imageUrl, "imageUrl");
+            PreConditions.notNullOrBlank(imageUrl, "imageUrl");
             this.imageUrl = imageUrl;
             return this;
         }

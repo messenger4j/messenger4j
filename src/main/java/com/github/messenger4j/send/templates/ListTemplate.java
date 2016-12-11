@@ -1,6 +1,6 @@
 package com.github.messenger4j.send.templates;
 
-import com.github.messenger4j.internal.Assert;
+import com.github.messenger4j.internal.PreConditions;
 import com.github.messenger4j.send.buttons.Button;
 import com.github.messenger4j.send.buttons.UrlButton;
 import com.google.gson.annotations.SerializedName;
@@ -80,8 +80,8 @@ public final class ListTemplate extends Template {
         }
 
         public Builder buttons(List<Button> buttons) {
-            Assert.notNullOrEmpty(buttons, "buttons");
-            Assert.sizeNotGreaterThan(buttons, BUTTONS_LIMIT, "buttons");
+            PreConditions.notNullOrEmpty(buttons, "buttons");
+            PreConditions.sizeNotGreaterThan(buttons, BUTTONS_LIMIT, "buttons");
             this.buttons = buttons;
             return this;
         }
@@ -96,9 +96,9 @@ public final class ListTemplate extends Template {
         }
 
         public ListTemplate build() {
-            Assert.notNullOrEmpty(this.elements, "elements");
+            PreConditions.notNullOrEmpty(this.elements, "elements");
             if (topElementStyle == TopElementStyle.LARGE) {
-                Assert.notNullOrBlank(elements.get(0).imageUrl, "imageUrl");
+                PreConditions.notNullOrBlank(elements.get(0).imageUrl, "imageUrl");
             }
             return new ListTemplate(this);
         }
@@ -174,8 +174,8 @@ public final class ListTemplate extends Template {
             }
 
             public ListTemplate.Builder done() {
-                Assert.sizeNotGreaterThan(this.elements, MAX_ELEMENTS, "elements", IllegalStateException.class);
-                Assert.sizeNotLessThan(this.elements, MIN_ELEMENTS, "elements", IllegalStateException.class);
+                PreConditions.sizeNotGreaterThan(this.elements, MAX_ELEMENTS, "elements", IllegalStateException.class);
+                PreConditions.sizeNotLessThan(this.elements, MIN_ELEMENTS, "elements", IllegalStateException.class);
                 return this.listTemplateBuilder.elements(Collections.unmodifiableList(new ArrayList<>(this.elements)));
             }
 
@@ -201,15 +201,15 @@ public final class ListTemplate extends Template {
             private DefaultAction defaultAction;
 
             public Builder(String title, ListBuilder listBuilder) {
-                Assert.notNullOrBlank(title, "title");
-                Assert.lengthNotGreaterThan(title, TITLE_CHARACTER_LIMIT, "title");
+                PreConditions.notNullOrBlank(title, "title");
+                PreConditions.lengthNotGreaterThan(title, TITLE_CHARACTER_LIMIT, "title");
                 this.title = title;
                 this.listBuilder = listBuilder;
             }
 
             public Builder subtitle(String subtitle) {
-                Assert.notNullOrBlank(subtitle, "subtitle");
-                Assert.lengthNotGreaterThan(subtitle, SUBTITLE_CHARACTER_LIMIT, "subtitle");
+                PreConditions.notNullOrBlank(subtitle, "subtitle");
+                PreConditions.lengthNotGreaterThan(subtitle, SUBTITLE_CHARACTER_LIMIT, "subtitle");
                 this.subtitle = subtitle;
                 return this;
             }
@@ -220,8 +220,8 @@ public final class ListTemplate extends Template {
             }
 
             public Builder buttons(List<Button> buttons) {
-                Assert.notNullOrEmpty(buttons, "buttons");
-                Assert.sizeNotGreaterThan(buttons, BUTTONS_LIMIT, "buttons", IllegalStateException.class);
+                PreConditions.notNullOrEmpty(buttons, "buttons");
+                PreConditions.sizeNotGreaterThan(buttons, BUTTONS_LIMIT, "buttons", IllegalStateException.class);
                 this.buttons = buttons;
                 return this;
             }

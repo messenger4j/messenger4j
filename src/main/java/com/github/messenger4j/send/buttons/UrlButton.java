@@ -1,6 +1,6 @@
 package com.github.messenger4j.send.buttons;
 
-import com.github.messenger4j.internal.Assert;
+import com.github.messenger4j.internal.PreConditions;
 import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
@@ -91,9 +91,9 @@ public final class UrlButton extends TitleButton {
         private final ListBuilder listBuilder;
 
         Builder(String title, String url, ListBuilder listBuilder) {
-            Assert.notNullOrBlank(title, "title");
-            Assert.lengthNotGreaterThan(title, TITLE_CHARACTER_LIMIT, "title");
-            Assert.notNullOrBlank(url, "url");
+            PreConditions.notNullOrBlank(title, "title");
+            PreConditions.lengthNotGreaterThan(title, TITLE_CHARACTER_LIMIT, "title");
+            PreConditions.notNullOrBlank(url, "url");
 
             this.title = title;
             this.url = url;
@@ -101,7 +101,7 @@ public final class UrlButton extends TitleButton {
         }
 
         public Builder webviewHeightRatio(WebviewHeightRatio webviewHeightRatio) {
-            Assert.notNull(webviewHeightRatio, "webviewHeightRatio");
+            PreConditions.notNull(webviewHeightRatio, "webviewHeightRatio");
             this.webviewHeightRatio = webviewHeightRatio;
             return this;
         }

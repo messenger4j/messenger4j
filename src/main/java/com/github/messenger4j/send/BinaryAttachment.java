@@ -1,6 +1,6 @@
 package com.github.messenger4j.send;
 
-import com.github.messenger4j.internal.Assert;
+import com.github.messenger4j.internal.PreConditions;
 import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
@@ -142,7 +142,7 @@ public final class BinaryAttachment extends Message.Attachment {
         private final Type type;
 
         private Builder(Type type) {
-            Assert.notNull(type, "type");
+            PreConditions.notNull(type, "type");
             this.type = type;
         }
 
@@ -166,7 +166,7 @@ public final class BinaryAttachment extends Message.Attachment {
         private Boolean isReusable;
 
         private UrlBuilder(Type type, String attachmentUrl) {
-            Assert.notNullOrBlank(attachmentUrl, "attachmentUrl");
+            PreConditions.notNullOrBlank(attachmentUrl, "attachmentUrl");
             this.type = type;
             this.attachmentUrl = attachmentUrl;
         }
@@ -191,7 +191,7 @@ public final class BinaryAttachment extends Message.Attachment {
         private final String attachmentId;
 
         private AttachmentIdBuilder(Type type, String attachmentId) {
-            Assert.notNullOrBlank(attachmentId, "attachmentId");
+            PreConditions.notNullOrBlank(attachmentId, "attachmentId");
             this.type = type;
             this.attachmentId = attachmentId;
         }

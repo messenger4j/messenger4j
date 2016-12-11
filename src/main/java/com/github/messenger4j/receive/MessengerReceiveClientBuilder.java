@@ -1,7 +1,7 @@
 package com.github.messenger4j.receive;
 
 import com.github.messenger4j.MessengerPlatform;
-import com.github.messenger4j.internal.Assert;
+import com.github.messenger4j.internal.PreConditions;
 import com.github.messenger4j.receive.events.AccountLinkingEvent;
 import com.github.messenger4j.receive.events.AttachmentMessageEvent;
 import com.github.messenger4j.receive.events.EchoMessageEvent;
@@ -62,8 +62,8 @@ public final class MessengerReceiveClientBuilder {
      * @param verifyToken the {@code Verification Token} that has been provided by you during the setup of the {@code Webhook}
      */
     public MessengerReceiveClientBuilder(String appSecret, String verifyToken) {
-        Assert.notNullOrBlank(appSecret, "appSecret");
-        Assert.notNullOrBlank(verifyToken, "verifyToken");
+        PreConditions.notNullOrBlank(appSecret, "appSecret");
+        PreConditions.notNullOrBlank(verifyToken, "verifyToken");
 
         this.appSecret = appSecret;
         this.verifyToken = verifyToken;

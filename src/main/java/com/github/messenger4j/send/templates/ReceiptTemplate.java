@@ -1,6 +1,6 @@
 package com.github.messenger4j.send.templates;
 
-import com.github.messenger4j.internal.Assert;
+import com.github.messenger4j.internal.PreConditions;
 import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -213,7 +213,7 @@ public final class ReceiptTemplate extends Template {
         }
 
         public ReceiptTemplate build() {
-            Assert.notNull(this.summary, "summary", IllegalStateException.class);
+            PreConditions.notNull(this.summary, "summary", IllegalStateException.class);
             return new ReceiptTemplate(this);
         }
     }
@@ -421,7 +421,7 @@ public final class ReceiptTemplate extends Template {
             }
 
             public ReceiptTemplate.Builder done() {
-                Assert.sizeNotGreaterThan(this.elements, ELEMENTS_LIMIT, "elements", IllegalStateException.class);
+                PreConditions.sizeNotGreaterThan(this.elements, ELEMENTS_LIMIT, "elements", IllegalStateException.class);
                 return this.receiptTemplateBuilder.elements(Collections.unmodifiableList(new ArrayList<>(this.elements)));
             }
         }

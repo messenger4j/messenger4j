@@ -1,6 +1,6 @@
 package com.github.messenger4j.send.buttons;
 
-import com.github.messenger4j.internal.Assert;
+import com.github.messenger4j.internal.PreConditions;
 import java.util.Objects;
 
 /**
@@ -64,11 +64,11 @@ public final class CallButton extends TitleButton {
         private final ListBuilder listBuilder;
 
         Builder(String title, String payload, ListBuilder listBuilder) {
-            Assert.notNullOrBlank(title, "title");
-            Assert.lengthNotGreaterThan(title, TITLE_CHARACTER_LIMIT, "title");
+            PreConditions.notNullOrBlank(title, "title");
+            PreConditions.lengthNotGreaterThan(title, TITLE_CHARACTER_LIMIT, "title");
 
-            Assert.notNullOrBlank(payload, "payload");
-            Assert.startsWith(payload, "+", "payload");
+            PreConditions.notNullOrBlank(payload, "payload");
+            PreConditions.startsWith(payload, "+", "payload");
 
             this.title = title;
             this.payload = payload;

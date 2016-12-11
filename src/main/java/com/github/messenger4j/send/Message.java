@@ -1,6 +1,6 @@
 package com.github.messenger4j.send;
 
-import com.github.messenger4j.internal.Assert;
+import com.github.messenger4j.internal.PreConditions;
 import com.github.messenger4j.send.templates.Template;
 import com.google.gson.annotations.SerializedName;
 import java.util.List;
@@ -100,34 +100,34 @@ final class Message {
         }
 
         public Builder text(String text) {
-            Assert.notNullOrBlank(text, "text");
-            Assert.lengthNotGreaterThan(text, TEXT_CHARACTER_LIMIT, "text");
+            PreConditions.notNullOrBlank(text, "text");
+            PreConditions.lengthNotGreaterThan(text, TEXT_CHARACTER_LIMIT, "text");
             this.text = text;
             return this;
         }
 
         public Builder binaryAttachment(BinaryAttachment binaryAttachment) {
-            Assert.notNull(binaryAttachment, "binaryAttachment");
+            PreConditions.notNull(binaryAttachment, "binaryAttachment");
             this.attachment = binaryAttachment;
             return this;
         }
 
         public Builder template(Template template) {
-            Assert.notNull(template, "template");
+            PreConditions.notNull(template, "template");
             this.attachment = new TemplateAttachment(template);
             return this;
         }
 
         public Builder quickReplies(List<QuickReply> quickReplies) {
-            Assert.notNullOrEmpty(quickReplies, "quickReplies");
-            Assert.sizeNotGreaterThan(quickReplies, QUICK_REPLIES_LIMIT, "quickReplies");
+            PreConditions.notNullOrEmpty(quickReplies, "quickReplies");
+            PreConditions.sizeNotGreaterThan(quickReplies, QUICK_REPLIES_LIMIT, "quickReplies");
             this.quickReplies = quickReplies;
             return this;
         }
 
         public Builder metadata(String metadata) {
-            Assert.notNullOrBlank(metadata, "metadata");
-            Assert.lengthNotGreaterThan(metadata, METADATA_CHARACTER_LIMIT, "metadata");
+            PreConditions.notNullOrBlank(metadata, "metadata");
+            PreConditions.lengthNotGreaterThan(metadata, METADATA_CHARACTER_LIMIT, "metadata");
             this.metadata = metadata;
             return this;
         }

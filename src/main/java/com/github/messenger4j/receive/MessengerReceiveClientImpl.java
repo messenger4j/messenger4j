@@ -7,7 +7,7 @@ import static com.github.messenger4j.internal.JsonHelper.getPropertyAsJsonArray;
 import static com.github.messenger4j.internal.JsonHelper.getPropertyAsString;
 
 import com.github.messenger4j.exceptions.MessengerVerificationException;
-import com.github.messenger4j.internal.Assert;
+import com.github.messenger4j.internal.PreConditions;
 import com.github.messenger4j.receive.callers.AccountLinkingEventHandlerCaller;
 import com.github.messenger4j.receive.callers.AttachmentMessageEventHandlerCaller;
 import com.github.messenger4j.receive.callers.EchoMessageEventHandlerCaller;
@@ -97,9 +97,9 @@ final class MessengerReceiveClientImpl implements MessengerReceiveClient {
     public String verifyWebhook(String mode, String verifyToken, String challenge)
             throws MessengerVerificationException {
 
-        Assert.notNullOrBlank(mode, "mode");
-        Assert.notNullOrBlank(verifyToken, "verifyToken");
-        Assert.notNullOrBlank(challenge, "challenge");
+        PreConditions.notNullOrBlank(mode, "mode");
+        PreConditions.notNullOrBlank(verifyToken, "verifyToken");
+        PreConditions.notNullOrBlank(challenge, "challenge");
 
         if (!mode.equals(MODE_SUBSCRIBE)) {
             throw new MessengerVerificationException("Webhook verification failed. Mode '" + mode + "' is invalid.");
@@ -124,7 +124,7 @@ final class MessengerReceiveClientImpl implements MessengerReceiveClient {
 
     @Override
     public void processCallbackPayload(String payload, String signature) throws MessengerVerificationException {
-        Assert.notNullOrBlank(payload, "payload");
+        PreConditions.notNullOrBlank(payload, "payload");
 
         if (!this.disableSignatureVerification && !SignatureVerifier.isSignatureValid(payload, signature, this.appSecret)) {
             throw new MessengerVerificationException("Signature verification failed. " +

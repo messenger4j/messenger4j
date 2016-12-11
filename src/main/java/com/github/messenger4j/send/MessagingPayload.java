@@ -1,6 +1,6 @@
 package com.github.messenger4j.send;
 
-import com.github.messenger4j.internal.Assert;
+import com.github.messenger4j.internal.PreConditions;
 import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
@@ -81,12 +81,12 @@ final class MessagingPayload {
         private SenderAction senderAction;
 
         private Builder(Recipient recipient) {
-            Assert.notNull(recipient, "recipient");
+            PreConditions.notNull(recipient, "recipient");
             this.recipient = recipient;
         }
 
         public Builder notificationType(NotificationType notificationType) {
-            Assert.notNull(notificationType, "notificationType");
+            PreConditions.notNull(notificationType, "notificationType");
             this.notificationType = notificationType;
             return this;
         }
@@ -101,7 +101,7 @@ final class MessagingPayload {
         }
 
         public Builder senderAction(SenderAction senderAction) {
-            Assert.notNull(senderAction, "senderAction");
+            PreConditions.notNull(senderAction, "senderAction");
             this.senderAction = senderAction;
             return this;
         }

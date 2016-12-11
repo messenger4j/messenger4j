@@ -1,6 +1,6 @@
 package com.github.messenger4j.receive;
 
-import com.github.messenger4j.internal.Assert;
+import com.github.messenger4j.internal.PreConditions;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
@@ -30,9 +30,9 @@ final class SignatureVerifier {
      * @return {@code true} if the verification was successful, otherwise {@code false}
      */
     static boolean isSignatureValid(String payload, String signature, String appSecret) {
-        Assert.notNullOrBlank(payload, "payload");
-        Assert.notNullOrBlank(signature, "signature");
-        Assert.notNullOrBlank(appSecret, "appSecret");
+        PreConditions.notNullOrBlank(payload, "payload");
+        PreConditions.notNullOrBlank(signature, "signature");
+        PreConditions.notNullOrBlank(appSecret, "appSecret");
         try {
             final Mac mac = Mac.getInstance(HMAC_SHA1);
             mac.init(new SecretKeySpec(appSecret.getBytes(), HMAC_SHA1));

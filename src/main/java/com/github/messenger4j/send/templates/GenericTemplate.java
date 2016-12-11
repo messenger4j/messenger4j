@@ -1,6 +1,6 @@
 package com.github.messenger4j.send.templates;
 
-import com.github.messenger4j.internal.Assert;
+import com.github.messenger4j.internal.PreConditions;
 import com.github.messenger4j.send.buttons.Button;
 import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
@@ -73,8 +73,8 @@ public final class GenericTemplate extends Template {
         }
 
         public GenericTemplate build() {
-            Assert.notNullOrEmpty(this.elements, "elements", IllegalStateException.class);
-            Assert.sizeNotGreaterThan(this.elements, ELEMENTS_LIMIT, "elements", IllegalStateException.class);
+            PreConditions.notNullOrEmpty(this.elements, "elements", IllegalStateException.class);
+            PreConditions.sizeNotGreaterThan(this.elements, ELEMENTS_LIMIT, "elements", IllegalStateException.class);
             return new GenericTemplate(this);
         }
     }
@@ -195,35 +195,35 @@ public final class GenericTemplate extends Template {
             private final ListBuilder listBuilder;
 
             private Builder(String title, ListBuilder listBuilder) {
-                Assert.notNullOrBlank(title, "title");
-                Assert.lengthNotGreaterThan(title, TITLE_CHARACTER_LIMIT, "title");
+                PreConditions.notNullOrBlank(title, "title");
+                PreConditions.lengthNotGreaterThan(title, TITLE_CHARACTER_LIMIT, "title");
 
                 this.title = title;
                 this.listBuilder = listBuilder;
             }
 
             public Builder itemUrl(String itemUrl) {
-                Assert.notNullOrBlank(itemUrl, "itemUrl");
+                PreConditions.notNullOrBlank(itemUrl, "itemUrl");
                 this.itemUrl = itemUrl;
                 return this;
             }
 
             public Builder imageUrl(String imageUrl) {
-                Assert.notNullOrBlank(imageUrl, "imageUrl");
+                PreConditions.notNullOrBlank(imageUrl, "imageUrl");
                 this.imageUrl = imageUrl;
                 return this;
             }
 
             public Builder subtitle(String subtitle) {
-                Assert.notNullOrBlank(subtitle, "subtitle");
-                Assert.lengthNotGreaterThan(subtitle, SUBTITLE_CHARACTER_LIMIT, "subtitle");
+                PreConditions.notNullOrBlank(subtitle, "subtitle");
+                PreConditions.lengthNotGreaterThan(subtitle, SUBTITLE_CHARACTER_LIMIT, "subtitle");
                 this.subtitle = subtitle;
                 return this;
             }
 
             public Builder buttons(List<Button> buttons) {
-                Assert.notNullOrEmpty(buttons, "buttons");
-                Assert.sizeNotGreaterThan(buttons, BUTTONS_LIMIT, "buttons");
+                PreConditions.notNullOrEmpty(buttons, "buttons");
+                PreConditions.sizeNotGreaterThan(buttons, BUTTONS_LIMIT, "buttons");
                 this.buttons = buttons;
                 return this;
             }

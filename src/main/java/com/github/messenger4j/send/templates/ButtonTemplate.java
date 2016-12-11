@@ -1,6 +1,6 @@
 package com.github.messenger4j.send.templates;
 
-import com.github.messenger4j.internal.Assert;
+import com.github.messenger4j.internal.PreConditions;
 import com.github.messenger4j.send.buttons.Button;
 import java.util.List;
 import java.util.Objects;
@@ -68,10 +68,10 @@ public final class ButtonTemplate extends Template {
         private final List<Button> buttons;
 
         private Builder(String text, List<Button> buttons) {
-            Assert.notNullOrBlank(text, "text");
-            Assert.lengthNotGreaterThan(text, TEXT_CHARACTER_LIMIT, "text");
-            Assert.notNullOrEmpty(buttons, "buttons");
-            Assert.sizeNotGreaterThan(buttons, BUTTONS_LIMIT, "buttons");
+            PreConditions.notNullOrBlank(text, "text");
+            PreConditions.lengthNotGreaterThan(text, TEXT_CHARACTER_LIMIT, "text");
+            PreConditions.notNullOrEmpty(buttons, "buttons");
+            PreConditions.sizeNotGreaterThan(buttons, BUTTONS_LIMIT, "buttons");
 
             this.text = text;
             this.buttons = buttons;
