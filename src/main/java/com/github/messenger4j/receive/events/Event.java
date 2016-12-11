@@ -4,7 +4,7 @@ import com.github.messenger4j.receive.handlers.EventHandler;
 import java.util.Objects;
 
 /**
- * This <b>internal</b> abstract class is a base implementation for the specific event types.
+ * This abstract class is the base implementation of the specific event types.
  *
  * <p>
  * Events could be user-actions (sending messages, tapping quick replies, ...) or could be created by the

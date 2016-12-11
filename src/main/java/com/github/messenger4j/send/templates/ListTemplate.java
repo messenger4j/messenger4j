@@ -4,7 +4,6 @@ import com.github.messenger4j.internal.Assert;
 import com.github.messenger4j.send.buttons.Button;
 import com.github.messenger4j.send.buttons.UrlButton;
 import com.google.gson.annotations.SerializedName;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -202,13 +201,15 @@ public final class ListTemplate extends Template {
             private DefaultAction defaultAction;
 
             public Builder(String title, ListBuilder listBuilder) {
+                Assert.notNullOrBlank(title, "title");
                 Assert.lengthNotGreaterThan(title, TITLE_CHARACTER_LIMIT, "title");
                 this.title = title;
                 this.listBuilder = listBuilder;
             }
 
             public Builder subtitle(String subtitle) {
-                Assert.lengthNotGreaterThan(title, SUBTITLE_CHARACTER_LIMIT, "subtitle");
+                Assert.notNullOrBlank(subtitle, "subtitle");
+                Assert.lengthNotGreaterThan(subtitle, SUBTITLE_CHARACTER_LIMIT, "subtitle");
                 this.subtitle = subtitle;
                 return this;
             }
@@ -225,7 +226,7 @@ public final class ListTemplate extends Template {
                 return this;
             }
 
-            public DefaultAction.Builder defaultAction(String url) {
+            public DefaultAction.Builder addDefaultAction(String url) {
                 return new DefaultAction.Builder(url, this);
             }
 
@@ -234,7 +235,7 @@ public final class ListTemplate extends Template {
                 return this;
             }
 
-            public ListBuilder build() {
+            public ListBuilder toList() {
                 listBuilder.addElementToList(new Element(this));
                 return listBuilder;
             }
@@ -299,7 +300,7 @@ public final class ListTemplate extends Template {
                     return this;
                 }
 
-                public Element.Builder build() {
+                public Element.Builder done() {
                     return elementBuilder.defaulAction(new DefaultAction(this));
                 }
             }
