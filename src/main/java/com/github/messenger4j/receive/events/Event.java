@@ -69,7 +69,7 @@ public abstract class Event {
 
         private final String id;
 
-        private Entity(String id) {
+        public Entity(String id) {
             this.id = id;
         }
 

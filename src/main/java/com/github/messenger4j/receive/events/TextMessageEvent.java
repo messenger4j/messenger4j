@@ -46,7 +46,7 @@ public final class TextMessageEvent extends CommonTextMessageEvent {
         return new TextMessageEvent(senderId, recipientId, timestamp, mid, text);
     }
 
-    private TextMessageEvent(String senderId, String recipientId, Date timestamp, String mid, String text) {
+    public TextMessageEvent(String senderId, String recipientId, Date timestamp, String mid, String text) {
         super(senderId, recipientId, timestamp, mid, text);
     }
 

@@ -68,6 +68,12 @@ public final class Assert {
         Assert.isTrue(collection.size() <= size, exceptionClass, "%s size is greater than %d", parameterName, size);
     }
 
+    public static <T extends RuntimeException> void sizeNotLessThan(Collection<?> collection, int size,
+                                                                       String parameterName, Class<T> exceptionClass) {
+
+        Assert.isTrue(collection.size() >= size, exceptionClass, "%s size is less than %d", parameterName, size);
+    }
+
     public static void startsWith(String string, String prefix, String parameterName) {
         Assert.isTrue(string.startsWith(prefix), IllegalArgumentException.class, "%s does not start with '%s'",
                 parameterName, prefix);

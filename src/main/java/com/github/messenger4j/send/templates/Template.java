@@ -53,6 +53,9 @@ public abstract class Template {
         RECEIPT,
 
         @SerializedName("button")
-        BUTTON
+        BUTTON,
+
+        @SerializedName("list")
+        LIST
     }
 }

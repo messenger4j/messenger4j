@@ -47,7 +47,7 @@ public final class OptInEvent extends TimestampedEvent {
         return new OptInEvent(senderId, recipientId, timestamp, ref);
     }
 
-    private OptInEvent(String senderId, String recipientId, Date timestamp, String ref) {
+    public OptInEvent(String senderId, String recipientId, Date timestamp, String ref) {
         super(senderId, recipientId, timestamp);
         this.ref = ref;
     }
