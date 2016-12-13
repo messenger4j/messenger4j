@@ -22,6 +22,29 @@ import com.github.messenger4j.send.MessengerSendClientBuilder;
  */
 public final class MessengerPlatform {
 
+    /**
+     * Constant for the {@code hub.mode} request parameter name.
+     */
+    public static final String MODE_REQUEST_PARAM_NAME = "hub.mode";
+
+    /**
+     * Constant for the {@code hub.challenge} request parameter name.
+     */
+    public static final String CHALLENGE_REQUEST_PARAM_NAME = "hub.challenge";
+
+    /**
+     * Constant for the {@code hub.verify_token} request parameter name.
+     */
+    public static final String VERIFY_TOKEN_REQUEST_PARAM_NAME = "hub.verify_token";
+
+    /**
+     * Constant for the {@code X-Hub-Signature} header name.
+     */
+    public static final String SIGNATURE_HEADER_NAME = "X-Hub-Signature";
+
+    /**
+     * Private constructor to prevent instantiation.
+     */
     private MessengerPlatform() {
     }
 

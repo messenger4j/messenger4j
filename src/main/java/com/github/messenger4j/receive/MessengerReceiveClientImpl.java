@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
 final class MessengerReceiveClientImpl implements MessengerReceiveClient {
 
     private static final String OBJECT_TYPE_PAGE = "page";
-    private static final String MODE_SUBSCRIBE = "subscribe";
+    private static final String HUB_MODE_SUBSCRIBE = "subscribe";
 
     private final Logger logger = LoggerFactory.getLogger(MessengerReceiveClientImpl.class);
 
@@ -101,7 +101,7 @@ final class MessengerReceiveClientImpl implements MessengerReceiveClient {
         PreConditions.notNullOrBlank(verifyToken, "verifyToken");
         PreConditions.notNullOrBlank(challenge, "challenge");
 
-        if (!mode.equals(MODE_SUBSCRIBE)) {
+        if (!mode.equals(HUB_MODE_SUBSCRIBE)) {
             throw new MessengerVerificationException("Webhook verification failed. Mode '" + mode + "' is invalid.");
         }
         if (!verifyToken.equals(this.verifyToken)) {
