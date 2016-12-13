@@ -2,7 +2,7 @@
 
 If you are excited about building Bots for the Facebook Messenger Platform, messenger4j is all you need ✌
 
->It's fast, lightweight, feature-rich and really **easy to use**!
+>It's fast, lightweight, feature-rich, and easy to use.
 
 For more information on the Facebook Messenger Platform refer to the [official documentation][1].
 
@@ -45,6 +45,10 @@ dependencies {
   compile 'com.github.messenger4j:messenger4j:0.6.1'
 }
 ```
+
+## Showcase
+For a complete sample application showcasing almost all features of the Messenger Platform take a look at the
+[messenger4j-spring-boot-quickstart-template][2]. You can use it to quickly bootstrap your chatbot projects.
 
 ## Examples
 #### Receiving
@@ -213,8 +217,7 @@ Unordered list of planned improvements:
     + Referral support
 * Send API: 
     + JavaDoc
-    + List / Airline Templates
-    + Account Linking Buttons
+    + Airline Templates
     + *upload* Binary Attachments
 * Payment support
 * Messenger Extensions support
@@ -227,3 +230,4 @@ This project is licensed under the terms of the [MIT license](LICENSE).
 
 
 [1]: https://developers.facebook.com/docs/messenger-platform
+[2]: https://github.com/messenger4j/messenger4j-spring-boot-quickstart-template
