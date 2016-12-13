@@ -5,7 +5,7 @@ import java.util.Objects;
 
 /**
  * @author Max Grabenhorst
- * @since 0.6.2
+ * @since 0.7.0
  */
 public final class LogInButton extends Button {
 
@@ -53,7 +53,7 @@ public final class LogInButton extends Button {
 
     /**
      * @author Max Grabenhorst
-     * @since 0.6.2
+     * @since 0.7.0
      */
     public static final class Builder {
 

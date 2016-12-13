@@ -153,14 +153,14 @@ public abstract class Button {
         }
 
         /**
-         * @since 0.6.2
+         * @since 0.7.0
          */
         public LogInButton.Builder addLogInButton(String url) {
             return new LogInButton.Builder(url, this);
         }
 
         /**
-         * @since 0.6.2
+         * @since 0.7.0
          */
         public LogOutButton.Builder addLogOutButton() {
             return new LogOutButton.Builder(this);

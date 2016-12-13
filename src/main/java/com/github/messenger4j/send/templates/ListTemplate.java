@@ -11,7 +11,7 @@ import java.util.Objects;
 
 /**
  * @author Jan Zarnikov
- * @since 0.6.2
+ * @since 0.7.0
  */
 public final class ListTemplate extends Template {
 
@@ -65,7 +65,7 @@ public final class ListTemplate extends Template {
     }
 
     /**
-     * @since 0.6.2
+     * @since 0.7.0
      */
     public static final class Builder {
 
@@ -105,7 +105,7 @@ public final class ListTemplate extends Template {
     }
 
     /**
-     * @since 0.6.2
+     * @since 0.7.0
      */
     public static final class Element {
 
@@ -154,7 +154,7 @@ public final class ListTemplate extends Template {
         }
 
         /**
-         * @since 0.6.2
+         * @since 0.7.0
          */
         public static final class ListBuilder {
 
@@ -185,7 +185,7 @@ public final class ListTemplate extends Template {
         }
 
         /**
-         * @since 0.6.2
+         * @since 0.7.0
          */
         public static final class Builder {
 
@@ -243,7 +243,7 @@ public final class ListTemplate extends Template {
         }
 
         /**
-         * @since 0.6.2
+         * @since 0.7.0
          */
         public static final class DefaultAction {
 
@@ -283,7 +283,7 @@ public final class ListTemplate extends Template {
             }
 
             /**
-             * @since 0.6.2
+             * @since 0.7.0
              */
             public static final class Builder {
                 private final String url;

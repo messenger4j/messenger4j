@@ -1,6 +1,6 @@
-# messenger4j: A Java library for the Facebook Messenger Platform
+# messenger4j: A Java library for the Messenger Platform
 
-If you are excited about building Bots for the Facebook Messenger Platform, messenger4j is all you need ✌
+If you are excited about building Chatbots on the Facebook Messenger Platform, messenger4j is all you need ✌
 
 >It's fast, lightweight, feature-rich, and easy to use.
 
@@ -34,7 +34,7 @@ To add a dependency on messenger4j using Maven, use the following:
 <dependency>
   <groupId>com.github.messenger4j</groupId>
   <artifactId>messenger4j</artifactId>
-  <version>0.6.1</version>
+  <version>0.7.0</version>
 </dependency>
 ```
 
@@ -42,7 +42,7 @@ To add a dependency using Gradle:
 
 ```
 dependencies {
-  compile 'com.github.messenger4j:messenger4j:0.6.1'
+  compile 'com.github.messenger4j:messenger4j:0.7.0'
 }
 ```
 

@@ -2,7 +2,7 @@ package com.github.messenger4j.send.buttons;
 
 /**
  * @author Max Grabenhorst
- * @since 0.6.2
+ * @since 0.7.0
  */
 public final class LogOutButton extends Button {
 
@@ -37,7 +37,7 @@ public final class LogOutButton extends Button {
 
     /**
      * @author Max Grabenhorst
-     * @since 0.6.2
+     * @since 0.7.0
      */
     public static final class Builder {
 

@@ -7,11 +7,11 @@
 
     <groupId>com.github.messenger4j</groupId>
     <artifactId>messenger4j</artifactId>
-    <version>0.6.2-SNAPSHOT</version>
+    <version>0.7.0</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>The ultimate Java library for the Facebook Messenger Platform</description>
+    <description>The ultimate Java library for building Chatbots on the Facebook Messenger Platform</description>
     <url>https://github.com/messenger4j/messenger4j</url>
 
     <licenses>
@@ -49,6 +49,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <build>
