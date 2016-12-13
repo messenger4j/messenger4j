@@ -238,7 +238,7 @@ public class MessengerSendClientTest {
     }
 
     @Test
-    public void shouldSendGenericTemplateMessage() throws Exception {
+    public void shouldSendGenericTemplateWithUrlAndPostbackButtonsMessage() throws Exception {
         //given
         final String recipientId = "USER_ID";
 
@@ -270,6 +270,37 @@ public class MessengerSendClientTest {
                 "\"url\":\"https://petersfancybrownhats.com\",\"title\":\"View Website\",\"type\":\"web_url\"}," +
                 "{\"payload\":\"DEVELOPER_DEFINED_PAYLOAD\",\"title\":\"Start Chatting\",\"type\":\"postback\"}]}]," +
                 "\"template_type\":\"generic\"}}}}";
+        verify(mockHttpClient).executePost(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+    }
+
+    @Test
+    public void shouldSendGenericTemplateWithLogInAndLogOutButtonsMessage() throws Exception {
+        //given
+        final String recipientId = "USER_ID";
+
+        final List<Button> buttons = Button.newListBuilder()
+                .addLogInButton("https://www.example.com/authorize").toList()
+                .addLogOutButton().toList()
+                .build();
+
+        final GenericTemplate genericTemplate = GenericTemplate.newBuilder()
+                .addElements()
+                .addElement("Welcome to M-Bank")
+                .imageUrl("http://www.example.com/images/m-bank.png")
+                .buttons(buttons)
+                .toList()
+                .done()
+                .build();
+
+        //when
+        messengerSendClient.sendTemplate(recipientId, genericTemplate);
+
+        //then
+        final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},\"message\":" +
+                "{\"attachment\":{\"type\":\"template\",\"payload\":{\"elements\":" +
+                "[{\"title\":\"Welcome to M-Bank\",\"image_url\":\"http://www.example.com/images/m-bank.png\"," +
+                "\"buttons\":[{\"url\":\"https://www.example.com/authorize\",\"type\":\"account_link\"}," +
+                "{\"type\":\"account_unlink\"}]}],\"template_type\":\"generic\"}}}}";
         verify(mockHttpClient).executePost(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 

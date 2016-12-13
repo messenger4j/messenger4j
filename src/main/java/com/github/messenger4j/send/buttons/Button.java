@@ -38,6 +38,14 @@ public abstract class Button {
         return false;
     }
 
+    public boolean isLogInButton() {
+        return false;
+    }
+
+    public boolean isLogOutButton() {
+        return false;
+    }
+
     public UrlButton asUrlButton() {
         throw new UnsupportedOperationException("not a UrlButton");
     }
@@ -52,6 +60,14 @@ public abstract class Button {
 
     public ShareButton asShareButton() {
         throw new UnsupportedOperationException("not a ShareButton");
+    }
+
+    public LogInButton asLogInButton() {
+        throw new UnsupportedOperationException("not a LogInButton");
+    }
+
+    public LogOutButton asLogOutButton() {
+        throw new UnsupportedOperationException("not a LogOutButton");
     }
 
     public ButtonType getType() {
@@ -94,7 +110,13 @@ public abstract class Button {
         CALL,
 
         @SerializedName("element_share")
-        SHARE
+        SHARE,
+
+        @SerializedName("account_link")
+        ACCOUNT_LINK,
+
+        @SerializedName("account_unlink")
+        ACCOUNT_UNLINK
     }
 
     /**
@@ -128,6 +150,20 @@ public abstract class Button {
 
         public ShareButton.Builder addShareButton() {
             return new ShareButton.Builder(this);
+        }
+
+        /**
+         * @since 0.6.2
+         */
+        public LogInButton.Builder addLogInButton(String url) {
+            return new LogInButton.Builder(url, this);
+        }
+
+        /**
+         * @since 0.6.2
+         */
+        public LogOutButton.Builder addLogOutButton() {
+            return new LogOutButton.Builder(this);
         }
 
         public List<Button> build() {
