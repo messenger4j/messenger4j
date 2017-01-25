@@ -18,7 +18,7 @@ public final class MessengerResponse {
     private final String messageId;
     private final String attachmentId;
 
-    static MessengerResponse fromJson(JsonObject jsonObject) {
+    public static MessengerResponse fromJson(JsonObject jsonObject) {
         final String recipientId = getPropertyAsString(jsonObject, PROP_RECIPIENT_ID);
         final String messageId = getPropertyAsString(jsonObject, PROP_MESSAGE_ID);
         final String attachmentId = getPropertyAsString(jsonObject, PROP_ATTACHMENT_ID);

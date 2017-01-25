@@ -1,5 +1,6 @@
 package com.github.messenger4j.send.buttons;
 
+import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.internal.PreConditions;
 import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
@@ -59,22 +60,6 @@ public final class UrlButton extends TitleButton {
                 "url='" + url + '\'' +
                 ", webviewHeightRatio=" + webviewHeightRatio +
                 "} super=" + super.toString();
-    }
-
-    /**
-     * @author Max Grabenhorst
-     * @since 0.6.0
-     */
-    public enum WebviewHeightRatio {
-
-        @SerializedName("compact")
-        COMPACT,
-
-        @SerializedName("tall")
-        TALL,
-
-        @SerializedName("full")
-        FULL
     }
 
     /**

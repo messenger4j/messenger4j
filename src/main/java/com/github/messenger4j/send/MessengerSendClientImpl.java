@@ -1,57 +1,34 @@
 package com.github.messenger4j.send;
 
+import com.github.messenger4j.common.MessengerSendClientAbstract;
 import com.github.messenger4j.exceptions.MessengerApiException;
 import com.github.messenger4j.exceptions.MessengerIOException;
 import com.github.messenger4j.internal.PreConditions;
-import com.github.messenger4j.send.http.MessengerHttpClient;
 import com.github.messenger4j.send.templates.Template;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
+
+import static com.github.messenger4j.send.http.MessengerHttpClient.Method.POST;
 
 /**
  * @author Max Grabenhorst
  * @since 0.6.0
  */
-final class MessengerSendClientImpl implements MessengerSendClient {
+final class MessengerSendClientImpl extends MessengerSendClientAbstract<MessagingPayload, MessengerResponse>
+        implements MessengerSendClient {
 
     private static final String FB_GRAPH_API_URL = "https://graph.facebook.com/v2.8/me/messages?access_token=%s";
 
     private final Logger logger = LoggerFactory.getLogger(MessengerSendClientImpl.class);
 
-    private final Gson gson;
-    private final JsonParser jsonParser;
-    private final String requestUrl;
-    private final MessengerHttpClient httpClient;
-
     MessengerSendClientImpl(MessengerSendClientBuilder builder) {
-        this.gson = new GsonBuilder().registerTypeAdapter(Float.class, floatSerializer()).create();
-        this.jsonParser = new JsonParser();
-        this.requestUrl = String.format(FB_GRAPH_API_URL, builder.pageAccessToken);
-        this.httpClient = builder.httpClient == null ? new DefaultMessengerHttpClient() : builder.httpClient;
+        super(String.format(FB_GRAPH_API_URL, builder.pageAccessToken),
+                builder.httpClient == null ? new DefaultMessengerHttpClient() : builder.httpClient);
 
         logger.debug("{} initialized successfully.", MessengerSendClientImpl.class.getSimpleName());
-    }
-
-    private JsonSerializer<Float> floatSerializer() {
-        return new JsonSerializer<Float>() {
-            public JsonElement serialize(Float floatValue, java.lang.reflect.Type type, JsonSerializationContext context) {
-                if (floatValue.isNaN() || floatValue.isInfinite()) {
-                    return null;
-                }
-                return new JsonPrimitive(new BigDecimal(floatValue).setScale(2, BigDecimal.ROUND_HALF_UP));
-            }
-        };
     }
 
     @Override
@@ -61,7 +38,7 @@ final class MessengerSendClientImpl implements MessengerSendClient {
         final MessagingPayload payload = MessagingPayload.newBuilder(buildRecipient(recipientId))
                 .senderAction(senderAction)
                 .build();
-        return sendMessagingPayload(payload);
+        return sendPayload(payload);
     }
 
     @Override
@@ -73,7 +50,7 @@ final class MessengerSendClientImpl implements MessengerSendClient {
                 .notificationType(notificationType)
                 .senderAction(senderAction)
                 .build();
-        return sendMessagingPayload(payload);
+        return sendPayload(payload);
     }
 
     @Override
@@ -83,7 +60,7 @@ final class MessengerSendClientImpl implements MessengerSendClient {
         final MessagingPayload payload = MessagingPayload.newBuilder(buildRecipient(recipientId))
                 .addMessage().text(text).done()
                 .build();
-        return sendMessagingPayload(payload);
+        return sendPayload(payload);
     }
 
     @Override
@@ -93,7 +70,7 @@ final class MessengerSendClientImpl implements MessengerSendClient {
         final MessagingPayload payload = MessagingPayload.newBuilder(buildRecipient(recipientId))
                 .addMessage().text(text).quickReplies(quickReplies).done()
                 .build();
-        return sendMessagingPayload(payload);
+        return sendPayload(payload);
     }
 
     @Override
@@ -104,7 +81,7 @@ final class MessengerSendClientImpl implements MessengerSendClient {
                 .notificationType(notificationType)
                 .addMessage().text(text).done()
                 .build();
-        return sendMessagingPayload(payload);
+        return sendPayload(payload);
     }
 
     @Override
@@ -116,7 +93,7 @@ final class MessengerSendClientImpl implements MessengerSendClient {
                 .notificationType(notificationType)
                 .addMessage().text(text).quickReplies(quickReplies).done()
                 .build();
-        return sendMessagingPayload(payload);
+        return sendPayload(payload);
     }
 
     @Override
@@ -128,7 +105,7 @@ final class MessengerSendClientImpl implements MessengerSendClient {
                 .notificationType(notificationType)
                 .addMessage().text(text).metadata(metadata).done()
                 .build();
-        return sendMessagingPayload(payload);
+        return sendPayload(payload);
     }
 
     @Override
@@ -140,7 +117,7 @@ final class MessengerSendClientImpl implements MessengerSendClient {
                 .notificationType(notificationType)
                 .addMessage().text(text).quickReplies(quickReplies).metadata(metadata).done()
                 .build();
-        return sendMessagingPayload(payload);
+        return sendPayload(payload);
     }
 
     @Override
@@ -163,7 +140,7 @@ final class MessengerSendClientImpl implements MessengerSendClient {
         final MessagingPayload payload = MessagingPayload.newBuilder(buildRecipient(recipientId))
                 .addMessage().binaryAttachment(imageAttachment).quickReplies(quickReplies).done()
                 .build();
-        return sendMessagingPayload(payload);
+        return sendPayload(payload);
     }
 
     @Override
@@ -203,7 +180,7 @@ final class MessengerSendClientImpl implements MessengerSendClient {
         final MessagingPayload payload = MessagingPayload.newBuilder(buildRecipient(recipientId))
                 .addMessage().binaryAttachment(binaryAttachment).done()
                 .build();
-        return sendMessagingPayload(payload);
+        return sendPayload(payload);
     }
 
     @Override
@@ -215,7 +192,7 @@ final class MessengerSendClientImpl implements MessengerSendClient {
                 .notificationType(notificationType)
                 .addMessage().binaryAttachment(binaryAttachment).done()
                 .build();
-        return sendMessagingPayload(payload);
+        return sendPayload(payload);
     }
 
     @Override
@@ -228,7 +205,7 @@ final class MessengerSendClientImpl implements MessengerSendClient {
                 .notificationType(notificationType)
                 .addMessage().binaryAttachment(binaryAttachment).quickReplies(quickReplies).done()
                 .build();
-        return sendMessagingPayload(payload);
+        return sendPayload(payload);
     }
 
     @Override
@@ -240,7 +217,7 @@ final class MessengerSendClientImpl implements MessengerSendClient {
                 .notificationType(notificationType)
                 .addMessage().binaryAttachment(binaryAttachment).metadata(metadata).done()
                 .build();
-        return sendMessagingPayload(payload);
+        return sendPayload(payload);
     }
 
     @Override
@@ -254,7 +231,7 @@ final class MessengerSendClientImpl implements MessengerSendClient {
                 .notificationType(notificationType)
                 .addMessage().binaryAttachment(binaryAttachment).quickReplies(quickReplies).metadata(metadata).done()
                 .build();
-        return sendMessagingPayload(payload);
+        return sendPayload(payload);
     }
 
     private void checkBinaryAttachmentTypeUsageWithQuickReplies(BinaryAttachment binaryAttachment) {
@@ -269,7 +246,7 @@ final class MessengerSendClientImpl implements MessengerSendClient {
         final MessagingPayload payload = MessagingPayload.newBuilder(buildRecipient(recipientId))
                 .addMessage().template(template).done()
                 .build();
-        return sendMessagingPayload(payload);
+        return sendPayload(payload);
     }
 
     @Override
@@ -280,7 +257,7 @@ final class MessengerSendClientImpl implements MessengerSendClient {
                 .notificationType(notificationType)
                 .addMessage().template(template).done()
                 .build();
-        return sendMessagingPayload(payload);
+        return sendPayload(payload);
     }
 
     @Override
@@ -292,7 +269,7 @@ final class MessengerSendClientImpl implements MessengerSendClient {
                 .notificationType(notificationType)
                 .addMessage().template(template).quickReplies(quickReplies).done()
                 .build();
-        return sendMessagingPayload(payload);
+        return sendPayload(payload);
     }
 
     @Override
@@ -304,7 +281,7 @@ final class MessengerSendClientImpl implements MessengerSendClient {
                 .notificationType(notificationType)
                 .addMessage().template(template).metadata(metadata).done()
                 .build();
-        return sendMessagingPayload(payload);
+        return sendPayload(payload);
     }
 
     @Override
@@ -316,28 +293,19 @@ final class MessengerSendClientImpl implements MessengerSendClient {
                 .notificationType(notificationType)
                 .addMessage().template(template).quickReplies(quickReplies).metadata(metadata).done()
                 .build();
-        return sendMessagingPayload(payload);
+        return sendPayload(payload);
+    }
+
+    private MessengerResponse sendPayload(MessagingPayload payload) throws MessengerApiException, MessengerIOException {
+        return sendPayload(payload, POST);
     }
 
     private Recipient buildRecipient(String recipientId) {
         return Recipient.newBuilder().recipientId(recipientId).build();
     }
 
-    private MessengerResponse sendMessagingPayload(MessagingPayload messagingPayload)
-            throws MessengerApiException, MessengerIOException {
-
-        try {
-            final String jsonBody = this.gson.toJson(messagingPayload);
-            final MessengerHttpClient.Response response = this.httpClient.executePost(this.requestUrl, jsonBody);
-            final JsonObject responseJsonObject = this.jsonParser.parse(response.getBody()).getAsJsonObject();
-
-            if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
-                return MessengerResponse.fromJson(responseJsonObject);
-            } else {
-                throw MessengerApiException.fromJson(responseJsonObject);
-            }
-        } catch (IOException e) {
-            throw new MessengerIOException(e);
-        }
+    @Override
+    protected MessengerResponse responseFromJson(JsonObject responseJsonObject) {
+        return MessengerResponse.fromJson(responseJsonObject);
     }
 }

@@ -7,7 +7,7 @@
 
     <groupId>com.github.messenger4j</groupId>
     <artifactId>messenger4j</artifactId>
-    <version>0.7.1-SNAPSHOT</version>
+    <version>0.7.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
