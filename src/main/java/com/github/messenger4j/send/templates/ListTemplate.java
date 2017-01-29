@@ -1,8 +1,8 @@
 package com.github.messenger4j.send.templates;
 
+import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.internal.PreConditions;
 import com.github.messenger4j.send.buttons.Button;
-import com.github.messenger4j.send.buttons.UrlButton;
 import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -250,7 +250,7 @@ public final class ListTemplate extends Template {
             private final Button.ButtonType type;
             private final String url;
             @SerializedName("webview_height_ratio")
-            private final UrlButton.WebviewHeightRatio webviewHeightRatio;
+            private final WebviewHeightRatio webviewHeightRatio;
 
             public DefaultAction(Builder builder) {
                 this.url = builder.url;
@@ -288,14 +288,14 @@ public final class ListTemplate extends Template {
             public static final class Builder {
                 private final String url;
                 private final Element.Builder elementBuilder;
-                private UrlButton.WebviewHeightRatio webviewHeightRatio;
+                private WebviewHeightRatio webviewHeightRatio;
 
                 public Builder(String url, Element.Builder builder) {
                     this.url = url;
                     elementBuilder = builder;
                 }
 
-                public Builder webviewHeightRatio(UrlButton.WebviewHeightRatio webviewHeightRatio) {
+                public Builder webviewHeightRatio(WebviewHeightRatio webviewHeightRatio) {
                     this.webviewHeightRatio = webviewHeightRatio;
                     return this;
                 }

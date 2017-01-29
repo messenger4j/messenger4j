@@ -116,7 +116,8 @@ public final class JsonHelper {
         PROP_ATTACHMENT_ID("attachment_id"),
         PROP_ERROR("error"),
         PROP_CODE("code"),
-        PROP_FB_TRACE_ID("fbtrace_id");
+        PROP_FB_TRACE_ID("fbtrace_id"),
+        PROP_RESULT("result");
 
         private final String value;
 

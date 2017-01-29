@@ -2,6 +2,7 @@ package com.github.messenger4j;
 
 import com.github.messenger4j.receive.MessengerReceiveClientBuilder;
 import com.github.messenger4j.send.MessengerSendClientBuilder;
+import com.github.messenger4j.setup.MessengerSetupClientBuilder;
 
 /**
  * This is the entry point for using the {@code Messenger Platform API}.
@@ -72,5 +73,9 @@ public final class MessengerPlatform {
      */
     public static MessengerSendClientBuilder newSendClientBuilder(String pageAccessToken) {
         return new MessengerSendClientBuilder(pageAccessToken);
+    }
+
+    public static MessengerSetupClientBuilder newSetupClientBuilder(String pageAccessToken) {
+        return new MessengerSetupClientBuilder(pageAccessToken);
     }
 }

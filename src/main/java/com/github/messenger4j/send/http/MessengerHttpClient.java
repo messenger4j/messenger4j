@@ -8,7 +8,12 @@ import java.io.IOException;
  */
 public interface MessengerHttpClient {
 
-    Response executePost(String url, String jsonBody) throws IOException;
+    enum Method{
+        POST,
+        DELETE
+    }
+
+    Response execute(String url, String jsonBody, Method method) throws IOException;
 
     /**
      * @author Max Grabenhorst
