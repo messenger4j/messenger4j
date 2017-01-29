@@ -4,15 +4,9 @@ import com.github.messenger4j.common.MessengerHttpClient.HttpResponse;
 import com.github.messenger4j.exceptions.MessengerApiException;
 import com.github.messenger4j.exceptions.MessengerIOException;
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
 import java.io.IOException;
-import java.math.BigDecimal;
 
 /**
  * @author Max Grabenhorst
@@ -27,7 +21,7 @@ public abstract class MessengerSendClientAbstract<P, R> {
     private final MessengerHttpClient httpClient;
 
     protected MessengerSendClientAbstract(String requestUrl, MessengerHttpClient httpClient) {
-        this.gson = new GsonBuilder().registerTypeAdapter(Float.class, floatSerializer()).create();
+        this.gson = GsonFactory.createGson();
         this.jsonParser = new JsonParser();
         this.requestUrl = requestUrl;
         this.httpClient = httpClient;
@@ -53,14 +47,4 @@ public abstract class MessengerSendClientAbstract<P, R> {
 
     protected abstract R responseFromJson(JsonObject responseJsonObject);
 
-    private JsonSerializer<Float> floatSerializer() {
-        return new JsonSerializer<Float>() {
-            public JsonElement serialize(Float floatValue, java.lang.reflect.Type type, JsonSerializationContext context) {
-                if (floatValue.isNaN() || floatValue.isInfinite()) {
-                    return null;
-                }
-                return new JsonPrimitive(new BigDecimal(floatValue).setScale(2, BigDecimal.ROUND_HALF_UP));
-            }
-        };
-    }
 }

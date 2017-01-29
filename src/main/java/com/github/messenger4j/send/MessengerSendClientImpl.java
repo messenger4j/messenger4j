@@ -8,8 +8,9 @@ import com.github.messenger4j.exceptions.MessengerApiException;
 import com.github.messenger4j.exceptions.MessengerIOException;
 import com.github.messenger4j.internal.PreConditions;
 import com.github.messenger4j.send.templates.Template;
-import com.google.gson.JsonObject;
 import java.util.List;
+
+import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

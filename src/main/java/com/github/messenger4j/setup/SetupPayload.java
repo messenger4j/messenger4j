@@ -3,7 +3,6 @@ package com.github.messenger4j.setup;
 import static java.util.Collections.singletonList;
 
 import com.github.messenger4j.internal.PreConditions;
-import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,13 +14,10 @@ import java.util.List;
  */
 final class SetupPayload {
 
-    @SerializedName("setting_type")
     private final SettingType settingType;
 
-    @SerializedName("thread_state")
     private final ThreadState threadState;
 
-    @SerializedName("call_to_actions")
     private final List<CallToAction> callToActions;
 
     private final Greeting greeting;

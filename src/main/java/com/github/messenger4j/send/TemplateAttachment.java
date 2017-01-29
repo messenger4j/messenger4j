@@ -1,7 +1,7 @@
 package com.github.messenger4j.send;
 
 import com.github.messenger4j.send.templates.Template;
-import com.google.gson.annotations.SerializedName;
+
 import java.util.Objects;
 
 /**
@@ -49,7 +49,6 @@ final class TemplateAttachment extends Message.Attachment {
      * @since 0.6.0
      */
     private enum Type {
-        @SerializedName("template")
         TEMPLATE
     }
 }

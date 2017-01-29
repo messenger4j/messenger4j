@@ -1,6 +1,5 @@
 package com.github.messenger4j.send.templates;
 
-import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 
 /**
@@ -9,15 +8,14 @@ import java.util.Objects;
  */
 public abstract class Template {
 
-    @SerializedName("template_type")
-    private final TemplateType type;
+    private final TemplateType templateType;
 
-    Template(TemplateType type) {
-        this.type = type;
+    Template(TemplateType templateType) {
+        this.templateType = templateType;
     }
 
-    public TemplateType getType() {
-        return type;
+    public TemplateType getTemplateType() {
+        return templateType;
     }
 
     @Override
@@ -25,18 +23,18 @@ public abstract class Template {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Template template = (Template) o;
-        return type == template.type;
+        return templateType == template.templateType;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type);
+        return Objects.hash(templateType);
     }
 
     @Override
     public String toString() {
         return "Template{" +
-                "type=" + type +
+                "templateType=" + templateType +
                 '}';
     }
 
@@ -46,16 +44,9 @@ public abstract class Template {
      */
     public enum TemplateType {
 
-        @SerializedName("generic")
         GENERIC,
-
-        @SerializedName("receipt")
         RECEIPT,
-
-        @SerializedName("button")
         BUTTON,
-
-        @SerializedName("list")
         LIST
     }
 }

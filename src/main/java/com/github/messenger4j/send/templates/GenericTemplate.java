@@ -2,7 +2,7 @@ package com.github.messenger4j.send.templates;
 
 import com.github.messenger4j.internal.PreConditions;
 import com.github.messenger4j.send.buttons.Button;
-import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -86,9 +86,7 @@ public final class GenericTemplate extends Template {
     public static final class Element {
 
         private final String title;
-        @SerializedName("item_url")
         private final String itemUrl;
-        @SerializedName("image_url")
         private final String imageUrl;
         private final String subtitle;
         private final List<Button> buttons;

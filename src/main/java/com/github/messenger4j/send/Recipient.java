@@ -1,7 +1,7 @@
 package com.github.messenger4j.send;
 
 import com.github.messenger4j.internal.PreConditions;
-import com.google.gson.annotations.SerializedName;
+
 import java.util.Objects;
 
 /**
@@ -11,7 +11,6 @@ import java.util.Objects;
 public final class Recipient {
 
     private final String id;
-    @SerializedName("phone_number")
     private final String phoneNumber;
 
     public static Builder newBuilder() {

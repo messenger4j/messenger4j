@@ -7,7 +7,7 @@ package com.github.messenger4j.send.buttons;
 public final class ShareButton extends Button {
 
     private ShareButton() {
-        super(ButtonType.SHARE);
+        super(ButtonType.ELEMENT_SHARE);
     }
 
     @Override

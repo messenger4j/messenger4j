@@ -1,7 +1,7 @@
 package com.github.messenger4j.send;
 
 import com.github.messenger4j.internal.PreConditions;
-import com.google.gson.annotations.SerializedName;
+
 import java.util.Objects;
 
 /**
@@ -62,13 +62,9 @@ public final class BinaryAttachment extends Message.Attachment {
      * @since 0.6.0
      */
     public enum Type {
-        @SerializedName("image")
         IMAGE,
-        @SerializedName("audio")
         AUDIO,
-        @SerializedName("video")
         VIDEO,
-        @SerializedName("file")
         FILE;
     }
 
@@ -79,9 +75,7 @@ public final class BinaryAttachment extends Message.Attachment {
     public static final class Payload {
 
         private final String url;
-        @SerializedName("is_reusable")
         private final Boolean isReusable;
-        @SerializedName("attachment_id")
         private final String attachmentId;
 
         private Payload(String url, Boolean isReusable) {

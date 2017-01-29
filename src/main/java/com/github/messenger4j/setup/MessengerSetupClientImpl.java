@@ -10,8 +10,10 @@ import com.github.messenger4j.common.DefaultMessengerHttpClient;
 import com.github.messenger4j.common.MessengerSendClientAbstract;
 import com.github.messenger4j.exceptions.MessengerApiException;
 import com.github.messenger4j.exceptions.MessengerIOException;
-import com.google.gson.JsonObject;
+
 import java.util.List;
+
+import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

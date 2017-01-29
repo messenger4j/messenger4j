@@ -2,7 +2,7 @@ package com.github.messenger4j.send;
 
 import com.github.messenger4j.internal.PreConditions;
 import com.github.messenger4j.send.templates.Template;
-import com.google.gson.annotations.SerializedName;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -14,7 +14,6 @@ final class Message {
 
     private final String text;
     private final Attachment attachment;
-    @SerializedName("quick_replies")
     private final List<QuickReply> quickReplies;
     private final String metadata;
 

@@ -12,7 +12,7 @@ public final class CallButton extends TitleButton {
     private final String payload;
 
     private CallButton(Builder builder) {
-        super(ButtonType.CALL, builder.title);
+        super(ButtonType.PHONE_NUMBER, builder.title);
         payload = builder.payload;
     }
 
