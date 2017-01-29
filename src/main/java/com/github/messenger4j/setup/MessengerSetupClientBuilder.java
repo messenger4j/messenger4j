@@ -1,11 +1,11 @@
 package com.github.messenger4j.setup;
 
+import com.github.messenger4j.common.MessengerHttpClient;
 import com.github.messenger4j.internal.PreConditions;
-import com.github.messenger4j.send.http.MessengerHttpClient;
 
 /**
- * @author Max Grabenhorst
- * @since 0.6.0
+ * @author Andriy Koretskyy
+ * @since 0.8.0
  */
 public final class MessengerSetupClientBuilder {
 

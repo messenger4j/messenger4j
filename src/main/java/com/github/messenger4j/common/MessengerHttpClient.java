@@ -1,4 +1,4 @@
-package com.github.messenger4j.send.http;
+package com.github.messenger4j.common;
 
 import java.io.IOException;
 
@@ -8,23 +8,27 @@ import java.io.IOException;
  */
 public interface MessengerHttpClient {
 
-    enum Method{
+    /**
+     * @author Andriy Koretskyy
+     * @since 0.8.0
+     */
+    enum HttpMethod {
         POST,
         DELETE
     }
 
-    Response execute(String url, String jsonBody, Method method) throws IOException;
+    HttpResponse execute(String url, String jsonBody, HttpMethod httpMethod) throws IOException;
 
     /**
      * @author Max Grabenhorst
      * @since 0.6.0
      */
-    final class Response {
+    final class HttpResponse {
 
         private final int statusCode;
         private final String body;
 
-        public Response(int statusCode, String body) {
+        public HttpResponse(int statusCode, String body) {
             this.statusCode = statusCode;
             this.body = body;
         }

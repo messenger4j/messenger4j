@@ -1,16 +1,22 @@
 package com.github.messenger4j.test.integration.send;
 
-import static com.github.messenger4j.send.http.MessengerHttpClient.Method.POST;
+import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.POST;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.endsWith;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.github.messenger4j.MessengerPlatform;
+import com.github.messenger4j.common.MessengerHttpClient;
+import com.github.messenger4j.common.MessengerHttpClient.HttpMethod;
+import com.github.messenger4j.common.MessengerHttpClient.HttpResponse;
 import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.exceptions.MessengerApiException;
 import com.github.messenger4j.send.BinaryAttachment;
@@ -21,8 +27,6 @@ import com.github.messenger4j.send.QuickReply;
 import com.github.messenger4j.send.Recipient;
 import com.github.messenger4j.send.SenderAction;
 import com.github.messenger4j.send.buttons.Button;
-import com.github.messenger4j.send.http.MessengerHttpClient;
-import com.github.messenger4j.send.http.MessengerHttpClient.Method;
 import com.github.messenger4j.send.templates.ButtonTemplate;
 import com.github.messenger4j.send.templates.GenericTemplate;
 import com.github.messenger4j.send.templates.ListTemplate;
@@ -42,14 +46,14 @@ public class MessengerSendClientTest {
     private MessengerSendClient messengerSendClient;
     private MessengerHttpClient mockHttpClient = mock(MessengerHttpClient.class);
 
-    private final MessengerHttpClient.Response fakeResponse = new MessengerHttpClient.Response(200, "{\n" +
+    private final HttpResponse fakeResponse = new HttpResponse(200, "{\n" +
             "  \"recipient_id\": \"USER_ID\",\n" +
             "  \"message_id\": \"mid.1473372944816:94f72b88c597657974\"\n" +
             "}");
 
     @Before
     public void beforeEach() throws Exception {
-        when(mockHttpClient.execute(anyString(), anyString(), any(Method.class))).thenReturn(fakeResponse);
+        when(mockHttpClient.execute(anyString(), anyString(), any(HttpMethod.class))).thenReturn(fakeResponse);
         messengerSendClient = MessengerPlatform.newSendClientBuilder(PAGE_ACCESS_TOKEN)
                 .httpClient(mockHttpClient)
                 .build();
@@ -447,12 +451,12 @@ public class MessengerSendClientTest {
     @Test
     public void shouldHandleSuccessResponse() throws Exception {
         //given
-        final MessengerHttpClient.Response successfulResponse = new MessengerHttpClient.Response(200, "{\n" +
+        final HttpResponse successfulResponse = new HttpResponse(200, "{\n" +
                 "  \"recipient_id\": \"USER_ID\",\n" +
                 "  \"message_id\": \"mid.1473372944816:94f72b88c597657974\",\n" +
                 "  \"attachment_id\": \"1745504518999123\"\n" +
                 "}");
-        when(mockHttpClient.execute(anyString(), anyString(), any(Method.class))).thenReturn(successfulResponse);
+        when(mockHttpClient.execute(anyString(), anyString(), any(HttpMethod.class))).thenReturn(successfulResponse);
 
         //when
         final MessengerResponse messengerResponse = messengerSendClient.sendTextMessage("recipient id", "text");
@@ -467,7 +471,7 @@ public class MessengerSendClientTest {
     @Test
     public void shouldHandleErrorResponse() throws Exception {
         //given
-        final MessengerHttpClient.Response errorResponse = new MessengerHttpClient.Response(401, "{\n" +
+        final HttpResponse errorResponse = new HttpResponse(401, "{\n" +
                 "  \"error\": {\n" +
                 "    \"message\": \"Invalid OAuth access token.\",\n" +
                 "    \"type\": \"OAuthException\",\n" +
@@ -475,7 +479,7 @@ public class MessengerSendClientTest {
                 "    \"fbtrace_id\": \"BLBz/WZt8dN\"\n" +
                 "  }\n" +
                 "}");
-        when(mockHttpClient.execute(anyString(), anyString(), any(Method.class))).thenReturn(errorResponse);
+        when(mockHttpClient.execute(anyString(), anyString(), any(HttpMethod.class))).thenReturn(errorResponse);
 
         //when
         MessengerApiException messengerApiException = null;

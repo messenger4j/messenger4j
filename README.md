@@ -19,6 +19,10 @@ For more information on the Facebook Messenger Platform refer to the [official d
     + Webview support
     + Fluent builder APIs
     + Pluggable HTTP-Client (`okHttp` is the default)
+* Thread Settings support
+    + Get Started Button
+    + Greeting Text
+    + Persistent Menu
 * JDK 7+ compatible
 * JDK 8 lambda support
 * 3 dependencies:
@@ -47,12 +51,14 @@ dependencies {
 ```
 
 ## Showcase
-For a complete sample application showcasing almost all features of the Messenger Platform take a look at the
+For a complete sample application showcasing many features of the Messenger Platform take a look at the
 [messenger4j-spring-boot-quickstart-template][2]. You can use it to quickly bootstrap your chatbot projects.
 
 ## Examples
+> For almost all supported features you can take a look at the integration tests (`src/test/java/.../test/integration`) for a working example.
+
 #### Receiving
-Ok, let's see how to handle an inbound text message:
+Let's see how to handle an inbound text message:
 
 ```java
 String payload = ... // callback request body
@@ -111,7 +117,7 @@ In addition the following handlers are supported:
 * `QuickReplyMessageEventHandler`
 
 #### Sending
-Ok, that was easy. But what's about sending messages back to the user?
+What's about sending messages back to the user?
 
 Sending a text message is as simple as: 
 
@@ -222,7 +228,6 @@ Unordered list of planned improvements:
 * Payment support
 * Messenger Extensions support
 * Checkbox Plugin support
-* Thread Settings support
 * User Profile API support
 
 ## License

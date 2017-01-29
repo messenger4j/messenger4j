@@ -1,41 +1,35 @@
 package com.github.messenger4j.test.integration.setup;
 
-import com.github.messenger4j.MessengerPlatform;
-import com.github.messenger4j.common.WebviewHeightRatio;
-import com.github.messenger4j.exceptions.MessengerApiException;
-import com.github.messenger4j.send.*;
-import com.github.messenger4j.send.buttons.Button;
-import com.github.messenger4j.send.http.MessengerHttpClient;
-import com.github.messenger4j.send.http.MessengerHttpClient.Method;
-import com.github.messenger4j.send.templates.ButtonTemplate;
-import com.github.messenger4j.send.templates.GenericTemplate;
-import com.github.messenger4j.send.templates.ListTemplate;
-import com.github.messenger4j.send.templates.ReceiptTemplate;
-import com.github.messenger4j.setup.CallToAction;
-import com.github.messenger4j.setup.MessengerSetupClient;
-import com.github.messenger4j.setup.SetupResponse;
-import com.github.messenger4j.setup.Type;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.ArgumentMatchers;
-
-import java.util.Collections;
-import java.util.List;
-
-import static com.github.messenger4j.send.http.MessengerHttpClient.Method.DELETE;
-import static com.github.messenger4j.send.http.MessengerHttpClient.Method.POST;
-import static com.github.messenger4j.setup.Type.POSTBACK;
+import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.DELETE;
+import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.POST;
+import static com.github.messenger4j.setup.CallToActionType.POSTBACK;
 import static java.util.Collections.singletonList;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.endsWith;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.github.messenger4j.MessengerPlatform;
+import com.github.messenger4j.common.MessengerHttpClient;
+import com.github.messenger4j.common.MessengerHttpClient.HttpMethod;
+import com.github.messenger4j.common.MessengerHttpClient.HttpResponse;
+import com.github.messenger4j.exceptions.MessengerApiException;
+import com.github.messenger4j.setup.CallToAction;
+import com.github.messenger4j.setup.MessengerSetupClient;
+import com.github.messenger4j.setup.SetupResponse;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author Andriy Koretskyy
- * @since 0.7.2
+ * @since 0.8.0
  */
 public class MessengerSetupClientTest {
 
@@ -44,12 +38,12 @@ public class MessengerSetupClientTest {
     private MessengerSetupClient messengerSetupClient;
     private MessengerHttpClient mockHttpClient = mock(MessengerHttpClient.class);
 
-    private final MessengerHttpClient.Response fakeResponse = new MessengerHttpClient.Response(200,
+    private final HttpResponse fakeResponse = new HttpResponse(200,
             "{\"result\": \"Successfully added new_thread's CTAs\"}");
 
     @Before
     public void beforeEach() throws Exception {
-        when(mockHttpClient.execute(anyString(), anyString(), ArgumentMatchers.any(Method.class))).thenReturn(fakeResponse);
+        when(mockHttpClient.execute(anyString(), anyString(), any(HttpMethod.class))).thenReturn(fakeResponse);
         messengerSetupClient = MessengerPlatform.newSetupClientBuilder(PAGE_ACCESS_TOKEN)
                 .httpClient(mockHttpClient)
                 .build();
@@ -138,9 +132,9 @@ public class MessengerSetupClientTest {
     @Test
     public void shouldHandleSuccessResponse() throws Exception {
         //given
-        final MessengerHttpClient.Response successfulResponse = new MessengerHttpClient.Response(200,
+        final HttpResponse successfulResponse = new HttpResponse(200,
                 "{\"result\": \"Successfully added new_thread's CTAs\"}");
-        when(mockHttpClient.execute(anyString(), anyString(), ArgumentMatchers.any(Method.class))).thenReturn(successfulResponse);
+        when(mockHttpClient.execute(anyString(), anyString(), any(HttpMethod.class))).thenReturn(successfulResponse);
 
         //when
         final SetupResponse setupResponse = messengerSetupClient.setupStartButton("button pressed");
@@ -153,7 +147,7 @@ public class MessengerSetupClientTest {
     @Test
     public void shouldHandleErrorResponse() throws Exception {
         //given
-        final MessengerHttpClient.Response errorResponse = new MessengerHttpClient.Response(401, "{\n" +
+        final HttpResponse errorResponse = new HttpResponse(401, "{\n" +
                 "  \"error\": {\n" +
                 "    \"message\": \"Invalid OAuth access token.\",\n" +
                 "    \"type\": \"OAuthException\",\n" +
@@ -161,7 +155,7 @@ public class MessengerSetupClientTest {
                 "    \"fbtrace_id\": \"BLBz/WZt8dN\"\n" +
                 "  }\n" +
                 "}");
-        when(mockHttpClient.execute(anyString(), anyString(), ArgumentMatchers.any(Method.class))).thenReturn(errorResponse);
+        when(mockHttpClient.execute(anyString(), anyString(), any(HttpMethod.class))).thenReturn(errorResponse);
 
         //when
         MessengerApiException messengerApiException = null;

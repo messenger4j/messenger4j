@@ -1,40 +1,56 @@
 package com.github.messenger4j.setup;
 
-import com.github.messenger4j.internal.PreConditions;
-import com.google.gson.annotations.SerializedName;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import static java.util.Collections.singletonList;
 
+import com.github.messenger4j.internal.PreConditions;
+import com.google.gson.annotations.SerializedName;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 /**
- * Created by andrey on 23.01.17.
+ * @author Andriy Koretskyy
+ * @since 0.8.0
  */
-public class SetupPayload {
+final class SetupPayload {
 
     @SerializedName("setting_type")
-    private SettingType settingType;
+    private final SettingType settingType;
 
     @SerializedName("thread_state")
-    private ThreadState threadState;
+    private final ThreadState threadState;
 
     @SerializedName("call_to_actions")
-    private List<CallToAction> callToActions;
+    private final List<CallToAction> callToActions;
 
-    private Greeting greeting;
+    private final Greeting greeting;
 
     static SetupPayload.Builder newBuilder() {
         return new SetupPayload.Builder();
     }
 
-
     private SetupPayload(SetupPayload.Builder builder) {
         settingType = builder.settingType;
         threadState = builder.threadState;
-        callToActions = builder.callToActions;
+        callToActions = builder.callToActions == null ? null : Collections.unmodifiableList(builder.callToActions);
         greeting = builder.greeting;
+    }
+
+    public SettingType getSettingType() {
+        return settingType;
+    }
+
+    public ThreadState getThreadState() {
+        return threadState;
+    }
+
+    public List<CallToAction> getCallToActions() {
+        return callToActions;
+    }
+
+    public Greeting getGreeting() {
+        return greeting;
     }
 
     static final class Builder {
@@ -64,14 +80,15 @@ public class SetupPayload {
         }
 
         public SetupPayload.Builder addMenuItems(Collection<CallToAction> menuItems) {
-            callToActions = callToActions == null ? callToActions = new ArrayList<>() : callToActions;
+            if (callToActions == null) {
+                callToActions = new ArrayList<>();
+            }
             callToActions.addAll(menuItems);
             return this;
         }
 
         public SetupPayload build() {
             PreConditions.notNull(settingType, "settingType");
-
             return new SetupPayload(this);
         }
     }

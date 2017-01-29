@@ -2,13 +2,11 @@ package com.github.messenger4j.setup;
 
 import com.github.messenger4j.exceptions.MessengerApiException;
 import com.github.messenger4j.exceptions.MessengerIOException;
-import com.github.messenger4j.send.MessengerResponse;
-import com.github.messenger4j.send.Recipient;
-
 import java.util.List;
 
 /**
- * Created by andrey on 23.01.17.
+ * @author Andriy Koretskyy
+ * @since 0.8.0
  */
 public interface MessengerSetupClient {
 

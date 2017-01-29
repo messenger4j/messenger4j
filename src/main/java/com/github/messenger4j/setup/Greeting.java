@@ -1,22 +1,18 @@
 package com.github.messenger4j.setup;
 
 /**
- * Created by andrey on 23.01.17.
+ * @author Andriy Koretskyy
+ * @since 0.8.0
  */
+final class Greeting {
 
-public class Greeting {
+    private final String text;
 
-    private String text;
-
-    public Greeting(String greeting) {
+    Greeting(String greeting) {
         text = greeting;
     }
 
     public String getText() {
         return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
     }
 }

@@ -1,17 +1,17 @@
 package com.github.messenger4j.send;
 
+import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.POST;
+
+import com.github.messenger4j.common.DefaultMessengerHttpClient;
 import com.github.messenger4j.common.MessengerSendClientAbstract;
 import com.github.messenger4j.exceptions.MessengerApiException;
 import com.github.messenger4j.exceptions.MessengerIOException;
 import com.github.messenger4j.internal.PreConditions;
 import com.github.messenger4j.send.templates.Template;
 import com.google.gson.JsonObject;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
-
-import static com.github.messenger4j.send.http.MessengerHttpClient.Method.POST;
 
 /**
  * @author Max Grabenhorst
