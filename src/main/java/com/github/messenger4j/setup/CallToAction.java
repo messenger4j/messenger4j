@@ -5,7 +5,6 @@ import static com.github.messenger4j.setup.CallToActionType.WEB_URL;
 
 import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.internal.PreConditions;
-
 import java.net.URL;
 import java.util.Objects;
 

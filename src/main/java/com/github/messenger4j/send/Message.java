@@ -2,7 +2,6 @@ package com.github.messenger4j.send;
 
 import com.github.messenger4j.internal.PreConditions;
 import com.github.messenger4j.send.templates.Template;
-
 import java.util.List;
 import java.util.Objects;
 

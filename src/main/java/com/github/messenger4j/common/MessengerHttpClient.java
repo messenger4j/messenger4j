@@ -13,11 +13,15 @@ public interface MessengerHttpClient {
      * @since 0.8.0
      */
     enum HttpMethod {
+        GET,
         POST,
         DELETE
     }
 
-    HttpResponse execute(String url, String jsonBody, HttpMethod httpMethod) throws IOException;
+    /**
+     * @since 0.8.0
+     */
+    HttpResponse execute(HttpMethod httpMethod, String url, String jsonBody) throws IOException;
 
     /**
      * @author Max Grabenhorst

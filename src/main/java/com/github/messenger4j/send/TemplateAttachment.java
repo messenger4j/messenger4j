@@ -1,7 +1,6 @@
 package com.github.messenger4j.send;
 
 import com.github.messenger4j.send.templates.Template;
-
 import java.util.Objects;
 
 /**

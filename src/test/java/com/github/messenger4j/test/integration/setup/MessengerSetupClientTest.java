@@ -43,7 +43,7 @@ public class MessengerSetupClientTest {
 
     @Before
     public void beforeEach() throws Exception {
-        when(mockHttpClient.execute(anyString(), anyString(), any(HttpMethod.class))).thenReturn(fakeResponse);
+        when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(fakeResponse);
         messengerSetupClient = MessengerPlatform.newSetupClientBuilder(PAGE_ACCESS_TOKEN)
                 .httpClient(mockHttpClient)
                 .build();
@@ -61,7 +61,7 @@ public class MessengerSetupClientTest {
         final String expectedJsonBody =
                 "{\"setting_type\":\"call_to_actions\",\"thread_state\":\"new_thread\",\"call_to_actions\":[" +
                         "{\"payload\":\"Button pressed\"}]}";
-        verify(mockHttpClient).execute(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody), eq(POST));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 
     @Test
@@ -72,7 +72,7 @@ public class MessengerSetupClientTest {
         //then
         final String expectedJsonBody =
                 "{\"setting_type\":\"call_to_actions\",\"thread_state\":\"new_thread\"}";
-        verify(mockHttpClient).execute(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody), eq(DELETE));
+        verify(mockHttpClient).execute(eq(DELETE), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 
     @Test
@@ -86,7 +86,7 @@ public class MessengerSetupClientTest {
         //then
         final String expectedJsonBody =
                 "{\"setting_type\":\"greeting\",\"greeting\":{\"text\":\"Hi, we welcome you at our page\"}}";
-        verify(mockHttpClient).execute(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody), eq(POST));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 
     @Test
@@ -96,7 +96,7 @@ public class MessengerSetupClientTest {
 
         //then
         final String expectedJsonBody = "{\"setting_type\":\"greeting\"}";
-        verify(mockHttpClient).execute(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody), eq(DELETE));
+        verify(mockHttpClient).execute(eq(DELETE), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 
     @Test
@@ -115,7 +115,7 @@ public class MessengerSetupClientTest {
         final String expectedJsonBody =
                 "{\"setting_type\":\"call_to_actions\",\"thread_state\":\"existing_thread\",\"call_to_actions\":" +
                         "[{\"type\":\"postback\",\"title\":\"Leave feedback\",\"payload\":\"any\"}]}";
-        verify(mockHttpClient).execute(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody), eq(POST));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 
     @Test
@@ -126,7 +126,7 @@ public class MessengerSetupClientTest {
         //then
         final String expectedJsonBody =
                 "{\"setting_type\":\"call_to_actions\",\"thread_state\":\"existing_thread\"}";
-        verify(mockHttpClient).execute(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody), eq(DELETE));
+        verify(mockHttpClient).execute(eq(DELETE), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 
     @Test
@@ -134,7 +134,7 @@ public class MessengerSetupClientTest {
         //given
         final HttpResponse successfulResponse = new HttpResponse(200,
                 "{\"result\": \"Successfully added new_thread's CTAs\"}");
-        when(mockHttpClient.execute(anyString(), anyString(), any(HttpMethod.class))).thenReturn(successfulResponse);
+        when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(successfulResponse);
 
         //when
         final SetupResponse setupResponse = messengerSetupClient.setupStartButton("button pressed");
@@ -155,7 +155,7 @@ public class MessengerSetupClientTest {
                 "    \"fbtrace_id\": \"BLBz/WZt8dN\"\n" +
                 "  }\n" +
                 "}");
-        when(mockHttpClient.execute(anyString(), anyString(), any(HttpMethod.class))).thenReturn(errorResponse);
+        when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(errorResponse);
 
         //when
         MessengerApiException messengerApiException = null;

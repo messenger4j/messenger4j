@@ -3,6 +3,7 @@ package com.github.messenger4j;
 import com.github.messenger4j.receive.MessengerReceiveClientBuilder;
 import com.github.messenger4j.send.MessengerSendClientBuilder;
 import com.github.messenger4j.setup.MessengerSetupClientBuilder;
+import com.github.messenger4j.user.UserProfileClientBuilder;
 
 /**
  * This is the entry point for using the {@code Messenger Platform API}.
@@ -81,4 +82,14 @@ public final class MessengerPlatform {
     public static MessengerSetupClientBuilder newSetupClientBuilder(String pageAccessToken) {
         return new MessengerSetupClientBuilder(pageAccessToken);
     }
+
+    /**
+     * @param pageAccessToken the generated {@code Page Access Token} of your {@code Facebook Page}
+     * @return a {@code UserProfileClientBuilder}
+     * @since 0.8.0
+     */
+    public static UserProfileClientBuilder newUserProfileClientBuilder(String pageAccessToken) {
+        return new UserProfileClientBuilder(pageAccessToken);
+    }
+
 }

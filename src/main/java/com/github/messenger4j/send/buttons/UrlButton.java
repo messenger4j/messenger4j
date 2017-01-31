@@ -2,7 +2,6 @@ package com.github.messenger4j.send.buttons;
 
 import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.internal.PreConditions;
-
 import java.util.Objects;
 
 /**
