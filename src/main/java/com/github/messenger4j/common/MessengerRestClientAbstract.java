@@ -1,5 +1,6 @@
 package com.github.messenger4j.common;
 
+import com.github.messenger4j.common.MessengerHttpClient.HttpMethod;
 import com.github.messenger4j.common.MessengerHttpClient.HttpResponse;
 import com.github.messenger4j.exceptions.MessengerApiException;
 import com.github.messenger4j.exceptions.MessengerIOException;
@@ -13,26 +14,24 @@ import java.io.IOException;
  * @author Andriy Koretskyy
  * @since 0.8.0
  */
-public abstract class MessengerSendClientAbstract<P, R> {
+public abstract class MessengerRestClientAbstract<P, R> {
 
     private final Gson gson;
     private final JsonParser jsonParser;
-    private final String requestUrl;
     private final MessengerHttpClient httpClient;
 
-    protected MessengerSendClientAbstract(String requestUrl, MessengerHttpClient httpClient) {
+    protected MessengerRestClientAbstract(MessengerHttpClient httpClient) {
         this.gson = GsonFactory.createGson();
         this.jsonParser = new JsonParser();
-        this.requestUrl = requestUrl;
-        this.httpClient = httpClient;
+        this.httpClient = httpClient == null ? new DefaultMessengerHttpClient() : httpClient;
     }
 
-    protected R sendPayload(P payload, MessengerHttpClient.HttpMethod httpMethod)
+    protected R doRequest(HttpMethod httpMethod, String requestUrl, P payload)
             throws MessengerApiException, MessengerIOException {
 
         try {
-            final String jsonBody = this.gson.toJson(payload);
-            final HttpResponse httpResponse = this.httpClient.execute(this.requestUrl, jsonBody, httpMethod);
+            final String jsonBody = payload == null ? null : this.gson.toJson(payload);
+            final HttpResponse httpResponse = this.httpClient.execute(httpMethod, requestUrl, jsonBody);
             final JsonObject responseJsonObject = this.jsonParser.parse(httpResponse.getBody()).getAsJsonObject();
 
             if (httpResponse.getStatusCode() >= 200 && httpResponse.getStatusCode() < 300) {

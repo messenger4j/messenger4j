@@ -6,14 +6,12 @@ import static com.github.messenger4j.setup.SettingType.CALL_TO_ACTIONS;
 import static com.github.messenger4j.setup.SettingType.GREETING;
 import static com.github.messenger4j.setup.ThreadState.EXISTING_THREAD;
 
-import com.github.messenger4j.common.DefaultMessengerHttpClient;
-import com.github.messenger4j.common.MessengerSendClientAbstract;
+import com.github.messenger4j.common.MessengerHttpClient.HttpMethod;
+import com.github.messenger4j.common.MessengerRestClientAbstract;
 import com.github.messenger4j.exceptions.MessengerApiException;
 import com.github.messenger4j.exceptions.MessengerIOException;
-
-import java.util.List;
-
 import com.google.gson.JsonObject;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,16 +19,18 @@ import org.slf4j.LoggerFactory;
  * @author Andriy Koretskyy
  * @since 0.8.0
  */
-final class MessengerSetupClientImpl extends MessengerSendClientAbstract<SetupPayload, SetupResponse>
+final class MessengerSetupClientImpl extends MessengerRestClientAbstract<SetupPayload, SetupResponse>
         implements MessengerSetupClient {
 
     private static final String FB_GRAPH_API_URL = "https://graph.facebook.com/v2.8/me/thread_settings?access_token=%s";
 
     private final Logger logger = LoggerFactory.getLogger(MessengerSetupClientImpl.class);
 
+    private final String requestUrl;
+
     MessengerSetupClientImpl(MessengerSetupClientBuilder builder) {
-        super(String.format(FB_GRAPH_API_URL, builder.pageAccessToken),
-                builder.httpClient == null ? new DefaultMessengerHttpClient() : builder.httpClient);
+        super(builder.httpClient);
+        this.requestUrl = String.format(FB_GRAPH_API_URL, builder.pageAccessToken);
         logger.debug("{} initialized successfully.", MessengerSetupClientImpl.class.getSimpleName());
     }
 
@@ -42,7 +42,7 @@ final class MessengerSetupClientImpl extends MessengerSendClientAbstract<SetupPa
                 .greeting(greeting)
                 .build();
 
-        return sendPayload(payload, POST);
+        return sendPayload(POST, payload);
     }
 
     @Override
@@ -51,7 +51,7 @@ final class MessengerSetupClientImpl extends MessengerSendClientAbstract<SetupPa
                 .settingType(GREETING)
                 .build();
 
-        return sendPayload(payload, DELETE);
+        return sendPayload(DELETE, payload);
     }
 
     @Override
@@ -63,7 +63,7 @@ final class MessengerSetupClientImpl extends MessengerSendClientAbstract<SetupPa
                 .payload(startPayload)
                 .build();
 
-        return sendPayload(payload, POST);
+        return sendPayload(POST, payload);
     }
 
     @Override
@@ -73,7 +73,7 @@ final class MessengerSetupClientImpl extends MessengerSendClientAbstract<SetupPa
                 .threadState(ThreadState.NEW_THREAD)
                 .build();
 
-        return sendPayload(payload, DELETE);
+        return sendPayload(DELETE, payload);
     }
 
     @Override
@@ -84,7 +84,7 @@ final class MessengerSetupClientImpl extends MessengerSendClientAbstract<SetupPa
                 .addMenuItems(menuItems)
                 .build();
 
-        return sendPayload(payload, POST);
+        return sendPayload(POST, payload);
     }
 
     @Override
@@ -94,7 +94,13 @@ final class MessengerSetupClientImpl extends MessengerSendClientAbstract<SetupPa
                 .threadState(EXISTING_THREAD)
                 .build();
 
-        return sendPayload(payload, DELETE);
+        return sendPayload(DELETE, payload);
+    }
+
+    private SetupResponse sendPayload(HttpMethod httpMethod, SetupPayload payload)
+            throws MessengerApiException, MessengerIOException {
+
+        return doRequest(httpMethod, this.requestUrl, payload);
     }
 
     @Override

@@ -53,7 +53,7 @@ public class MessengerSendClientTest {
 
     @Before
     public void beforeEach() throws Exception {
-        when(mockHttpClient.execute(anyString(), anyString(), any(HttpMethod.class))).thenReturn(fakeResponse);
+        when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(fakeResponse);
         messengerSendClient = MessengerPlatform.newSendClientBuilder(PAGE_ACCESS_TOKEN)
                 .httpClient(mockHttpClient)
                 .build();
@@ -71,7 +71,7 @@ public class MessengerSendClientTest {
         //then
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
                 + "\"sender_action\":\"mark_seen\"}";
-        verify(mockHttpClient).execute(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody), eq(POST));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 
     @Test
@@ -86,7 +86,7 @@ public class MessengerSendClientTest {
         //then
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
                 + "\"message\":{\"text\":\"Hello Messenger Platform\"}}";
-        verify(mockHttpClient).execute(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody), eq(POST));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 
     @Test
@@ -111,7 +111,7 @@ public class MessengerSendClientTest {
                 + "{\"content_type\":\"text\",\"title\":\"Red\",\"payload\":\"PAYLOAD_FOR_PICKING_RED\"},"
                 + "{\"content_type\":\"text\",\"title\":\"Green\",\"payload\":\"PAYLOAD_FOR_PICKING_GREEN\"}"
                 + "]}}";
-        verify(mockHttpClient).execute(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody), eq(POST));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 
     @Test
@@ -132,7 +132,7 @@ public class MessengerSendClientTest {
                 + "\"text\":\"Hello Messenger Platform\","
                 + "\"metadata\":\"DEVELOPER_DEFINED_METADATA\""
                 + "}}";
-        verify(mockHttpClient).execute(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody), eq(POST));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 
     @Test
@@ -150,7 +150,7 @@ public class MessengerSendClientTest {
                 + "\"type\":\"image\","
                 + "\"payload\":{\"url\":\"https://petersapparel.com/img/shirt.png\"}"
                 + "}}}";
-        verify(mockHttpClient).execute(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody), eq(POST));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 
     @Test
@@ -173,7 +173,7 @@ public class MessengerSendClientTest {
                 + "\"type\":\"image\","
                 + "\"payload\":{\"url\":\"https://petersapparel.com/img/shirt.png\",\"is_reusable\":true}"
                 + "}}}";
-        verify(mockHttpClient).execute(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody), eq(POST));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 
     @Test
@@ -195,7 +195,7 @@ public class MessengerSendClientTest {
                 + "\"type\":\"image\","
                 + "\"payload\":{\"attachment_id\":\"1745504518999123\"}"
                 + "}}}";
-        verify(mockHttpClient).execute(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody), eq(POST));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -238,7 +238,7 @@ public class MessengerSendClientTest {
                 ",\"buttons\":[{\"url\":\"https://petersapparel.parseapp.com\",\"title\":\"Show Website\"" +
                 ",\"type\":\"web_url\"},{\"payload\":\"USER_DEFINED_PAYLOAD\",\"title\":\"Start Chatting\"" +
                 ",\"type\":\"postback\"}],\"template_type\":\"button\"}}}}";
-        verify(mockHttpClient).execute(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody), eq(POST));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 
     @Test
@@ -274,7 +274,7 @@ public class MessengerSendClientTest {
                 "\"url\":\"https://petersfancybrownhats.com\",\"title\":\"View Website\",\"type\":\"web_url\"}," +
                 "{\"payload\":\"DEVELOPER_DEFINED_PAYLOAD\",\"title\":\"Start Chatting\",\"type\":\"postback\"}]}]," +
                 "\"template_type\":\"generic\"}}}}";
-        verify(mockHttpClient).execute(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody), eq(POST));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 
     @Test
@@ -305,7 +305,7 @@ public class MessengerSendClientTest {
                 "[{\"title\":\"Welcome to M-Bank\",\"image_url\":\"http://www.example.com/images/m-bank.png\"," +
                 "\"buttons\":[{\"url\":\"https://www.example.com/authorize\",\"type\":\"account_link\"}," +
                 "{\"type\":\"account_unlink\"}]}],\"template_type\":\"generic\"}}}}";
-        verify(mockHttpClient).execute(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody), eq(POST));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 
     @Test
@@ -362,7 +362,7 @@ public class MessengerSendClientTest {
                 "\"state\":\"CA\",\"country\":\"US\"},\"summary\":{\"total_cost\":56.14,\"total_tax\":6.19," +
                 "\"shipping_cost\":4.95,\"subtotal\":75.00},\"adjustments\":[{\"name\":\"New Customer Discount\"," +
                 "\"amount\":20.00},{\"name\":\"$10 Off Coupon\",\"amount\":10.00}],\"template_type\":\"receipt\"}}}}";
-        verify(mockHttpClient).execute(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody), eq(POST));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 
     @Test
@@ -445,7 +445,7 @@ public class MessengerSendClientTest {
                 "\"title\":\"Shop Now\",\"type\":\"web_url\"}],\"default_action\":{\"type\":\"web_url\"," +
                 "\"url\":\"https://peterssendreceiveapp.ngrok.io/view?item\\u003d102\",\"webview_height_ratio\":\"tall\"}}]," +
                 "\"template_type\":\"list\"}}}}";
-        verify(mockHttpClient).execute(endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody), eq(POST));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 
     @Test
@@ -456,7 +456,7 @@ public class MessengerSendClientTest {
                 "  \"message_id\": \"mid.1473372944816:94f72b88c597657974\",\n" +
                 "  \"attachment_id\": \"1745504518999123\"\n" +
                 "}");
-        when(mockHttpClient.execute(anyString(), anyString(), any(HttpMethod.class))).thenReturn(successfulResponse);
+        when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(successfulResponse);
 
         //when
         final MessengerResponse messengerResponse = messengerSendClient.sendTextMessage("recipient id", "text");
@@ -479,7 +479,7 @@ public class MessengerSendClientTest {
                 "    \"fbtrace_id\": \"BLBz/WZt8dN\"\n" +
                 "  }\n" +
                 "}");
-        when(mockHttpClient.execute(anyString(), anyString(), any(HttpMethod.class))).thenReturn(errorResponse);
+        when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(errorResponse);
 
         //when
         MessengerApiException messengerApiException = null;

@@ -54,6 +54,7 @@ final class GsonFactory {
 
     /**
      * @author Andriy Koretskyy
+     * @author Max Grabenhorst
      * @since 0.8.0
      */
     private static final class LowercaseEnumTypeAdapterFactory implements TypeAdapterFactory {
@@ -99,21 +100,23 @@ final class GsonFactory {
 
         /**
          * Transforms the given enum constant to lower case. If a {@code SerializedName} annotation is present,
-         * default adpter result is returned.
+         * the default adapter result is returned.
          *
-         * @param enumVal             the enumeration constant
-         * @param delegateAdapter     default adapter in case if enum value has {@code SerializedName} annotation
+         * @param enumConstant    the enumeration constant
+         * @param delegateAdapter the default adapter of the given type
          * @return the transformed string representation of the constant
          */
-        private <T> String transform(T enumVal, TypeAdapter<T> delegateAdapter) {
-            boolean hasSerializedNameAnnotation = false;
-            String enumValue = ((Enum)enumVal).name();
+        private <T> String transform(T enumConstant, TypeAdapter<T> delegateAdapter) {
             try {
-                hasSerializedNameAnnotation = enumVal.getClass().getField(enumValue).isAnnotationPresent(SerializedName.class);
+                final String enumValue = ((Enum) enumConstant).name();
+                final boolean hasSerializedNameAnnotation = enumConstant.getClass().getField(enumValue)
+                        .isAnnotationPresent(SerializedName.class);
+                return hasSerializedNameAnnotation ? delegateAdapter.toJsonTree(enumConstant).getAsString() :
+                        enumValue.toLowerCase();
             } catch (NoSuchFieldException e) {
                 // should never happen
+                throw new RuntimeException(e);
             }
-            return hasSerializedNameAnnotation ? delegateAdapter.toJsonTree(enumVal).getAsString() : enumValue.toLowerCase();
         }
     }
 }

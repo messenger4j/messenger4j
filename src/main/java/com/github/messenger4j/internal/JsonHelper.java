@@ -62,6 +62,11 @@ public final class JsonHelper {
         return jsonElement == null ? null : jsonElement.getAsDouble();
     }
 
+    public static Float getPropertyAsFloat(JsonObject jsonObject, Constants... propertyPath) {
+        final JsonElement jsonElement = getProperty(jsonObject, propertyPath);
+        return jsonElement == null ? null : jsonElement.getAsFloat();
+    }
+
     public static JsonArray getPropertyAsJsonArray(JsonObject jsonObject, Constants... propertyPath) {
         final JsonElement jsonElement = getProperty(jsonObject, propertyPath);
         return jsonElement == null ? null : jsonElement.getAsJsonArray();
@@ -117,7 +122,13 @@ public final class JsonHelper {
         PROP_ERROR("error"),
         PROP_CODE("code"),
         PROP_FB_TRACE_ID("fbtrace_id"),
-        PROP_RESULT("result");
+        PROP_RESULT("result"),
+        PROP_FIRST_NAME("first_name"),
+        PROP_LAST_NAME("last_name"),
+        PROP_PROFILE_PIC("profile_pic"),
+        PROP_LOCALE("locale"),
+        PROP_TIMEZONE("timezone"),
+        PROP_GENDER("gender");
 
         private final String value;
 
