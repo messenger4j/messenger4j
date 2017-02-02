@@ -1,12 +1,13 @@
 package com.github.messenger4j.send;
 
+import com.google.gson.JsonObject;
+
+import java.util.Objects;
+
 import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_ATTACHMENT_ID;
 import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_MESSAGE_ID;
 import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_RECIPIENT_ID;
 import static com.github.messenger4j.internal.JsonHelper.getPropertyAsString;
-
-import com.google.gson.JsonObject;
-import java.util.Objects;
 
 /**
  * @author Max Grabenhorst

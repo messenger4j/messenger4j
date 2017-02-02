@@ -1,6 +1,5 @@
 package com.github.messenger4j.send.buttons;
 
-import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -99,23 +98,11 @@ public abstract class Button {
      * @since 0.6.0
      */
     public enum ButtonType {
-
-        @SerializedName("web_url")
-        URL,
-
-        @SerializedName("postback")
+        WEB_URL,
         POSTBACK,
-
-        @SerializedName("phone_number")
-        CALL,
-
-        @SerializedName("element_share")
-        SHARE,
-
-        @SerializedName("account_link")
+        PHONE_NUMBER,
+        ELEMENT_SHARE,
         ACCOUNT_LINK,
-
-        @SerializedName("account_unlink")
         ACCOUNT_UNLINK
     }
 

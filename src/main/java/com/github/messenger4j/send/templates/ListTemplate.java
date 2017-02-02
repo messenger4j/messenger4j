@@ -3,7 +3,7 @@ package com.github.messenger4j.send.templates;
 import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.internal.PreConditions;
 import com.github.messenger4j.send.buttons.Button;
-import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +15,6 @@ import java.util.Objects;
  */
 public final class ListTemplate extends Template {
 
-    @SerializedName("top_element_style")
     private final TopElementStyle topElementStyle;
     private final List<Button> buttons;
     private final List<Element> elements;
@@ -32,10 +31,7 @@ public final class ListTemplate extends Template {
     }
 
     public enum TopElementStyle {
-        @SerializedName("large")
         LARGE,
-
-        @SerializedName("compact")
         COMPACT
     }
 
@@ -111,10 +107,8 @@ public final class ListTemplate extends Template {
 
         private final String title;
         private final String subtitle;
-        @SerializedName("image_url")
         private final String imageUrl;
         private final List<Button> buttons;
-        @SerializedName("default_action")
         private final DefaultAction defaultAction;
 
         private Element(Builder builder) {
@@ -249,13 +243,12 @@ public final class ListTemplate extends Template {
 
             private final Button.ButtonType type;
             private final String url;
-            @SerializedName("webview_height_ratio")
             private final WebviewHeightRatio webviewHeightRatio;
 
             public DefaultAction(Builder builder) {
                 this.url = builder.url;
                 this.webviewHeightRatio = builder.webviewHeightRatio;
-                this.type = Button.ButtonType.URL;
+                this.type = Button.ButtonType.WEB_URL;
             }
 
             @Override

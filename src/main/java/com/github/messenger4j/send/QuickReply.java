@@ -13,11 +13,9 @@ import java.util.Objects;
  */
 public final class QuickReply {
 
-    @SerializedName("content_type")
     private final ContentType contentType;
     private final String title;
     private final String payload;
-    @SerializedName("image_url")
     private final String imageUrl;
 
     public static ListBuilder newListBuilder() {
@@ -85,9 +83,7 @@ public final class QuickReply {
      * @since 0.6.0
      */
     public enum ContentType {
-        @SerializedName("text")
         TEXT,
-        @SerializedName("location")
         LOCATION
     }
 

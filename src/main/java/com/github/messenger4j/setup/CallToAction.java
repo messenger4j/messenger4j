@@ -1,11 +1,11 @@
 package com.github.messenger4j.setup;
 
 import static com.github.messenger4j.setup.CallToActionType.POSTBACK;
-import static com.github.messenger4j.setup.CallToActionType.URL;
+import static com.github.messenger4j.setup.CallToActionType.WEB_URL;
 
 import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.internal.PreConditions;
-import com.google.gson.annotations.SerializedName;
+
 import java.net.URL;
 import java.util.Objects;
 
@@ -19,7 +19,6 @@ public final class CallToAction {
     private final String title;
     private final URL url;
     private final String payload;
-    @SerializedName("webview_height_ratio")
     private final WebviewHeightRatio webviewHeightRatio;
 
     public static CallToAction.Builder newBuilder() {
@@ -127,7 +126,7 @@ public final class CallToAction {
         public CallToAction build() {
             PreConditions.notNull(callToActionType, "type");
             PreConditions.notNullOrBlank(title, "title");
-            if (callToActionType == URL) {
+            if (callToActionType == WEB_URL) {
                 PreConditions.notNull(url, "url");
             }
 

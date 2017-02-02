@@ -2,7 +2,7 @@ package com.github.messenger4j.send.buttons;
 
 import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.internal.PreConditions;
-import com.google.gson.annotations.SerializedName;
+
 import java.util.Objects;
 
 /**
@@ -12,11 +12,10 @@ import java.util.Objects;
 public final class UrlButton extends TitleButton {
 
     private final String url;
-    @SerializedName("webview_height_ratio")
     private final WebviewHeightRatio webviewHeightRatio;
 
     private UrlButton(Builder builder) {
-        super(ButtonType.URL, builder.title);
+        super(ButtonType.WEB_URL, builder.title);
         url = builder.url;
         webviewHeightRatio = builder.webviewHeightRatio;
     }

@@ -13,17 +13,12 @@ import java.util.Objects;
  */
 public final class ReceiptTemplate extends Template {
 
-    @SerializedName("recipient_name")
     private final String recipientName;
-    @SerializedName("merchant_name")
     private final String merchantName;
-    @SerializedName("order_number")
     private final String orderNumber;
     private final String currency;
-    @SerializedName("payment_method")
     private final String paymentMethod;
     private final String timestamp;
-    @SerializedName("order_url")
     private final String orderUrl;
     private final List<Element> elements;
     private final ShippingAddress address;
@@ -224,11 +219,8 @@ public final class ReceiptTemplate extends Template {
      */
     public static final class Summary {
 
-        @SerializedName("total_cost")
         private final Float totalCost;
-        @SerializedName("total_tax")
         private final Float totalTax;
-        @SerializedName("shipping_cost")
         private final Float shippingCost;
         private final Float subtotal;
 
@@ -329,7 +321,6 @@ public final class ReceiptTemplate extends Template {
         private final Integer quantity;
         private final Float price;
         private final String currency;
-        @SerializedName("image_url")
         private final String imageUrl;
 
         private Element(Builder builder) {
@@ -482,7 +473,6 @@ public final class ReceiptTemplate extends Template {
         @SerializedName("street_2")
         private final String street2;
         private final String city;
-        @SerializedName("postal_code")
         private final String postalCode;
         private final String state;
         private final String country;

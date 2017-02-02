@@ -1,7 +1,7 @@
 package com.github.messenger4j.send;
 
 import com.github.messenger4j.internal.PreConditions;
-import com.google.gson.annotations.SerializedName;
+
 import java.util.Objects;
 
 /**
@@ -11,10 +11,8 @@ import java.util.Objects;
 final class MessagingPayload {
 
     private final Recipient recipient;
-    @SerializedName("notification_type")
     private final NotificationType notificationType;
     private final Message message;
-    @SerializedName("sender_action")
     private final SenderAction senderAction;
 
     static Builder newBuilder(Recipient recipient) {

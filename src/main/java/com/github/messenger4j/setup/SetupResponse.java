@@ -1,10 +1,11 @@
 package com.github.messenger4j.setup;
 
+import com.google.gson.JsonObject;
+
+import java.util.Objects;
+
 import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_RESULT;
 import static com.github.messenger4j.internal.JsonHelper.getPropertyAsString;
-
-import com.google.gson.JsonObject;
-import java.util.Objects;
 
 /**
  * @author Andriy Koretskyy
