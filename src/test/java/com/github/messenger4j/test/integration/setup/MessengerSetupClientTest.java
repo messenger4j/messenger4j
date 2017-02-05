@@ -3,7 +3,7 @@ package com.github.messenger4j.test.integration.setup;
 import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.DELETE;
 import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.POST;
 import static com.github.messenger4j.setup.CallToActionType.POSTBACK;
-import static java.util.Collections.singletonList;
+import static com.github.messenger4j.setup.CallToActionType.WEB_URL;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -20,10 +20,15 @@ import com.github.messenger4j.MessengerPlatform;
 import com.github.messenger4j.common.MessengerHttpClient;
 import com.github.messenger4j.common.MessengerHttpClient.HttpMethod;
 import com.github.messenger4j.common.MessengerHttpClient.HttpResponse;
+import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.exceptions.MessengerApiException;
 import com.github.messenger4j.setup.CallToAction;
 import com.github.messenger4j.setup.MessengerSetupClient;
 import com.github.messenger4j.setup.SetupResponse;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -102,19 +107,48 @@ public class MessengerSetupClientTest {
     @Test
     public void shouldSetupPersistentMenu() throws Exception {
         //given
-        final CallToAction menuItem = CallToAction.newBuilder()
-                .title("Leave feedback")
+        final CallToAction firstMenuItem = CallToAction.newBuilder()
                 .type(POSTBACK)
-                .payload("any")
+                .title("Help")
+                .payload("DEVELOPER_DEFINED_PAYLOAD_FOR_HELP")
                 .build();
 
+        final CallToAction secondMenuItem = CallToAction.newBuilder()
+                .type(POSTBACK)
+                .title("Start a New Order")
+                .payload("DEVELOPER_DEFINED_PAYLOAD_FOR_START_ORDER")
+                .build();
+
+        final CallToAction thirdMenuItem = CallToAction.newBuilder()
+                .type(WEB_URL)
+                .title("Checkout")
+                .url(new URL("http://petersapparel.parseapp.com/checkout"))
+                .webviewHeightRatio(WebviewHeightRatio.COMPACT)
+                .messengerExtensions(true)
+                .fallbackUrl(new URL("https://peterssendreceiveapp.ngrok.io/fallback"))
+                .build();
+
+        final CallToAction fourthMenuItem = CallToAction.newBuilder()
+                .type(WEB_URL)
+                .title("View Website")
+                .url(new URL("http://petersapparel.parseapp.com/"))
+                .build();
+
+        final List<CallToAction> menuItems = new ArrayList<>(Arrays.asList(firstMenuItem, secondMenuItem,
+                thirdMenuItem, fourthMenuItem));
+
         //when
-        messengerSetupClient.setupPersistentMenu(singletonList(menuItem));
+        messengerSetupClient.setupPersistentMenu(menuItems);
 
         //then
-        final String expectedJsonBody =
-                "{\"setting_type\":\"call_to_actions\",\"thread_state\":\"existing_thread\",\"call_to_actions\":" +
-                        "[{\"type\":\"postback\",\"title\":\"Leave feedback\",\"payload\":\"any\"}]}";
+        final String expectedJsonBody = "{\"setting_type\":\"call_to_actions\",\"thread_state\":\"existing_thread\"" +
+                ",\"call_to_actions\":[{\"type\":\"postback\",\"title\":\"Help\"" +
+                ",\"payload\":\"DEVELOPER_DEFINED_PAYLOAD_FOR_HELP\"},{\"type\":\"postback\"" +
+                ",\"title\":\"Start a New Order\",\"payload\":\"DEVELOPER_DEFINED_PAYLOAD_FOR_START_ORDER\"}" +
+                ",{\"type\":\"web_url\",\"title\":\"Checkout\",\"url\":\"http://petersapparel.parseapp.com/checkout\"" +
+                ",\"webview_height_ratio\":\"compact\",\"messenger_extensions\":true" +
+                ",\"fallback_url\":\"https://peterssendreceiveapp.ngrok.io/fallback\"},{\"type\":\"web_url\"" +
+                ",\"title\":\"View Website\",\"url\":\"http://petersapparel.parseapp.com/\"}]}";
         verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 

@@ -12,11 +12,15 @@ public final class UrlButton extends TitleButton {
 
     private final String url;
     private final WebviewHeightRatio webviewHeightRatio;
+    private final Boolean messengerExtensions;
+    private final String fallbackUrl;
 
     private UrlButton(Builder builder) {
         super(ButtonType.WEB_URL, builder.title);
         url = builder.url;
         webviewHeightRatio = builder.webviewHeightRatio;
+        messengerExtensions = builder.messengerExtensions;
+        fallbackUrl = builder.fallbackUrl;
     }
 
     @Override
@@ -37,6 +41,14 @@ public final class UrlButton extends TitleButton {
         return webviewHeightRatio;
     }
 
+    public Boolean getMessengerExtensions() {
+        return messengerExtensions;
+    }
+
+    public String getFallbackUrl() {
+        return fallbackUrl;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -44,12 +56,14 @@ public final class UrlButton extends TitleButton {
         if (!super.equals(o)) return false;
         UrlButton urlButton = (UrlButton) o;
         return Objects.equals(url, urlButton.url) &&
-                webviewHeightRatio == urlButton.webviewHeightRatio;
+                webviewHeightRatio == urlButton.webviewHeightRatio &&
+                Objects.equals(messengerExtensions, urlButton.messengerExtensions) &&
+                Objects.equals(fallbackUrl, urlButton.fallbackUrl);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), url, webviewHeightRatio);
+        return Objects.hash(super.hashCode(), url, webviewHeightRatio, messengerExtensions, fallbackUrl);
     }
 
     @Override
@@ -57,6 +71,8 @@ public final class UrlButton extends TitleButton {
         return "UrlButton{" +
                 "url='" + url + '\'' +
                 ", webviewHeightRatio=" + webviewHeightRatio +
+                ", messengerExtensions=" + messengerExtensions +
+                ", fallbackUrl='" + fallbackUrl + '\'' +
                 "} super=" + super.toString();
     }
 
@@ -71,6 +87,8 @@ public final class UrlButton extends TitleButton {
         private final String title;
         private final String url;
         private WebviewHeightRatio webviewHeightRatio;
+        private Boolean messengerExtensions;
+        private String fallbackUrl;
         private final ListBuilder listBuilder;
 
         Builder(String title, String url, ListBuilder listBuilder) {
@@ -86,6 +104,17 @@ public final class UrlButton extends TitleButton {
         public Builder webviewHeightRatio(WebviewHeightRatio webviewHeightRatio) {
             PreConditions.notNull(webviewHeightRatio, "webviewHeightRatio");
             this.webviewHeightRatio = webviewHeightRatio;
+            return this;
+        }
+
+        public Builder messengerExtensions(Boolean messengerExtensions) {
+            this.messengerExtensions = messengerExtensions;
+            return this;
+        }
+
+        public Builder fallbackUrl(String fallbackUrl) {
+            PreConditions.notNullOrBlank(fallbackUrl, "fallbackUrl");
+            this.fallbackUrl = fallbackUrl;
             return this;
         }
 
