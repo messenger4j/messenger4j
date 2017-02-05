@@ -2,9 +2,25 @@ package com.github.messenger4j.send.templates;
 
 import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.send.buttons.Button;
+import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 
 public class ListTemplateTest {
+
+    @Test
+    public void shouldHaveACorrectEqualsImplementation() {
+        EqualsVerifier.forClass(ListTemplate.class)
+                .usingGetClass()
+                .verify();
+
+        EqualsVerifier.forClass(ListTemplate.Element.class)
+                .usingGetClass()
+                .verify();
+
+        EqualsVerifier.forClass(ListTemplate.Element.DefaultAction.class)
+                .usingGetClass()
+                .verify();
+    }
 
     @Test
     public void buildNormal() throws Exception {

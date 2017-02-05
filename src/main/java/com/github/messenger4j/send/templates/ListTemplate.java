@@ -243,11 +243,15 @@ public final class ListTemplate extends Template {
             private final Button.ButtonType type;
             private final String url;
             private final WebviewHeightRatio webviewHeightRatio;
+            private final Boolean messengerExtensions;
+            private final String fallbackUrl;
 
             public DefaultAction(Builder builder) {
+                this.type = Button.ButtonType.WEB_URL;
                 this.url = builder.url;
                 this.webviewHeightRatio = builder.webviewHeightRatio;
-                this.type = Button.ButtonType.WEB_URL;
+                this.messengerExtensions = builder.messengerExtensions;
+                this.fallbackUrl = builder.fallbackUrl;
             }
 
             @Override
@@ -257,12 +261,14 @@ public final class ListTemplate extends Template {
                 DefaultAction that = (DefaultAction) o;
                 return type == that.type &&
                         Objects.equals(url, that.url) &&
-                        webviewHeightRatio == that.webviewHeightRatio;
+                        webviewHeightRatio == that.webviewHeightRatio &&
+                        Objects.equals(messengerExtensions, that.messengerExtensions) &&
+                        Objects.equals(fallbackUrl, that.fallbackUrl);
             }
 
             @Override
             public int hashCode() {
-                return Objects.hash(type, url, webviewHeightRatio);
+                return Objects.hash(type, url, webviewHeightRatio, messengerExtensions, fallbackUrl);
             }
 
             @Override
@@ -271,6 +277,8 @@ public final class ListTemplate extends Template {
                         "type=" + type +
                         ", url='" + url + '\'' +
                         ", webviewHeightRatio=" + webviewHeightRatio +
+                        ", messengerExtensions=" + messengerExtensions +
+                        ", fallbackUrl='" + fallbackUrl + '\'' +
                         '}';
             }
 
@@ -279,8 +287,11 @@ public final class ListTemplate extends Template {
              */
             public static final class Builder {
                 private final String url;
-                private final Element.Builder elementBuilder;
                 private WebviewHeightRatio webviewHeightRatio;
+                private Boolean messengerExtensions;
+                private String fallbackUrl;
+                private final Element.Builder elementBuilder;
+
 
                 public Builder(String url, Element.Builder builder) {
                     this.url = url;
@@ -289,6 +300,17 @@ public final class ListTemplate extends Template {
 
                 public Builder webviewHeightRatio(WebviewHeightRatio webviewHeightRatio) {
                     this.webviewHeightRatio = webviewHeightRatio;
+                    return this;
+                }
+
+                public Builder messengerExtensions(Boolean messengerExtensions) {
+                    this.messengerExtensions = messengerExtensions;
+                    return this;
+                }
+
+                public Builder fallbackUrl(String fallbackUrl) {
+                    PreConditions.notNullOrBlank(fallbackUrl, "fallbackUrl");
+                    this.fallbackUrl = fallbackUrl;
                     return this;
                 }
 

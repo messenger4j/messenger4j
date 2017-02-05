@@ -19,25 +19,27 @@ public final class CallToAction {
     private final URL url;
     private final String payload;
     private final WebviewHeightRatio webviewHeightRatio;
+    private final Boolean messengerExtensions;
+    private final URL fallbackUrl;
 
     public static CallToAction.Builder newBuilder() {
         return new CallToAction.Builder();
     }
 
     public CallToAction(String payload) {
-        this.payload = payload;
-        this.type = null;
-        this.title = null;
-        this.url = null;
-        this.webviewHeightRatio = null;
+        this(null, null, null, payload, null, null, null);
     }
 
-    public CallToAction(CallToActionType type, String title, URL url, String payload, WebviewHeightRatio webviewHeightRatio) {
+    public CallToAction(CallToActionType type, String title, URL url, String payload,
+                        WebviewHeightRatio webviewHeightRatio, Boolean messengerExtensions, URL fallbackUrl) {
+
         this.type = type;
         this.title = title;
         this.url = url;
         this.payload = payload;
         this.webviewHeightRatio = webviewHeightRatio;
+        this.messengerExtensions = messengerExtensions;
+        this.fallbackUrl = fallbackUrl;
     }
 
     public CallToActionType getType() {
@@ -60,6 +62,14 @@ public final class CallToAction {
         return webviewHeightRatio;
     }
 
+    public Boolean getMessengerExtensions() {
+        return messengerExtensions;
+    }
+
+    public URL getFallbackUrl() {
+        return fallbackUrl;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -69,24 +79,27 @@ public final class CallToAction {
                 Objects.equals(title, that.title) &&
                 Objects.equals(url, that.url) &&
                 Objects.equals(payload, that.payload) &&
-                webviewHeightRatio == that.webviewHeightRatio;
+                webviewHeightRatio == that.webviewHeightRatio &&
+                Objects.equals(messengerExtensions, that.messengerExtensions) &&
+                Objects.equals(fallbackUrl, that.fallbackUrl);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, title, url, payload, webviewHeightRatio);
+        return Objects.hash(type, title, url, payload, webviewHeightRatio, messengerExtensions, fallbackUrl);
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("CallToAction{");
-        sb.append("type=").append(type);
-        sb.append(", title='").append(title).append('\'');
-        sb.append(", url=").append(url);
-        sb.append(", payload='").append(payload).append('\'');
-        sb.append(", webviewHeightRatio=").append(webviewHeightRatio);
-        sb.append('}');
-        return sb.toString();
+        return "CallToAction{" +
+                "type=" + type +
+                ", title='" + title + '\'' +
+                ", url=" + url +
+                ", payload='" + payload + '\'' +
+                ", webviewHeightRatio=" + webviewHeightRatio +
+                ", messengerExtensions=" + messengerExtensions +
+                ", fallbackUrl='" + fallbackUrl + '\'' +
+                '}';
     }
 
     public static final class Builder {
@@ -96,6 +109,8 @@ public final class CallToAction {
         private URL url;
         private String payload;
         private WebviewHeightRatio webviewHeightRatio;
+        private Boolean messengerExtensions;
+        private URL fallbackUrl;
 
         public Builder type(CallToActionType callToActionType) {
             this.callToActionType = callToActionType;
@@ -122,6 +137,16 @@ public final class CallToAction {
             return this;
         }
 
+        public Builder messengerExtensions(Boolean messengerExtensions) {
+            this.messengerExtensions = messengerExtensions;
+            return this;
+        }
+
+        public Builder fallbackUrl(URL fallbackUrl) {
+            this.fallbackUrl = fallbackUrl;
+            return this;
+        }
+
         public CallToAction build() {
             PreConditions.notNull(callToActionType, "type");
             PreConditions.notNullOrBlank(title, "title");
@@ -133,7 +158,8 @@ public final class CallToAction {
                 PreConditions.notNullOrBlank(payload, "payload");
             }
 
-            return new CallToAction(callToActionType, title, url, payload, webviewHeightRatio);
+            return new CallToAction(callToActionType, title, url, payload, webviewHeightRatio,
+                    messengerExtensions, fallbackUrl);
         }
     }
 }

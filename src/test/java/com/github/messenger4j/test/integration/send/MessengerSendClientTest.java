@@ -225,6 +225,11 @@ public class MessengerSendClientTest {
         final List<Button> buttons = Button.newListBuilder()
                 .addUrlButton("Show Website", "https://petersapparel.parseapp.com").toList()
                 .addPostbackButton("Start Chatting", "USER_DEFINED_PAYLOAD").toList()
+                .addUrlButton("Show Website", "https://petersapparel.parseapp.com")
+                    .webviewHeightRatio(WebviewHeightRatio.FULL)
+                    .messengerExtensions(true)
+                    .fallbackUrl("https://petersfancyapparel.com/fallback")
+                    .toList()
                 .build();
 
         final ButtonTemplate buttonTemplate = ButtonTemplate.newBuilder("What do you want to do next?", buttons).build();
@@ -237,7 +242,9 @@ public class MessengerSendClientTest {
                 "\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"text\":\"What do you want to do next?\"" +
                 ",\"buttons\":[{\"url\":\"https://petersapparel.parseapp.com\",\"title\":\"Show Website\"" +
                 ",\"type\":\"web_url\"},{\"payload\":\"USER_DEFINED_PAYLOAD\",\"title\":\"Start Chatting\"" +
-                ",\"type\":\"postback\"}],\"template_type\":\"button\"}}}}";
+                ",\"type\":\"postback\"},{\"url\":\"https://petersapparel.parseapp.com\",\"webview_height_ratio\":\"full\"" +
+                ",\"messenger_extensions\":true,\"fallback_url\":\"https://petersfancyapparel.com/fallback\"" +
+                ",\"title\":\"Show Website\",\"type\":\"web_url\"}],\"template_type\":\"button\"}}}}";
         verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
 
@@ -382,8 +389,10 @@ public class MessengerSendClientTest {
                         .toList()
                         .build())
                 .addDefaultAction("https://peterssendreceiveapp.ngrok.io/shop_collection")
-                .webviewHeightRatio(WebviewHeightRatio.TALL)
-                .done()
+                    .webviewHeightRatio(WebviewHeightRatio.TALL)
+                    .messengerExtensions(true)
+                    .fallbackUrl("https://peterssendreceiveapp.ngrok.io/fallback")
+                    .done()
                 .toList()
                     .addElement("Classic White T-Shirt")
                     .subtitle("100% Cotton, 200% Comfortable")
@@ -428,7 +437,8 @@ public class MessengerSendClientTest {
                 "\"subtitle\":\"See all our colors\",\"image_url\":\"https://peterssendreceiveapp.ngrok.io/img/collection.png\"," +
                 "\"buttons\":[{\"url\":\"https://peterssendreceiveapp.ngrok.io/collection\",\"webview_height_ratio\":\"tall\"," +
                 "\"title\":\"View\",\"type\":\"web_url\"}],\"default_action\":{\"type\":\"web_url\"," +
-                "\"url\":\"https://peterssendreceiveapp.ngrok.io/shop_collection\",\"webview_height_ratio\":\"tall\"}}," +
+                "\"url\":\"https://peterssendreceiveapp.ngrok.io/shop_collection\",\"webview_height_ratio\":\"tall\"," +
+                "\"messenger_extensions\":true,\"fallback_url\":\"https://peterssendreceiveapp.ngrok.io/fallback\"}}," +
                 "{\"title\":\"Classic White T-Shirt\",\"subtitle\":\"100% Cotton, 200% Comfortable\"," +
                 "\"image_url\":\"https://peterssendreceiveapp.ngrok.io/img/white-t-shirt.png\"," +
                 "\"buttons\":[{\"url\":\"https://peterssendreceiveapp.ngrok.io/shop?item\\u003d100\",\"webview_height_ratio\":\"tall\"," +
