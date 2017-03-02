@@ -4,7 +4,9 @@ import com.github.messenger4j.MessengerPlatform;
 import com.github.messenger4j.internal.PreConditions;
 import com.github.messenger4j.receive.events.AccountLinkingEvent;
 import com.github.messenger4j.receive.events.AttachmentMessageEvent;
+import com.github.messenger4j.receive.events.EchoAttachmentMessageEvent;
 import com.github.messenger4j.receive.events.EchoMessageEvent;
+import com.github.messenger4j.receive.events.EchoTextMessageEvent;
 import com.github.messenger4j.receive.events.FallbackEvent;
 import com.github.messenger4j.receive.events.MessageDeliveredEvent;
 import com.github.messenger4j.receive.events.MessageReadEvent;
@@ -14,7 +16,9 @@ import com.github.messenger4j.receive.events.QuickReplyMessageEvent;
 import com.github.messenger4j.receive.events.TextMessageEvent;
 import com.github.messenger4j.receive.handlers.AccountLinkingEventHandler;
 import com.github.messenger4j.receive.handlers.AttachmentMessageEventHandler;
+import com.github.messenger4j.receive.handlers.EchoAttachmentMessageEventHandler;
 import com.github.messenger4j.receive.handlers.EchoMessageEventHandler;
+import com.github.messenger4j.receive.handlers.EchoTextMessageEventHandler;
 import com.github.messenger4j.receive.handlers.EventHandler;
 import com.github.messenger4j.receive.handlers.FallbackEventHandler;
 import com.github.messenger4j.receive.handlers.MessageDeliveredEventHandler;
@@ -46,6 +50,8 @@ public final class MessengerReceiveClientBuilder {
     boolean disableSignatureVerification;
     AttachmentMessageEventHandler attachmentMessageEventHandler;
     OptInEventHandler optInEventHandler;
+    EchoTextMessageEventHandler echoTextMessageEventHandler;
+    EchoAttachmentMessageEventHandler echoAttachmentMessageEventHandler;
     EchoMessageEventHandler echoMessageEventHandler;
     QuickReplyMessageEventHandler quickReplyMessageEventHandler;
     TextMessageEventHandler textMessageEventHandler;
@@ -102,6 +108,28 @@ public final class MessengerReceiveClientBuilder {
      */
     public MessengerReceiveClientBuilder onOptInEvent(OptInEventHandler optInEventHandler) {
         this.optInEventHandler = optInEventHandler;
+        return this;
+    }
+
+    /**
+     * Sets the {@link EventHandler} responsible for handling the {@link EchoTextMessageEvent}.
+     *
+     * @param echoTextMessageEventHandler an {@code EchoTextMessageEventHandler}
+     * @return the {@code MessengerReceiveClientBuilder}
+     */
+    public MessengerReceiveClientBuilder onEchoTextMessageEvent(EchoTextMessageEventHandler echoTextMessageEventHandler) {
+        this.echoTextMessageEventHandler = echoTextMessageEventHandler;
+        return this;
+    }
+
+    /**
+     * Sets the {@link EventHandler} responsible for handling the {@link EchoAttachmentMessageEvent}.
+     *
+     * @param echoAttachmentMessageEventHandler an {@code EchoMessageEventHandler}
+     * @return the {@code MessengerReceiveClientBuilder}
+     */
+    public MessengerReceiveClientBuilder onEchoAttachmentMessageEvent(EchoAttachmentMessageEventHandler echoAttachmentMessageEventHandler) {
+        this.echoAttachmentMessageEventHandler = echoAttachmentMessageEventHandler;
         return this;
     }
 

@@ -10,7 +10,9 @@ import com.github.messenger4j.exceptions.MessengerVerificationException;
 import com.github.messenger4j.internal.PreConditions;
 import com.github.messenger4j.receive.callers.AccountLinkingEventHandlerCaller;
 import com.github.messenger4j.receive.callers.AttachmentMessageEventHandlerCaller;
+import com.github.messenger4j.receive.callers.EchoAttachmentMessageEventHandlerCaller;
 import com.github.messenger4j.receive.callers.EchoMessageEventHandlerCaller;
+import com.github.messenger4j.receive.callers.EchoTextMessageEventHandlerCaller;
 import com.github.messenger4j.receive.callers.EventHandlerCaller;
 import com.github.messenger4j.receive.callers.MessageDeliveredEventHandlerCaller;
 import com.github.messenger4j.receive.callers.MessageReadEventHandlerCaller;
@@ -65,7 +67,7 @@ final class MessengerReceiveClientImpl implements MessengerReceiveClient {
         this.fallbackEventHandler = builder.fallbackEventHandler;
 
         this.jsonParser = new JsonParser();
-        this.eventHandlerCallers = new ArrayList<>(9);
+        this.eventHandlerCallers = new ArrayList<>(11);
 
         registerEventHandlerCaller(new TextMessageEventHandlerCaller(builder.textMessageEventHandler,
                 builder.fallbackEventHandler));
@@ -74,6 +76,10 @@ final class MessengerReceiveClientImpl implements MessengerReceiveClient {
         registerEventHandlerCaller(new QuickReplyMessageEventHandlerCaller(builder.quickReplyMessageEventHandler,
                 builder.fallbackEventHandler));
         registerEventHandlerCaller(new PostbackEventHandlerCaller(builder.postbackEventHandler,
+                builder.fallbackEventHandler));
+        registerEventHandlerCaller(new EchoTextMessageEventHandlerCaller(builder.echoTextMessageEventHandler,
+                builder.fallbackEventHandler));
+        registerEventHandlerCaller(new EchoAttachmentMessageEventHandlerCaller(builder.echoAttachmentMessageEventHandler,
                 builder.fallbackEventHandler));
         registerEventHandlerCaller(new EchoMessageEventHandlerCaller(builder.echoMessageEventHandler,
                 builder.fallbackEventHandler));

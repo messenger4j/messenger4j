@@ -29,7 +29,7 @@ import java.util.Objects;
  * @since 0.6.0
  * @see Event
  */
-public final class EchoMessageEvent extends MessageEvent {
+public class EchoMessageEvent extends MessageEvent {
 
     private final String appId;
     private final String metadata;
