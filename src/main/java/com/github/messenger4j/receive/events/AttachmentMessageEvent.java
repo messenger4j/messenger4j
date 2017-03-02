@@ -37,9 +37,7 @@ import java.util.Objects;
  * @see Event
  * @see Attachment
  */
-public final class AttachmentMessageEvent extends MessageEvent {
-
-    private final List<Attachment> attachments;
+public final class AttachmentMessageEvent extends CommonAttachmentMessageEvent {
 
     /**
      * <b>Internal</b> method to create an instance of {@link AttachmentMessageEvent} from the given
@@ -66,32 +64,21 @@ public final class AttachmentMessageEvent extends MessageEvent {
     public AttachmentMessageEvent(String senderId, String recipientId, Date timestamp, String mid,
                                    List<Attachment> attachments) {
 
-        super(senderId, recipientId, timestamp, mid);
-        this.attachments = attachments == null ? null : Collections.unmodifiableList(attachments);
-    }
-
-    public List<Attachment> getAttachments() {
-        return attachments;
+        super(senderId, recipientId, timestamp, mid, attachments);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        AttachmentMessageEvent that = (AttachmentMessageEvent) o;
-        return Objects.equals(attachments, that.attachments);
+        return super.equals(o);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), attachments);
+        return super.hashCode();
     }
 
     @Override
     public String toString() {
-        return "AttachmentMessageEvent{" +
-                "attachments=" + attachments +
-                "} super=" + super.toString();
+        return "AttachmentMessageEvent{} super=" + super.toString();
     }
 }

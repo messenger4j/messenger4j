@@ -8,6 +8,7 @@ import java.util.Objects;
 import static com.github.messenger4j.internal.JsonHelper.Constants.*;
 import static com.github.messenger4j.internal.JsonHelper.getPropertyAsDate;
 import static com.github.messenger4j.internal.JsonHelper.getPropertyAsString;
+
 /**
  * This event will occur when a text message has been sent by your page.
  *
@@ -22,16 +23,16 @@ import static com.github.messenger4j.internal.JsonHelper.getPropertyAsString;
  * @since 0.9.0
  * @see Event
  */
-public class EchoTextMessageEvent extends EchoMessageEvent {
-
-    private final String text;
+public class EchoTextMessageEvent extends CommonTextMessageEvent {
+    private final String appId;
+    private final String metadata;
 
     /**
-     * <b>Internal</b> method to create an instance of {@link EchoTextMessageEvent} from the given
+     * <b>Internal</b> method to create an instance of {@link EchoAttachmentMessageEvent} from the given
      * event as JSON structure.
      *
      * @param jsonObject the event as JSON structure
-     * @return the created {@link EchoTextMessageEvent}
+     * @return the created {@link EchoAttachmentMessageEvent}
      */
     public static EchoTextMessageEvent fromJson(JsonObject jsonObject) {
         final String senderId = getPropertyAsString(jsonObject, PROP_SENDER, PROP_ID);
@@ -45,13 +46,20 @@ public class EchoTextMessageEvent extends EchoMessageEvent {
         return new EchoTextMessageEvent(senderId, recipientId, timestamp, mid, appId, metadata, text);
     }
 
-    public EchoTextMessageEvent(String senderId, String recipientId, Date timestamp, String mid, String appId, String metadata, String text) {
-        super(senderId, recipientId, timestamp, mid, appId, metadata);
-        this.text = text;
+    public EchoTextMessageEvent(String senderId, String recipientId, Date timestamp, String mid, String appId, String metadata,
+                                      String text) {
+
+        super(senderId, recipientId, timestamp, mid, text);
+        this.appId = appId;
+        this.metadata = metadata;
     }
 
-    public String getText() {
-        return text;
+    public String getAppId() {
+        return appId;
+    }
+
+    public String getMetadata() {
+        return metadata;
     }
 
     @Override
@@ -60,18 +68,20 @@ public class EchoTextMessageEvent extends EchoMessageEvent {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         EchoTextMessageEvent that = (EchoTextMessageEvent) o;
-        return Objects.equals(text, that.text);
+        return Objects.equals(appId, that.appId) &&
+                Objects.equals(metadata, that.metadata);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), text);
+        return Objects.hash(super.hashCode(), appId, metadata);
     }
 
     @Override
     public String toString() {
         return "EchoTextMessageEvent{" +
-                "text='" + text + '\'' +
+                "appId='" + appId + '\'' +
+                ", metadata='" + metadata + '\'' +
                 "} super=" + super.toString();
     }
 }

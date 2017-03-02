@@ -30,8 +30,9 @@ import static com.github.messenger4j.internal.JsonHelper.getPropertyAsString;
  * @since 0.9.0
  * @see Event
  */
-public class EchoAttachmentMessageEvent extends EchoMessageEvent {
-    private final List<Attachment> attachments;
+public final class EchoAttachmentMessageEvent extends CommonAttachmentMessageEvent {
+    private final String appId;
+    private final String metadata;
 
     /**
      * <b>Internal</b> method to create an instance of {@link EchoAttachmentMessageEvent} from the given
@@ -60,12 +61,17 @@ public class EchoAttachmentMessageEvent extends EchoMessageEvent {
     public EchoAttachmentMessageEvent(String senderId, String recipientId, Date timestamp, String mid, String appId, String metadata,
                                   List<Attachment> attachments) {
 
-        super(senderId, recipientId, timestamp, mid, appId, metadata);
-        this.attachments = attachments == null ? null : Collections.unmodifiableList(attachments);
+        super(senderId, recipientId, timestamp, mid, attachments);
+        this.appId = appId;
+        this.metadata = metadata;
     }
 
-    public List<Attachment> getAttachments() {
-        return attachments;
+    public String getAppId() {
+        return appId;
+    }
+
+    public String getMetadata() {
+        return metadata;
     }
 
     @Override
@@ -74,18 +80,20 @@ public class EchoAttachmentMessageEvent extends EchoMessageEvent {
         if (o == null || getClass() != o.getClass()) return false;
         if (!super.equals(o)) return false;
         EchoAttachmentMessageEvent that = (EchoAttachmentMessageEvent) o;
-        return Objects.equals(attachments, that.attachments);
+        return Objects.equals(appId, that.appId) &&
+                Objects.equals(metadata, that.metadata);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), attachments);
+        return Objects.hash(super.hashCode(), appId, metadata);
     }
 
     @Override
     public String toString() {
         return "EchoAttachmentMessageEvent{" +
-                "attachments=" + attachments +
+                "appId='" + appId + '\'' +
+                ", metadata='" + metadata + '\'' +
                 "} super=" + super.toString();
     }
 }

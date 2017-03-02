@@ -10,7 +10,7 @@ import java.util.Objects;
  * @since 0.6.0
  * @see Event
  */
-abstract class CommonTextMessageEvent extends MessageEvent {
+public abstract class CommonTextMessageEvent extends MessageEvent {
 
     private final String text;
 
