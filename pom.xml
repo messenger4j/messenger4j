@@ -63,7 +63,7 @@
                     <target>1.7</target>
                     <compilerArguments>
                         <Werror/>
-                        <Xlint:all/>
+                        <Xlint/>
                     </compilerArguments>
                 </configuration>
             </plugin>
