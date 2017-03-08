@@ -128,7 +128,9 @@ public final class JsonHelper {
         PROP_PROFILE_PIC("profile_pic"),
         PROP_LOCALE("locale"),
         PROP_TIMEZONE("timezone"),
-        PROP_GENDER("gender");
+        PROP_GENDER("gender"),
+        PROP_REFERRAL("referral"),
+        PROP_SOURCE("source");
 
         private final String value;
 

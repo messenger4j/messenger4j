@@ -1,10 +1,16 @@
 package com.github.messenger4j.receive;
 
+import static com.github.messenger4j.internal.JsonHelper.getPropertyAsJsonArray;
+import static com.github.messenger4j.internal.JsonHelper.getPropertyAsString;
 import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_ENTRY;
 import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_MESSAGING;
 import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_OBJECT;
-import static com.github.messenger4j.internal.JsonHelper.getPropertyAsJsonArray;
-import static com.github.messenger4j.internal.JsonHelper.getPropertyAsString;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.messenger4j.exceptions.MessengerVerificationException;
 import com.github.messenger4j.internal.PreConditions;
@@ -17,17 +23,15 @@ import com.github.messenger4j.receive.callers.MessageReadEventHandlerCaller;
 import com.github.messenger4j.receive.callers.OptInEventHandlerCaller;
 import com.github.messenger4j.receive.callers.PostbackEventHandlerCaller;
 import com.github.messenger4j.receive.callers.QuickReplyMessageEventHandlerCaller;
+import com.github.messenger4j.receive.callers.ReferralEventHandlerCaller;
 import com.github.messenger4j.receive.callers.TextMessageEventHandlerCaller;
+import com.github.messenger4j.receive.events.Event;
 import com.github.messenger4j.receive.events.FallbackEvent;
 import com.github.messenger4j.receive.handlers.FallbackEventHandler;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import java.util.ArrayList;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This is the standard implementation of the {@link MessengerReceiveClient} interface used by
@@ -50,7 +54,7 @@ final class MessengerReceiveClientImpl implements MessengerReceiveClient {
     private final FallbackEventHandler fallbackEventHandler;
 
     private final JsonParser jsonParser;
-    private final List<EventHandlerCaller> eventHandlerCallers;
+    private final List<EventHandlerCaller<? extends Event>> eventHandlerCallers;
 
     /**
      * Constructs a {@code MessengerReceiveClientImpl} from the values
@@ -85,11 +89,13 @@ final class MessengerReceiveClientImpl implements MessengerReceiveClient {
                 builder.fallbackEventHandler));
         registerEventHandlerCaller(new OptInEventHandlerCaller(builder.optInEventHandler,
                 builder.fallbackEventHandler));
+        registerEventHandlerCaller(new ReferralEventHandlerCaller(builder.referralEventHandler,
+                builder.fallbackEventHandler));
 
         logger.debug("{} initialized successfully.", MessengerReceiveClientImpl.class.getSimpleName());
     }
 
-    private void registerEventHandlerCaller(EventHandlerCaller eventHandlerCaller) {
+    private void registerEventHandlerCaller(EventHandlerCaller<? extends Event> eventHandlerCaller) {
         this.eventHandlerCallers.add(eventHandlerCaller);
     }
 
@@ -154,7 +160,7 @@ final class MessengerReceiveClientImpl implements MessengerReceiveClient {
 
     private void processMessagingEvent(JsonObject messagingEvent) {
         boolean eventHandlerCalled = false;
-        for (EventHandlerCaller eventHandlerCaller : this.eventHandlerCallers) {
+        for (EventHandlerCaller<? extends Event> eventHandlerCaller : this.eventHandlerCallers) {
             eventHandlerCalled = eventHandlerCaller.callHandlerIfResponsibleForEvent(messagingEvent);
             if (eventHandlerCalled) {
                 break;

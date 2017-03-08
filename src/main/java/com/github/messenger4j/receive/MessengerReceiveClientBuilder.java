@@ -22,6 +22,7 @@ import com.github.messenger4j.receive.handlers.MessageReadEventHandler;
 import com.github.messenger4j.receive.handlers.OptInEventHandler;
 import com.github.messenger4j.receive.handlers.PostbackEventHandler;
 import com.github.messenger4j.receive.handlers.QuickReplyMessageEventHandler;
+import com.github.messenger4j.receive.handlers.ReferralEventHandler;
 import com.github.messenger4j.receive.handlers.TextMessageEventHandler;
 
 /**
@@ -53,6 +54,7 @@ public final class MessengerReceiveClientBuilder {
     AccountLinkingEventHandler accountLinkingEventHandler;
     MessageReadEventHandler messageReadEventHandler;
     MessageDeliveredEventHandler messageDeliveredEventHandler;
+    ReferralEventHandler referralEventHandler;
     FallbackEventHandler fallbackEventHandler;
 
     /**
@@ -179,6 +181,17 @@ public final class MessengerReceiveClientBuilder {
      */
     public MessengerReceiveClientBuilder onMessageDeliveredEvent(MessageDeliveredEventHandler messageDeliveredEventHandler) {
         this.messageDeliveredEventHandler = messageDeliveredEventHandler;
+        return this;
+    }
+
+    /**
+     * Sets the {@link EventHandler} responsible for handling the {@link ReferralEvent}.
+     *
+     * @param referralEventHandler a {@code ReferralEventHandler}
+     * @return the {@code MessengerReceiveClientBuilder}
+     */
+    public MessengerReceiveClientBuilder onReferralEvent(ReferralEventHandler referralEventHandler) {
+        this.referralEventHandler = referralEventHandler;
         return this;
     }
 
