@@ -1,9 +1,10 @@
 package com.github.messenger4j.send;
 
-import com.github.messenger4j.internal.PreConditions;
-import com.github.messenger4j.send.templates.Template;
 import java.util.List;
 import java.util.Objects;
+
+import com.github.messenger4j.internal.PreConditions;
+import com.github.messenger4j.send.templates.Template;
 
 /**
  * @author Max Grabenhorst
@@ -41,13 +42,13 @@ final class Message {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Message message = (Message) o;
-        return Objects.equals(text, message.text) &&
-                Objects.equals(attachment, message.attachment) &&
-                Objects.equals(quickReplies, message.quickReplies) &&
-                Objects.equals(metadata, message.metadata);
+        return Objects.equals(text, message.text) && Objects.equals(attachment, message.attachment)
+                && Objects.equals(quickReplies, message.quickReplies) && Objects.equals(metadata, message.metadata);
     }
 
     @Override
@@ -57,12 +58,8 @@ final class Message {
 
     @Override
     public String toString() {
-        return "Message{" +
-                "text='" + text + '\'' +
-                ", attachment=" + attachment +
-                ", quickReplies=" + quickReplies +
-                ", metadata='" + metadata + '\'' +
-                '}';
+        return "Message{" + "text='" + text + '\'' + ", attachment=" + attachment + ", quickReplies=" + quickReplies
+                + ", metadata='" + metadata + '\'' + '}';
     }
 
     /**
@@ -83,7 +80,7 @@ final class Message {
      */
     static final class Builder {
 
-        private static final int TEXT_CHARACTER_LIMIT = 320;
+        private static final int TEXT_CHARACTER_LIMIT = 640;
         private static final int QUICK_REPLIES_LIMIT = 10;
         private static final int METADATA_CHARACTER_LIMIT = 1000;
 
