@@ -1,41 +1,30 @@
 package com.github.messenger4j.test.integration.receive;
 
-import static org.hamcrest.Matchers.emptyCollectionOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
-import com.github.messenger4j.MessengerPlatform;
 import com.github.messenger4j.exceptions.MessengerVerificationException;
-import com.github.messenger4j.receive.MessengerReceiveClient;
-import com.github.messenger4j.receive.MessengerReceiveClientBuilder;
-import com.github.messenger4j.receive.events.AccountLinkingEvent;
-import com.github.messenger4j.receive.events.AttachmentMessageEvent;
-import com.github.messenger4j.receive.events.EchoMessageEvent;
-import com.github.messenger4j.receive.events.FallbackEvent;
-import com.github.messenger4j.receive.events.MessageDeliveredEvent;
-import com.github.messenger4j.receive.events.MessageReadEvent;
-import com.github.messenger4j.receive.events.OptInEvent;
-import com.github.messenger4j.receive.events.PostbackEvent;
-import com.github.messenger4j.receive.events.QuickReplyMessageEvent;
-import com.github.messenger4j.receive.events.TextMessageEvent;
-import com.github.messenger4j.receive.handlers.AccountLinkingEventHandler;
-import com.github.messenger4j.receive.handlers.AttachmentMessageEventHandler;
-import com.github.messenger4j.receive.handlers.EchoMessageEventHandler;
-import com.github.messenger4j.receive.handlers.FallbackEventHandler;
-import com.github.messenger4j.receive.handlers.MessageDeliveredEventHandler;
-import com.github.messenger4j.receive.handlers.MessageReadEventHandler;
-import com.github.messenger4j.receive.handlers.OptInEventHandler;
-import com.github.messenger4j.receive.handlers.PostbackEventHandler;
-import com.github.messenger4j.receive.handlers.QuickReplyMessageEventHandler;
-import com.github.messenger4j.receive.handlers.TextMessageEventHandler;
-import java.util.Date;
-import org.junit.Before;
+import com.github.messenger4j.v3.Messenger;
+import com.github.messenger4j.v3.receive.AccountLinkingEvent;
+import com.github.messenger4j.v3.receive.Attachment;
+import com.github.messenger4j.v3.receive.AttachmentMessageEvent;
+import com.github.messenger4j.v3.receive.Event;
+import com.github.messenger4j.v3.receive.MessageDeliveredEvent;
+import com.github.messenger4j.v3.receive.MessageEchoEvent;
+import com.github.messenger4j.v3.receive.MessageReadEvent;
+import com.github.messenger4j.v3.receive.OptInEvent;
+import com.github.messenger4j.v3.receive.PostbackEvent;
+import com.github.messenger4j.v3.receive.QuickReplyMessageEvent;
+import com.github.messenger4j.v3.receive.Referral;
+import com.github.messenger4j.v3.receive.RichMediaAttachment;
+import com.github.messenger4j.v3.receive.TextMessageEvent;
+import java.time.Instant;
+import java.util.Optional;
+import java.util.function.Consumer;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -45,32 +34,10 @@ import org.mockito.ArgumentCaptor;
  */
 public class MessengerReceiveClientTest {
 
-    private MessengerReceiveClientBuilder builder;
-    private AttachmentMessageEventHandler mockAttachmentMessageEventHandler = mock(AttachmentMessageEventHandler.class);
-    private OptInEventHandler mockOptInEventHandler = mock(OptInEventHandler.class);
-    private EchoMessageEventHandler mockEchoMessageEventHandler = mock(EchoMessageEventHandler.class);
-    private QuickReplyMessageEventHandler mockQuickReplyMessageEventHandler = mock(QuickReplyMessageEventHandler.class);
-    private TextMessageEventHandler mockTextMessageEventHandler = mock(TextMessageEventHandler.class);
-    private PostbackEventHandler mockPostbackEventHandler = mock(PostbackEventHandler.class);
-    private AccountLinkingEventHandler mockAccountLinkingEventHandler = mock(AccountLinkingEventHandler.class);
-    private MessageReadEventHandler mockMessageReadEventHandler = mock(MessageReadEventHandler.class);
-    private MessageDeliveredEventHandler mockMessageDeliveredEventHandler = mock(MessageDeliveredEventHandler.class);
-    private FallbackEventHandler mockFallbackEventHandler = mock(FallbackEventHandler.class);
+    @SuppressWarnings("unchecked")
+    private Consumer<Event> mockEventHandler = (Consumer<Event>) mock(Consumer.class);
 
-    @Before
-    public void beforeEach() {
-        builder = MessengerPlatform.newReceiveClientBuilder("60efff025951cddde78c8d03de52cc90", "CUSTOM_VERIFY_TOKEN")
-                .onAttachmentMessageEvent(mockAttachmentMessageEventHandler)
-                .onOptInEvent(mockOptInEventHandler)
-                .onEchoMessageEvent(mockEchoMessageEventHandler)
-                .onQuickReplyMessageEvent(mockQuickReplyMessageEventHandler)
-                .onTextMessageEvent(mockTextMessageEventHandler)
-                .onPostbackEvent(mockPostbackEventHandler)
-                .onAccountLinkingEvent(mockAccountLinkingEventHandler)
-                .onMessageReadEvent(mockMessageReadEventHandler)
-                .onMessageDeliveredEvent(mockMessageDeliveredEventHandler)
-                .fallbackEventHandler(mockFallbackEventHandler);
-    }
+    private final Messenger messenger = Messenger.create("test", "60efff025951cddde78c8d03de52cc90", "CUSTOM_VERIFY_TOKEN");
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfObjectTypeIsNotPage() throws Exception {
@@ -99,10 +66,8 @@ public class MessengerReceiveClientTest {
                 "    }]\n" +
                 "}";
 
-        final MessengerReceiveClient messengerReceiveClient = builder.disableSignatureVerification().build();
-
         //when
-        messengerReceiveClient.processCallbackPayload(payload);
+        messenger.onReceiveEvents(payload, null, mockEventHandler);
 
         //then - throw exception
     }
@@ -144,94 +109,30 @@ public class MessengerReceiveClientTest {
                 "    }]\n" +
                 "}";
 
-        final MessengerReceiveClient messengerReceiveClient = builder.disableSignatureVerification().build();
-
         //when
-        messengerReceiveClient.processCallbackPayload(payload);
+        messenger.onReceiveEvents(payload, null, mockEventHandler);
 
         //then
-        final ArgumentCaptor<AttachmentMessageEvent> argument = ArgumentCaptor.forClass(AttachmentMessageEvent.class);
-        verify(mockAttachmentMessageEventHandler).handle(argument.capture());
-        final AttachmentMessageEvent attachmentMessageEvent = argument.getValue();
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
 
-        assertThat(attachmentMessageEvent.getSender().getId(), equalTo("USER_ID"));
-        assertThat(attachmentMessageEvent.getRecipient().getId(), equalTo("PAGE_ID"));
-        assertThat(attachmentMessageEvent.getTimestamp(), equalTo(new Date(1458692752478L)));
-        assertThat(attachmentMessageEvent.getMid(), equalTo("mid.1458696618141:b4ef9d19ec21086067"));
-        assertThat(attachmentMessageEvent.getAttachments(), hasSize(2));
+        final AttachmentMessageEvent attachmentMessageEvent = event.asAttachmentMessageEvent();
+        assertThat(attachmentMessageEvent.senderId(), equalTo("USER_ID"));
+        assertThat(attachmentMessageEvent.recipientId(), equalTo("PAGE_ID"));
+        assertThat(attachmentMessageEvent.timestamp(), equalTo(Instant.ofEpochMilli(1458692752478L)));
+        assertThat(attachmentMessageEvent.messageId(), equalTo("mid.1458696618141:b4ef9d19ec21086067"));
+        assertThat(attachmentMessageEvent.attachments(), hasSize(2));
 
-        final AttachmentMessageEvent.Attachment firstAttachment = attachmentMessageEvent.getAttachments().get(0);
-        assertThat(firstAttachment.getType(), equalTo(AttachmentMessageEvent.AttachmentType.IMAGE));
-        assertThat(firstAttachment.getPayload().asBinaryPayload().getUrl(), equalTo("IMAGE_URL"));
+        final Attachment firstAttachment = attachmentMessageEvent.attachments().get(0);
+        assertThat(firstAttachment.isRichMediaAttachment(), is(true));
+        assertThat(firstAttachment.asRichMediaAttachment().type(), equalTo(RichMediaAttachment.Type.IMAGE));
+        assertThat(firstAttachment.asRichMediaAttachment().url(), equalTo("IMAGE_URL"));
 
-        final AttachmentMessageEvent.Attachment secondAttachment = attachmentMessageEvent.getAttachments().get(1);
-        assertThat(secondAttachment.getType(), equalTo(AttachmentMessageEvent.AttachmentType.LOCATION));
-        assertThat(secondAttachment.getPayload().asLocationPayload().getCoordinates().getLatitude(),
-                equalTo(52.3765533));
-        assertThat(secondAttachment.getPayload().asLocationPayload().getCoordinates().getLongitude(),
-                equalTo(9.7389123));
-
-        verifyZeroInteractions(mockOptInEventHandler, mockEchoMessageEventHandler,
-                mockQuickReplyMessageEventHandler, mockTextMessageEventHandler, mockPostbackEventHandler,
-                mockAccountLinkingEventHandler, mockMessageReadEventHandler, mockMessageDeliveredEventHandler,
-                mockFallbackEventHandler);
-    }
-
-    @Test
-    public void shouldHandleUnsupportedPayloadAttachmentMessageEvent() throws Exception {
-        //given
-        final String payload = "{\n" +
-                "    \"object\": \"page\",\n" +
-                "    \"entry\": [{\n" +
-                "        \"id\": \"PAGE_ID\",\n" +
-                "        \"time\": 1458692752478,\n" +
-                "        \"messaging\": [{\n" +
-                "            \"sender\": {\n" +
-                "                \"id\": \"USER_ID\"\n" +
-                "            },\n" +
-                "            \"recipient\": {\n" +
-                "                \"id\": \"PAGE_ID\"\n" +
-                "            },\n" +
-                "            \"timestamp\": 1458692752478,\n" +
-                "            \"message\": {\n" +
-                "                \"mid\": \"mid.1458696618141:b4ef9d19ec21086067\",\n" +
-                "                \"attachments\": [{\n" +
-                "                    \"type\": \"image\",\n" +
-                "                    \"payload\": {\n" +
-                "                        \"UNSUPPORTED_PAYLOAD_TYPE\": \"SOME_DATA\"\n" +
-                "                    }\n" +
-                "                }, {\n" +
-                "                    \"type\": \"location\",\n" +
-                "                    \"payload\": {\n" +
-                "                        \"coordinates\": {\n" +
-                "                            \"lat\": 52.3765533,\n" +
-                "                            \"long\": 9.7389123\n" +
-                "                        }\n" +
-                "                    }\n" +
-                "                }]\n" +
-                "            }\n" +
-                "        }]\n" +
-                "    }]\n" +
-                "}";
-
-        final MessengerReceiveClient messengerReceiveClient = builder.disableSignatureVerification().build();
-
-        //when
-        messengerReceiveClient.processCallbackPayload(payload);
-
-        //then
-        final ArgumentCaptor<AttachmentMessageEvent> argument = ArgumentCaptor.forClass(AttachmentMessageEvent.class);
-        verify(mockAttachmentMessageEventHandler).handle(argument.capture());
-        final AttachmentMessageEvent attachmentMessageEvent = argument.getValue();
-
-        assertThat(attachmentMessageEvent.getAttachments(), hasSize(2));
-        final AttachmentMessageEvent.Attachment firstAttachment = attachmentMessageEvent.getAttachments().get(0);
-        assertThat(firstAttachment.getPayload().isUnsupportedPayload(), is(true));
-
-        verifyZeroInteractions(mockOptInEventHandler, mockEchoMessageEventHandler,
-                mockQuickReplyMessageEventHandler, mockTextMessageEventHandler, mockPostbackEventHandler,
-                mockAccountLinkingEventHandler, mockMessageReadEventHandler, mockMessageDeliveredEventHandler,
-                mockFallbackEventHandler);
+        final Attachment secondAttachment = attachmentMessageEvent.attachments().get(1);
+        assertThat(secondAttachment.isLocationAttachment(), is(true));
+        assertThat(secondAttachment.asLocationAttachment().latitude(), equalTo(52.3765533));
+        assertThat(secondAttachment.asLocationAttachment().longitude(), equalTo(9.7389123));
     }
 
     @Test
@@ -257,25 +158,19 @@ public class MessengerReceiveClientTest {
                 "    }]\n" +
                 "}";
 
-        final MessengerReceiveClient messengerReceiveClient = builder.disableSignatureVerification().build();
-
         //when
-        messengerReceiveClient.processCallbackPayload(payload);
+        messenger.onReceiveEvents(payload, null, mockEventHandler);
 
         //then
-        final ArgumentCaptor<OptInEvent> argument = ArgumentCaptor.forClass(OptInEvent.class);
-        verify(mockOptInEventHandler).handle(argument.capture());
-        final OptInEvent optInEvent = argument.getValue();
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
 
-        assertThat(optInEvent.getSender().getId(), equalTo("USER_ID"));
-        assertThat(optInEvent.getRecipient().getId(), equalTo("PAGE_ID"));
-        assertThat(optInEvent.getTimestamp(), equalTo(new Date(1234567890L)));
-        assertThat(optInEvent.getRef(), equalTo("PASS_THROUGH_PARAM"));
-
-        verifyZeroInteractions(mockAttachmentMessageEventHandler, mockEchoMessageEventHandler,
-                mockQuickReplyMessageEventHandler, mockTextMessageEventHandler, mockPostbackEventHandler,
-                mockAccountLinkingEventHandler, mockMessageReadEventHandler, mockMessageDeliveredEventHandler,
-                mockFallbackEventHandler);
+        final OptInEvent optInEvent = event.asOptInEvent();
+        assertThat(optInEvent.senderId(), equalTo("USER_ID"));
+        assertThat(optInEvent.recipientId(), equalTo("PAGE_ID"));
+        assertThat(optInEvent.timestamp(), equalTo(Instant.ofEpochMilli(1234567890L)));
+        assertThat(optInEvent.refPayload(), equalTo(Optional.of("PASS_THROUGH_PARAM")));
     }
 
     @Test
@@ -306,27 +201,21 @@ public class MessengerReceiveClientTest {
                 "    }]\n" +
                 "}";
 
-        final MessengerReceiveClient messengerReceiveClient = builder.disableSignatureVerification().build();
-
         //when
-        messengerReceiveClient.processCallbackPayload(payload);
+        messenger.onReceiveEvents(payload, null, mockEventHandler);
 
         //then
-        final ArgumentCaptor<EchoMessageEvent> argument = ArgumentCaptor.forClass(EchoMessageEvent.class);
-        verify(mockEchoMessageEventHandler).handle(argument.capture());
-        final EchoMessageEvent echoMessageEvent = argument.getValue();
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
 
-        assertThat(echoMessageEvent.getSender().getId(), equalTo("PAGE_ID"));
-        assertThat(echoMessageEvent.getRecipient().getId(), equalTo("USER_ID"));
-        assertThat(echoMessageEvent.getTimestamp(), equalTo(new Date(1480114700296L)));
-        assertThat(echoMessageEvent.getAppId(), equalTo("1517776481860111"));
-        assertThat(echoMessageEvent.getMetadata(), equalTo("DEVELOPER_DEFINED_METADATA_STRING"));
-        assertThat(echoMessageEvent.getMid(), equalTo("mid.1457764197618:41d102a3e1ae206a38"));
-
-        verifyZeroInteractions(mockAttachmentMessageEventHandler, mockOptInEventHandler,
-                mockQuickReplyMessageEventHandler, mockTextMessageEventHandler, mockPostbackEventHandler,
-                mockAccountLinkingEventHandler, mockMessageReadEventHandler, mockMessageDeliveredEventHandler,
-                mockFallbackEventHandler);
+        final MessageEchoEvent messageEchoEvent = event.asMessageEchoEvent();
+        assertThat(messageEchoEvent.senderId(), equalTo("PAGE_ID"));
+        assertThat(messageEchoEvent.recipientId(), equalTo("USER_ID"));
+        assertThat(messageEchoEvent.timestamp(), equalTo(Instant.ofEpochMilli(1480114700296L)));
+        assertThat(messageEchoEvent.messageId(), equalTo("mid.1457764197618:41d102a3e1ae206a38"));
+        assertThat(messageEchoEvent.appId(), equalTo("1517776481860111"));
+        assertThat(messageEchoEvent.metadata(), equalTo(Optional.of("DEVELOPER_DEFINED_METADATA_STRING")));
     }
 
     @Test
@@ -350,27 +239,21 @@ public class MessengerReceiveClientTest {
                 "\"subtitle\":\"Includes: headset, sensor, remote\"}],\"adjustments\":[{\"name\":\"New Customer Discount\"," +
                 "\"amount\":-50},{\"name\":\"$100 Off Coupon\",\"amount\":-100}]}}]}}]}]}";
 
-        final MessengerReceiveClient messengerReceiveClient = builder.disableSignatureVerification().build();
-
         //when
-        messengerReceiveClient.processCallbackPayload(payload);
+        messenger.onReceiveEvents(payload, null, mockEventHandler);
 
         //then
-        final ArgumentCaptor<EchoMessageEvent> argument = ArgumentCaptor.forClass(EchoMessageEvent.class);
-        verify(mockEchoMessageEventHandler).handle(argument.capture());
-        final EchoMessageEvent echoMessageEvent = argument.getValue();
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
 
-        assertThat(echoMessageEvent.getSender().getId(), equalTo("17175299999834678"));
-        assertThat(echoMessageEvent.getRecipient().getId(), equalTo("1256299999730577"));
-        assertThat(echoMessageEvent.getTimestamp(), equalTo(new Date(1480120402725L)));
-        assertThat(echoMessageEvent.getAppId(), equalTo("1559999994822905"));
-        assertThat(echoMessageEvent.getMetadata(), is(nullValue()));
-        assertThat(echoMessageEvent.getMid(), equalTo("mid.1480199999925:83392d9f65"));
-
-        verifyZeroInteractions(mockAttachmentMessageEventHandler, mockOptInEventHandler,
-                mockQuickReplyMessageEventHandler, mockTextMessageEventHandler, mockPostbackEventHandler,
-                mockAccountLinkingEventHandler, mockMessageReadEventHandler, mockMessageDeliveredEventHandler,
-                mockFallbackEventHandler);
+        final MessageEchoEvent messageEchoEvent = event.asMessageEchoEvent();
+        assertThat(messageEchoEvent.senderId(), equalTo("17175299999834678"));
+        assertThat(messageEchoEvent.recipientId(), equalTo("1256299999730577"));
+        assertThat(messageEchoEvent.timestamp(), equalTo(Instant.ofEpochMilli(1480120402725L)));
+        assertThat(messageEchoEvent.messageId(), equalTo("mid.1480199999925:83392d9f65"));
+        assertThat(messageEchoEvent.appId(), equalTo("1559999994822905"));
+        assertThat(messageEchoEvent.metadata(), is(Optional.empty()));
     }
 
     @Test
@@ -400,27 +283,21 @@ public class MessengerReceiveClientTest {
                 "    }]\n" +
                 "}";
 
-        final MessengerReceiveClient messengerReceiveClient = builder.disableSignatureVerification().build();
-
         //when
-        messengerReceiveClient.processCallbackPayload(payload);
+        messenger.onReceiveEvents(payload, null, mockEventHandler);
 
         //then
-        final ArgumentCaptor<QuickReplyMessageEvent> argument = ArgumentCaptor.forClass(QuickReplyMessageEvent.class);
-        verify(mockQuickReplyMessageEventHandler).handle(argument.capture());
-        final QuickReplyMessageEvent quickReplyMessageEvent = argument.getValue();
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
 
-        assertThat(quickReplyMessageEvent.getSender().getId(), equalTo("USER_ID"));
-        assertThat(quickReplyMessageEvent.getRecipient().getId(), equalTo("PAGE_ID"));
-        assertThat(quickReplyMessageEvent.getTimestamp(), equalTo(new Date(1458692752478L)));
-        assertThat(quickReplyMessageEvent.getMid(), equalTo("mid.1457764197618:41d102a3e1ae206a38"));
-        assertThat(quickReplyMessageEvent.getText(), equalTo("hello, world!"));
-        assertThat(quickReplyMessageEvent.getQuickReply().getPayload(), equalTo("DEVELOPER_DEFINED_PAYLOAD"));
-
-        verifyZeroInteractions(mockAttachmentMessageEventHandler, mockOptInEventHandler,
-                mockEchoMessageEventHandler, mockTextMessageEventHandler, mockPostbackEventHandler,
-                mockAccountLinkingEventHandler, mockMessageReadEventHandler, mockMessageDeliveredEventHandler,
-                mockFallbackEventHandler);
+        final QuickReplyMessageEvent quickReplyMessageEvent = event.asQuickReplyMessageEvent();
+        assertThat(quickReplyMessageEvent.senderId(), equalTo("USER_ID"));
+        assertThat(quickReplyMessageEvent.recipientId(), equalTo("PAGE_ID"));
+        assertThat(quickReplyMessageEvent.timestamp(), equalTo(Instant.ofEpochMilli(1458692752478L)));
+        assertThat(quickReplyMessageEvent.messageId(), equalTo("mid.1457764197618:41d102a3e1ae206a38"));
+        assertThat(quickReplyMessageEvent.text(), equalTo("hello, world!"));
+        assertThat(quickReplyMessageEvent.payload(), equalTo("DEVELOPER_DEFINED_PAYLOAD"));
     }
 
     @Test
@@ -447,26 +324,20 @@ public class MessengerReceiveClientTest {
                 "    }]\n" +
                 "}";
 
-        final MessengerReceiveClient messengerReceiveClient = builder.disableSignatureVerification().build();
-
         //when
-        messengerReceiveClient.processCallbackPayload(payload);
+        messenger.onReceiveEvents(payload, null, mockEventHandler);
 
         //then
-        final ArgumentCaptor<TextMessageEvent> argument = ArgumentCaptor.forClass(TextMessageEvent.class);
-        verify(mockTextMessageEventHandler).handle(argument.capture());
-        final TextMessageEvent textMessageEvent = argument.getValue();
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
 
-        assertThat(textMessageEvent.getSender().getId(), equalTo("USER_ID"));
-        assertThat(textMessageEvent.getRecipient().getId(), equalTo("PAGE_ID"));
-        assertThat(textMessageEvent.getTimestamp(), equalTo(new Date(1458692752478L)));
-        assertThat(textMessageEvent.getMid(), equalTo("mid.1457764197618:41d102a3e1ae206a38"));
-        assertThat(textMessageEvent.getText(), equalTo("hello, text message world!"));
-
-        verifyZeroInteractions(mockAttachmentMessageEventHandler, mockOptInEventHandler,
-                mockEchoMessageEventHandler, mockQuickReplyMessageEventHandler, mockPostbackEventHandler,
-                mockAccountLinkingEventHandler, mockMessageReadEventHandler, mockMessageDeliveredEventHandler,
-                mockFallbackEventHandler);
+        final TextMessageEvent textMessageEvent = event.asTextMessageEvent();
+        assertThat(textMessageEvent.senderId(), equalTo("USER_ID"));
+        assertThat(textMessageEvent.recipientId(), equalTo("PAGE_ID"));
+        assertThat(textMessageEvent.timestamp(), equalTo(Instant.ofEpochMilli(1458692752478L)));
+        assertThat(textMessageEvent.messageId(), equalTo("mid.1457764197618:41d102a3e1ae206a38"));
+        assertThat(textMessageEvent.text(), equalTo("hello, text message world!"));
     }
 
     @Test
@@ -478,39 +349,42 @@ public class MessengerReceiveClientTest {
                 "        \"id\": \"PAGE_ID\",\n" +
                 "        \"time\": 1458692752478,\n" +
                 "        \"messaging\": [{\n" +
-                "            \"sender\": {\n" +
-                "                \"id\": \"USER_ID\"\n" +
-                "            },\n" +
-                "            \"recipient\": {\n" +
-                "                \"id\": \"PAGE_ID\"\n" +
-                "            },\n" +
-                "            \"timestamp\": 1458692752478,\n" +
-                "            \"postback\": {\n" +
-                "                \"payload\": \"USER_DEFINED_PAYLOAD\"\n" +
-                "            }\n" +
-                "        }]\n" +
+                "  \"sender\":{\n" +
+                "    \"id\":\"<PSID>\"\n" +
+                "  },\n" +
+                "  \"recipient\":{\n" +
+                "    \"id\":\"<PAGE_ID>\"\n" +
+                "  },\n" +
+                "  \"timestamp\":1458692752478,\n" +
+                "  \"postback\":{\n" +
+                "    \"title\": \"<TITLE_FOR_THE_CTA>\",  \n" +
+                "    \"payload\": \"<USER_DEFINED_PAYLOAD>\",\n" +
+                "    \"referral\": {\n" +
+                "      \"ref\": \"<USER_DEFINED_REFERRAL_PARAM>\",\n" +
+                "      \"source\": \"<SHORTLINK>\",\n" +
+                "      \"type\": \"OPEN_THREAD\"\n" +
+                "    }\n" +
+                "  }\n" +
+                "}]\n" +
                 "    }]\n" +
                 "}";
 
-        final MessengerReceiveClient messengerReceiveClient = builder.disableSignatureVerification().build();
-
         //when
-        messengerReceiveClient.processCallbackPayload(payload);
+        messenger.onReceiveEvents(payload, null, mockEventHandler);
 
         //then
-        final ArgumentCaptor<PostbackEvent> argument = ArgumentCaptor.forClass(PostbackEvent.class);
-        verify(mockPostbackEventHandler).handle(argument.capture());
-        final PostbackEvent postbackEvent = argument.getValue();
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
 
-        assertThat(postbackEvent.getSender().getId(), equalTo("USER_ID"));
-        assertThat(postbackEvent.getRecipient().getId(), equalTo("PAGE_ID"));
-        assertThat(postbackEvent.getTimestamp(), equalTo(new Date(1458692752478L)));
-        assertThat(postbackEvent.getPayload(), equalTo("USER_DEFINED_PAYLOAD"));
-
-        verifyZeroInteractions(mockAttachmentMessageEventHandler, mockOptInEventHandler,
-                mockEchoMessageEventHandler, mockQuickReplyMessageEventHandler, mockTextMessageEventHandler,
-                mockAccountLinkingEventHandler, mockMessageReadEventHandler, mockMessageDeliveredEventHandler,
-                mockFallbackEventHandler);
+        final PostbackEvent postbackEvent = event.asPostbackEvent();
+        assertThat(postbackEvent.senderId(), equalTo("<PSID>"));
+        assertThat(postbackEvent.recipientId(), equalTo("<PAGE_ID>"));
+        assertThat(postbackEvent.timestamp(), equalTo(Instant.ofEpochMilli(1458692752478L)));
+        assertThat(postbackEvent.title(), equalTo("<TITLE_FOR_THE_CTA>"));
+        assertThat(postbackEvent.payload(), equalTo(Optional.of("<USER_DEFINED_PAYLOAD>")));
+        assertThat(postbackEvent.referral(), equalTo(Optional.of(new Referral("<SHORTLINK>",
+                "OPEN_THREAD", "<USER_DEFINED_REFERRAL_PARAM>", null))));
     }
 
     @Test
@@ -537,26 +411,20 @@ public class MessengerReceiveClientTest {
                 "    }]\n" +
                 "}";
 
-        final MessengerReceiveClient messengerReceiveClient = builder.disableSignatureVerification().build();
-
         //when
-        messengerReceiveClient.processCallbackPayload(payload);
+        messenger.onReceiveEvents(payload, null, mockEventHandler);
 
         //then
-        final ArgumentCaptor<AccountLinkingEvent> argument = ArgumentCaptor.forClass(AccountLinkingEvent.class);
-        verify(mockAccountLinkingEventHandler).handle(argument.capture());
-        final AccountLinkingEvent accountLinkingEvent = argument.getValue();
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
 
-        assertThat(accountLinkingEvent.getSender().getId(), equalTo("USER_ID"));
-        assertThat(accountLinkingEvent.getRecipient().getId(), equalTo("PAGE_ID"));
-        assertThat(accountLinkingEvent.getTimestamp(), equalTo(new Date(1234567890L)));
-        assertThat(accountLinkingEvent.getStatus(), equalTo(AccountLinkingEvent.AccountLinkingStatus.LINKED));
-        assertThat(accountLinkingEvent.getAuthorizationCode(), equalTo("PASS_THROUGH_AUTHORIZATION_CODE"));
-
-        verifyZeroInteractions(mockAttachmentMessageEventHandler, mockOptInEventHandler,
-                mockEchoMessageEventHandler, mockQuickReplyMessageEventHandler, mockTextMessageEventHandler,
-                mockPostbackEventHandler, mockMessageReadEventHandler, mockMessageDeliveredEventHandler,
-                mockFallbackEventHandler);
+        final AccountLinkingEvent accountLinkingEvent = event.asAccountLinkingEvent();
+        assertThat(accountLinkingEvent.senderId(), equalTo("USER_ID"));
+        assertThat(accountLinkingEvent.recipientId(), equalTo("PAGE_ID"));
+        assertThat(accountLinkingEvent.timestamp(), equalTo(Instant.ofEpochMilli(1234567890L)));
+        assertThat(accountLinkingEvent.status(), equalTo(AccountLinkingEvent.Status.LINKED));
+        assertThat(accountLinkingEvent.authorizationCode(), equalTo(Optional.of("PASS_THROUGH_AUTHORIZATION_CODE")));
     }
 
     @Test
@@ -582,26 +450,20 @@ public class MessengerReceiveClientTest {
                 "    }]\n" +
                 "}";
 
-        final MessengerReceiveClient messengerReceiveClient = builder.disableSignatureVerification().build();
-
         //when
-        messengerReceiveClient.processCallbackPayload(payload);
+        messenger.onReceiveEvents(payload, null, mockEventHandler);
 
         //then
-        final ArgumentCaptor<AccountLinkingEvent> argument = ArgumentCaptor.forClass(AccountLinkingEvent.class);
-        verify(mockAccountLinkingEventHandler).handle(argument.capture());
-        final AccountLinkingEvent accountLinkingEvent = argument.getValue();
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
 
-        assertThat(accountLinkingEvent.getSender().getId(), equalTo("USER_ID"));
-        assertThat(accountLinkingEvent.getRecipient().getId(), equalTo("PAGE_ID"));
-        assertThat(accountLinkingEvent.getTimestamp(), equalTo(new Date(1234567890L)));
-        assertThat(accountLinkingEvent.getStatus(), equalTo(AccountLinkingEvent.AccountLinkingStatus.UNLINKED));
-        assertThat(accountLinkingEvent.getAuthorizationCode(), nullValue());
-
-        verifyZeroInteractions(mockAttachmentMessageEventHandler, mockOptInEventHandler,
-                mockEchoMessageEventHandler, mockQuickReplyMessageEventHandler, mockTextMessageEventHandler,
-                mockPostbackEventHandler, mockMessageReadEventHandler, mockMessageDeliveredEventHandler,
-                mockFallbackEventHandler);
+        final AccountLinkingEvent accountLinkingEvent = event.asAccountLinkingEvent();
+        assertThat(accountLinkingEvent.senderId(), equalTo("USER_ID"));
+        assertThat(accountLinkingEvent.recipientId(), equalTo("PAGE_ID"));
+        assertThat(accountLinkingEvent.timestamp(), equalTo(Instant.ofEpochMilli(1234567890L)));
+        assertThat(accountLinkingEvent.status(), equalTo(AccountLinkingEvent.Status.UNLINKED));
+        assertThat(accountLinkingEvent.authorizationCode(), is(Optional.empty()));
     }
 
     @Test
@@ -627,25 +489,19 @@ public class MessengerReceiveClientTest {
                 "    }]\n" +
                 "}";
 
-        final MessengerReceiveClient messengerReceiveClient = builder.disableSignatureVerification().build();
-
         //when
-        messengerReceiveClient.processCallbackPayload(payload);
+        messenger.onReceiveEvents(payload, null, mockEventHandler);
 
         //then
-        final ArgumentCaptor<MessageReadEvent> argument = ArgumentCaptor.forClass(MessageReadEvent.class);
-        verify(mockMessageReadEventHandler).handle(argument.capture());
-        final MessageReadEvent messageReadEvent = argument.getValue();
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
 
-        assertThat(messageReadEvent.getSender().getId(), equalTo("USER_ID"));
-        assertThat(messageReadEvent.getRecipient().getId(), equalTo("PAGE_ID"));
-        assertThat(messageReadEvent.getTimestamp(), equalTo(new Date(1458668856463L)));
-        assertThat(messageReadEvent.getWatermark(), equalTo(new Date(1458668856253L)));
-
-        verifyZeroInteractions(mockAttachmentMessageEventHandler, mockOptInEventHandler,
-                mockEchoMessageEventHandler, mockQuickReplyMessageEventHandler, mockTextMessageEventHandler,
-                mockPostbackEventHandler, mockAccountLinkingEventHandler, mockMessageDeliveredEventHandler,
-                mockFallbackEventHandler);
+        final MessageReadEvent messageReadEvent = event.asMessageReadEvent();
+        assertThat(messageReadEvent.senderId(), equalTo("USER_ID"));
+        assertThat(messageReadEvent.recipientId(), equalTo("PAGE_ID"));
+        assertThat(messageReadEvent.timestamp(), equalTo(Instant.ofEpochMilli(1458668856463L)));
+        assertThat(messageReadEvent.watermark(), equalTo(Instant.ofEpochMilli(1458668856253L)));
     }
 
     @Test
@@ -673,26 +529,20 @@ public class MessengerReceiveClientTest {
                 "    }]\n" +
                 "}";
 
-        final MessengerReceiveClient messengerReceiveClient = builder.disableSignatureVerification().build();
-
         //when
-        messengerReceiveClient.processCallbackPayload(payload);
+        messenger.onReceiveEvents(payload, null, mockEventHandler);
 
         //then
-        final ArgumentCaptor<MessageDeliveredEvent> argument = ArgumentCaptor.forClass(MessageDeliveredEvent.class);
-        verify(mockMessageDeliveredEventHandler).handle(argument.capture());
-        final MessageDeliveredEvent messageDeliveredEvent = argument.getValue();
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
 
-        assertThat(messageDeliveredEvent.getSender().getId(), equalTo("USER_ID"));
-        assertThat(messageDeliveredEvent.getRecipient().getId(), equalTo("PAGE_ID"));
-        assertThat(messageDeliveredEvent.getWatermark(), equalTo(new Date(1458668856253L)));
-        assertThat(messageDeliveredEvent.getMids(), hasSize(1));
-        assertThat(messageDeliveredEvent.getMids().get(0), equalTo("mid.1458668856218:ed81099e15d3f4f233"));
-
-        verifyZeroInteractions(mockAttachmentMessageEventHandler, mockOptInEventHandler,
-                mockEchoMessageEventHandler, mockQuickReplyMessageEventHandler, mockTextMessageEventHandler,
-                mockPostbackEventHandler, mockAccountLinkingEventHandler, mockMessageReadEventHandler,
-                mockFallbackEventHandler);
+        final MessageDeliveredEvent messageDeliveredEvent = event.asMessageDeliveredEvent();
+        assertThat(messageDeliveredEvent.senderId(), equalTo("USER_ID"));
+        assertThat(messageDeliveredEvent.recipientId(), equalTo("PAGE_ID"));
+        assertThat(messageDeliveredEvent.watermark(), equalTo(Instant.ofEpochMilli(1458668856253L)));
+        assertThat(messageDeliveredEvent.messageIds().get(), hasSize(1));
+        assertThat(messageDeliveredEvent.messageIds().get().get(0), equalTo("mid.1458668856218:ed81099e15d3f4f233"));
     }
 
     @Test
@@ -717,75 +567,23 @@ public class MessengerReceiveClientTest {
                 "    }]\n" +
                 "}";
 
-        final MessengerReceiveClient messengerReceiveClient = builder.disableSignatureVerification().build();
-
         //when
-        messengerReceiveClient.processCallbackPayload(payload);
+        messenger.onReceiveEvents(payload, null, mockEventHandler);
 
         //then
-        final ArgumentCaptor<MessageDeliveredEvent> argument = ArgumentCaptor.forClass(MessageDeliveredEvent.class);
-        verify(mockMessageDeliveredEventHandler).handle(argument.capture());
-        final MessageDeliveredEvent messageDeliveredEvent = argument.getValue();
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
 
-        assertThat(messageDeliveredEvent.getSender().getId(), equalTo("USER_ID"));
-        assertThat(messageDeliveredEvent.getRecipient().getId(), equalTo("PAGE_ID"));
-        assertThat(messageDeliveredEvent.getWatermark(), equalTo(new Date(1458668856253L)));
-        assertThat(messageDeliveredEvent.getMids(), is(emptyCollectionOf(String.class)));
-
-        verifyZeroInteractions(mockAttachmentMessageEventHandler, mockOptInEventHandler,
-                mockEchoMessageEventHandler, mockQuickReplyMessageEventHandler, mockTextMessageEventHandler,
-                mockPostbackEventHandler, mockAccountLinkingEventHandler, mockMessageReadEventHandler,
-                mockFallbackEventHandler);
+        final MessageDeliveredEvent messageDeliveredEvent = event.asMessageDeliveredEvent();
+        assertThat(messageDeliveredEvent.senderId(), equalTo("USER_ID"));
+        assertThat(messageDeliveredEvent.recipientId(), equalTo("PAGE_ID"));
+        assertThat(messageDeliveredEvent.watermark(), equalTo(Instant.ofEpochMilli(1458668856253L)));
+        assertThat(messageDeliveredEvent.messageIds().isPresent(), is(false));
     }
 
     @Test
-    public void shouldCallFallbackEventHandlerIfHandlerForConcreteEventIsNotRegistered() throws Exception {
-        //given
-        final String payload = "{\n" +
-                "    \"object\": \"page\",\n" +
-                "    \"entry\": [{\n" +
-                "        \"id\": \"PAGE_ID\",\n" +
-                "        \"time\": 1458692752478,\n" +
-                "        \"messaging\": [{\n" +
-                "            \"sender\": {\n" +
-                "                \"id\": \"USER_ID\"\n" +
-                "            },\n" +
-                "            \"recipient\": {\n" +
-                "                \"id\": \"PAGE_ID\"\n" +
-                "            },\n" +
-                "            \"timestamp\": 1458692752478,\n" +
-                "            \"message\": {\n" +
-                "                \"mid\": \"mid.1457764197618:41d102a3e1ae206a38\",\n" +
-                "                \"text\": \"hello, text message world!\"\n" +
-                "            }\n" +
-                "        }]\n" +
-                "    }]\n" +
-                "}";
-
-        final MessengerReceiveClient messengerReceiveClient = builder
-                .onTextMessageEvent(null)
-                .disableSignatureVerification()
-                .build();
-
-        //when
-        messengerReceiveClient.processCallbackPayload(payload);
-
-        //then
-        final ArgumentCaptor<FallbackEvent> argument = ArgumentCaptor.forClass(FallbackEvent.class);
-        verify(mockFallbackEventHandler).handle(argument.capture());
-        final FallbackEvent fallbackEvent = argument.getValue();
-
-        assertThat(fallbackEvent.getSender().getId(), equalTo("USER_ID"));
-        assertThat(fallbackEvent.getRecipient().getId(), equalTo("PAGE_ID"));
-
-        verifyZeroInteractions(mockAttachmentMessageEventHandler, mockOptInEventHandler,
-                mockEchoMessageEventHandler, mockQuickReplyMessageEventHandler, mockPostbackEventHandler,
-                mockAccountLinkingEventHandler, mockMessageReadEventHandler, mockMessageDeliveredEventHandler,
-                mockTextMessageEventHandler);
-    }
-
-    @Test
-    public void shouldCallFallbackEventHandlerIfMessagingEventTypeIsUnsupported() throws Exception {
+    public void shouldHandleEventTypeThatIsUnsupported() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -807,67 +605,37 @@ public class MessengerReceiveClientTest {
                 "    }]\n" +
                 "}";
 
-        final MessengerReceiveClient messengerReceiveClient = builder
-                .disableSignatureVerification()
-                .build();
-
         //when
-        messengerReceiveClient.processCallbackPayload(payload);
+        messenger.onReceiveEvents(payload, null, mockEventHandler);
 
         //then
-        final ArgumentCaptor<FallbackEvent> argument = ArgumentCaptor.forClass(FallbackEvent.class);
-        verify(mockFallbackEventHandler).handle(argument.capture());
-        final FallbackEvent fallbackEvent = argument.getValue();
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
 
-        assertThat(fallbackEvent.getSender().getId(), equalTo("USER_ID"));
-        assertThat(fallbackEvent.getRecipient().getId(), equalTo("PAGE_ID"));
+        assertThat(event.senderId(), equalTo("USER_ID"));
+        assertThat(event.recipientId(), equalTo("PAGE_ID"));
+        assertThat(event.timestamp(), equalTo(Instant.ofEpochMilli(1458692752478L)));
 
-        verifyZeroInteractions(mockAttachmentMessageEventHandler, mockOptInEventHandler,
-                mockEchoMessageEventHandler, mockQuickReplyMessageEventHandler, mockPostbackEventHandler,
-                mockAccountLinkingEventHandler, mockMessageReadEventHandler, mockMessageDeliveredEventHandler,
-                mockTextMessageEventHandler);
+        assertThat(event.isAccountLinkingEvent(), is(false));
+        assertThat(event.isMessageDeliveredEvent(), is(false));
+        assertThat(event.isMessageEchoEvent(), is(false));
+        assertThat(event.isMessageReadEvent(), is(false));
+        assertThat(event.isOptInEvent(), is(false));
+        assertThat(event.isPostbackEvent(), is(false));
+        assertThat(event.isReferralEvent(), is(false));
+        assertThat(event.isAttachmentMessageEvent(), is(false));
+        assertThat(event.isQuickReplyMessageEvent(), is(false));
+        assertThat(event.isTextMessageEvent(), is(false));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowExceptionIfNoPayloadProvided() throws Exception {
         //given
         final String payload = null;
-        final MessengerReceiveClient messengerReceiveClient = builder.disableSignatureVerification().build();
 
         //when
-        messengerReceiveClient.processCallbackPayload(payload);
-
-        //then - throw exception
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionIfNoSignatureProvidedAndVerificationNotDisabled() throws Exception {
-        //given
-        final String payload = "{\n" +
-                "    \"object\": \"page\",\n" +
-                "    \"entry\": [{\n" +
-                "        \"id\": \"PAGE_ID\",\n" +
-                "        \"time\": 1458692752478,\n" +
-                "        \"messaging\": [{\n" +
-                "            \"sender\": {\n" +
-                "                \"id\": \"USER_ID\"\n" +
-                "            },\n" +
-                "            \"recipient\": {\n" +
-                "                \"id\": \"PAGE_ID\"\n" +
-                "            },\n" +
-                "            \"timestamp\": 1458668856463,\n" +
-                "            \"read\": {\n" +
-                "                \"watermark\": 1458668856253,\n" +
-                "                \"seq\": 38\n" +
-                "            }\n" +
-                "        }]\n" +
-                "    }]\n" +
-                "}";
-
-        final MessengerReceiveClient messengerReceiveClient = builder.build();
-
-        //when
-        messengerReceiveClient.processCallbackPayload(payload);
+        messenger.onReceiveEvents(payload, null, mockEventHandler);
 
         //then - throw exception
     }
@@ -879,19 +647,17 @@ public class MessengerReceiveClientTest {
                 "\"messaging\":[{\"sender\":{\"id\":\"1256217357730577\"},\"recipient\":{\"id\":\"1717527131834678\"}," +
                 "\"timestamp\":1475942721741,\"message\":{\"mid\":\"mid.1475942721728:3b9e3646712f9bed52\"," +
                 "\"seq\":123,\"text\":\"34wrr3wr\"}}]}]}";
-
         final String signature = "sha1=3daa41999293ff66c3eb313e04bcf77861bb0276";
-        final MessengerReceiveClient messengerReceiveClient = builder.build();
 
         //when
-        messengerReceiveClient.processCallbackPayload(payload, signature);
+        messenger.onReceiveEvents(payload, signature, mockEventHandler);
 
         //then
-        final ArgumentCaptor<TextMessageEvent> argument = ArgumentCaptor.forClass(TextMessageEvent.class);
-        verify(mockTextMessageEventHandler).handle(argument.capture());
-        final TextMessageEvent textMessageEvent = argument.getValue();
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
 
-        assertThat(textMessageEvent.getText(), is(equalTo("34wrr3wr")));
+        assertThat(event.asTextMessageEvent().text(), is(equalTo("34wrr3wr")));
     }
 
     @Test(expected = MessengerVerificationException.class)
@@ -901,12 +667,10 @@ public class MessengerReceiveClientTest {
                 "\"messaging\":[{\"sender\":{\"id\":\"1256217357730577\"},\"recipient\":{\"id\":\"1717527131834678\"}," +
                 "\"timestamp\":1475942721741,\"message\":{\"mid\":\"mid.1475942721728:3b9e3646712f9bed52\"," +
                 "\"seq\":123,\"text\":\"CHANGED_TEXT_SO_SIGNATURE_IS_INVALID\"}}]}]}";
-
         final String signature = "sha1=3daa41999293ff66c3eb313e04bcf77861bb0276";
-        final MessengerReceiveClient messengerReceiveClient = builder.build();
 
         //when
-        messengerReceiveClient.processCallbackPayload(payload, signature);
+        messenger.onReceiveEvents(payload, signature, mockEventHandler);
 
         //then - throw exception
     }
@@ -916,14 +680,11 @@ public class MessengerReceiveClientTest {
         //given
         final String mode = "subscribe";
         final String verifyToken = "CUSTOM_VERIFY_TOKEN";
-        final String challenge = "CUSTOM_CHALLENGE";
-        final MessengerReceiveClient messengerReceiveClient = builder.build();
 
         //when
-        final String returnedChallenge = messengerReceiveClient.verifyWebhook(mode, verifyToken, challenge);
+        messenger.verifyWebhook(mode, verifyToken);
 
-        //then
-        assertThat(returnedChallenge, is(equalTo(challenge)));
+        //then - no exception is thrown
     }
 
     @Test(expected = MessengerVerificationException.class)
@@ -931,11 +692,9 @@ public class MessengerReceiveClientTest {
         //given
         final String mode = "INVALID_MODE";
         final String verifyToken = "CUSTOM_VERIFY_TOKEN";
-        final String challenge = "CUSTOM_CHALLENGE";
-        final MessengerReceiveClient messengerReceiveClient = builder.build();
 
         //when
-        messengerReceiveClient.verifyWebhook(mode, verifyToken, challenge);
+        messenger.verifyWebhook(mode, verifyToken);
 
         //then - throw exception
     }
@@ -945,11 +704,9 @@ public class MessengerReceiveClientTest {
         //given
         final String mode = "subscribe";
         final String verifyToken = "INVALID_VERIFY_TOKEN";
-        final String challenge = "CUSTOM_CHALLENGE";
-        final MessengerReceiveClient messengerReceiveClient = builder.build();
 
         //when
-        messengerReceiveClient.verifyWebhook(mode, verifyToken, challenge);
+        messenger.verifyWebhook(mode, verifyToken);
 
         //then - throw exception
     }

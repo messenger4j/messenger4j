@@ -14,104 +14,104 @@ public interface MessengerSendClient {
     /*
         SENDER_ACTION
      */
-    MessengerResponse sendSenderAction(String recipientId, SenderAction senderAction)
+    MessageResponse sendSenderAction(String recipientId, SenderAction senderAction)
             throws MessengerApiException, MessengerIOException;
 
-    MessengerResponse sendSenderAction(Recipient recipient, NotificationType notificationType, SenderAction senderAction)
+    MessageResponse sendSenderAction(Recipient recipient, NotificationType notificationType, SenderAction senderAction)
             throws MessengerApiException, MessengerIOException;
 
     /*
         TEXT_MESSAGE
      */
-    MessengerResponse sendTextMessage(String recipientId, String text)
+    MessageResponse sendTextMessage(String recipientId, String text)
             throws MessengerApiException, MessengerIOException;
 
-    MessengerResponse sendTextMessage(String recipientId, String text, List<QuickReply> quickReplies)
+    MessageResponse sendTextMessage(String recipientId, String text, List<QuickReply> quickReplies)
             throws MessengerApiException, MessengerIOException;
 
-    MessengerResponse sendTextMessage(Recipient recipient, NotificationType notificationType, String text)
+    MessageResponse sendTextMessage(Recipient recipient, NotificationType notificationType, String text)
             throws MessengerApiException, MessengerIOException;
 
-    MessengerResponse sendTextMessage(Recipient recipient, NotificationType notificationType, String text,
-                                      List<QuickReply> quickReplies)
+    MessageResponse sendTextMessage(Recipient recipient, NotificationType notificationType, String text,
+                                    List<QuickReply> quickReplies)
             throws MessengerApiException, MessengerIOException;
 
-    MessengerResponse sendTextMessage(Recipient recipient, NotificationType notificationType, String text,
-                                      String metadata)
+    MessageResponse sendTextMessage(Recipient recipient, NotificationType notificationType, String text,
+                                    String metadata)
             throws MessengerApiException, MessengerIOException;
 
-    MessengerResponse sendTextMessage(Recipient recipient, NotificationType notificationType, String text,
-                                      List<QuickReply> quickReplies, String metadata)
+    MessageResponse sendTextMessage(Recipient recipient, NotificationType notificationType, String text,
+                                    List<QuickReply> quickReplies, String metadata)
             throws MessengerApiException, MessengerIOException;
 
     /*
         IMAGE_ATTACHMENT
      */
-    MessengerResponse sendImageAttachment(String recipientId, String imageUrl)
+    MessageResponse sendImageAttachment(String recipientId, String imageUrl)
             throws MessengerApiException, MessengerIOException;
 
-    MessengerResponse sendImageAttachment(String recipientId, String imageUrl, List<QuickReply> quickReplies)
+    MessageResponse sendImageAttachment(String recipientId, String imageUrl, List<QuickReply> quickReplies)
             throws MessengerApiException, MessengerIOException;
 
     /*
         AUDIO_ATTACHMENT
      */
-    MessengerResponse sendAudioAttachment(String recipientId, String audioUrl)
+    MessageResponse sendAudioAttachment(String recipientId, String audioUrl)
             throws MessengerApiException, MessengerIOException;
 
     /*
         VIDEO_ATTACHMENT
      */
-    MessengerResponse sendVideoAttachment(String recipientId, String videoUrl)
+    MessageResponse sendVideoAttachment(String recipientId, String videoUrl)
             throws MessengerApiException, MessengerIOException;
 
     /*
         FILE_ATTACHMENT
      */
-    MessengerResponse sendFileAttachment(String recipientId, String fileUrl)
+    MessageResponse sendFileAttachment(String recipientId, String fileUrl)
             throws MessengerApiException, MessengerIOException;
 
     /*
         BINARY_ATTACHMENT
     */
-    MessengerResponse sendBinaryAttachment(String recipientId, BinaryAttachment binaryAttachment)
+    MessageResponse sendBinaryAttachment(String recipientId, BinaryAttachment binaryAttachment)
             throws MessengerApiException, MessengerIOException;
 
-    MessengerResponse sendBinaryAttachment(Recipient recipient, NotificationType notificationType,
-                                           BinaryAttachment binaryAttachment)
+    MessageResponse sendBinaryAttachment(Recipient recipient, NotificationType notificationType,
+                                         BinaryAttachment binaryAttachment)
             throws MessengerApiException, MessengerIOException;
 
-    MessengerResponse sendBinaryAttachment(Recipient recipient, NotificationType notificationType,
-                                           BinaryAttachment binaryAttachment, List<QuickReply> quickReplies)
+    MessageResponse sendBinaryAttachment(Recipient recipient, NotificationType notificationType,
+                                         BinaryAttachment binaryAttachment, List<QuickReply> quickReplies)
             throws MessengerApiException, MessengerIOException;
 
-    MessengerResponse sendBinaryAttachment(Recipient recipient, NotificationType notificationType,
-                                           BinaryAttachment binaryAttachment, String metadata)
+    MessageResponse sendBinaryAttachment(Recipient recipient, NotificationType notificationType,
+                                         BinaryAttachment binaryAttachment, String metadata)
             throws MessengerApiException, MessengerIOException;
 
-    MessengerResponse sendBinaryAttachment(Recipient recipient, NotificationType notificationType,
-                                           BinaryAttachment binaryAttachment, List<QuickReply> quickReplies,
-                                           String metadata)
+    MessageResponse sendBinaryAttachment(Recipient recipient, NotificationType notificationType,
+                                         BinaryAttachment binaryAttachment, List<QuickReply> quickReplies,
+                                         String metadata)
             throws MessengerApiException, MessengerIOException;
 
     /*
         TEMPLATE
      */
-    MessengerResponse sendTemplate(String recipientId, Template template)
+    MessageResponse sendTemplate(String recipientId, Template template)
             throws MessengerApiException, MessengerIOException;
 
-    MessengerResponse sendTemplate(Recipient recipient, NotificationType notificationType, Template template)
+    MessageResponse sendTemplate(Recipient recipient, NotificationType notificationType, Template template)
             throws MessengerApiException, MessengerIOException;
 
-    MessengerResponse sendTemplate(Recipient recipient, NotificationType notificationType, Template template,
-                                   List<QuickReply> quickReplies)
+    MessageResponse sendTemplate(Recipient recipient, NotificationType notificationType, Template template,
+                                 List<QuickReply> quickReplies)
             throws MessengerApiException, MessengerIOException;
 
-    MessengerResponse sendTemplate(Recipient recipient, NotificationType notificationType, Template template,
-                                   String metadata)
+    MessageResponse sendTemplate(Recipient recipient, NotificationType notificationType, Template template,
+                                 String metadata)
             throws MessengerApiException, MessengerIOException;
 
-    MessengerResponse sendTemplate(Recipient recipient, NotificationType notificationType, Template template,
-                                   List<QuickReply> quickReplies, String metadata)
+    MessageResponse sendTemplate(Recipient recipient, NotificationType notificationType, Template template,
+                                 List<QuickReply> quickReplies, String metadata)
             throws MessengerApiException, MessengerIOException;
 }

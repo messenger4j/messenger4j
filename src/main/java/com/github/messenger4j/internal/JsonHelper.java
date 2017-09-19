@@ -4,7 +4,9 @@ package com.github.messenger4j.internal;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import java.time.Instant;
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * <b>Internal</b> helper class used to support processing of JSON structures.
@@ -55,6 +57,11 @@ public final class JsonHelper {
     public static Date getPropertyAsDate(JsonObject jsonObject, Constants... propertyPath) {
         final Long longValue = getPropertyAsLong(jsonObject, propertyPath);
         return longValue == null ? null : new Date(longValue);
+    }
+
+    public static Optional<Instant> getPropertyAsInstant(JsonObject jsonObject, Constants... propertyPath) {
+        final Long longValue = getPropertyAsLong(jsonObject, propertyPath);
+        return Optional.ofNullable(longValue).map(Instant::ofEpochMilli);
     }
 
     public static Double getPropertyAsDouble(JsonObject jsonObject, Constants... propertyPath) {
@@ -128,7 +135,11 @@ public final class JsonHelper {
         PROP_PROFILE_PIC("profile_pic"),
         PROP_LOCALE("locale"),
         PROP_TIMEZONE("timezone"),
-        PROP_GENDER("gender");
+        PROP_GENDER("gender"),
+        PROP_TITLE("title"),
+        PROP_REFERRAL("referral"),
+        PROP_SOURCE("source"),
+        PROP_AD_ID("ad_id");
 
         private final String value;
 

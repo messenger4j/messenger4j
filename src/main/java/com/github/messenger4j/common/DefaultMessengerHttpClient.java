@@ -11,7 +11,7 @@ import okhttp3.Response;
  * @author Max Grabenhorst
  * @since 0.6.0
  */
-final class DefaultMessengerHttpClient implements MessengerHttpClient {
+public final class DefaultMessengerHttpClient implements MessengerHttpClient {
 
     private static final String APPLICATION_JSON_CHARSET_UTF_8 = "application/json; charset=utf-8";
 

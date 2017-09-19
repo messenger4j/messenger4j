@@ -2,6 +2,10 @@ package com.github.messenger4j.common;
 
 import static com.google.gson.FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES;
 
+import com.github.messenger4j.v3.Message;
+import com.github.messenger4j.v3.MessageSerializer;
+import com.github.messenger4j.v3.RichMedia;
+import com.github.messenger4j.v3.RichMediaSerializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -25,15 +29,17 @@ import java.util.Map;
  * @author Andriy Koretskyy
  * @since 0.8.0
  */
-final class GsonFactory {
+public final class GsonFactory {
 
     private GsonFactory() {
     }
 
-    static Gson createGson() {
+    public static Gson createGson() {
         return new GsonBuilder()
                 .registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory())
                 .registerTypeAdapter(Float.class, new FloatSerializer())
+                .registerTypeAdapter(Message.class, new MessageSerializer())
+                .registerTypeAdapter(RichMedia.class, new RichMediaSerializer())
                 .setFieldNamingPolicy(LOWER_CASE_WITH_UNDERSCORES)
                 .create();
     }

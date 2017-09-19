@@ -1,10 +1,10 @@
 package com.github.messenger4j.receive;
 
-import com.github.messenger4j.internal.PreConditions;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import lombok.NonNull;
 
 /**
  * The {@code SignatureVerifier} is used to verify the provided signature of the payload in order to ensure
@@ -13,7 +13,7 @@ import javax.crypto.spec.SecretKeySpec;
  * @author Max Grabenhorst
  * @since 0.6.0
  */
-final class SignatureVerifier {
+public final class SignatureVerifier {
 
     private static final String HMAC_SHA1 = "HmacSHA1";
     private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
@@ -29,10 +29,8 @@ final class SignatureVerifier {
      * @param appSecret the {@code Application Secret} of the Facebook App
      * @return {@code true} if the verification was successful, otherwise {@code false}
      */
-    static boolean isSignatureValid(String payload, String signature, String appSecret) {
-        PreConditions.notNullOrBlank(payload, "payload");
-        PreConditions.notNullOrBlank(signature, "signature");
-        PreConditions.notNullOrBlank(appSecret, "appSecret");
+    public static boolean isSignatureValid(@NonNull String payload, @NonNull String signature,
+                                           @NonNull String appSecret) {
         try {
             final Mac mac = Mac.getInstance(HMAC_SHA1);
             mac.init(new SecretKeySpec(appSecret.getBytes(), HMAC_SHA1));

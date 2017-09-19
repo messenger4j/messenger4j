@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * @author Max Grabenhorst
  * @since 0.6.0
  */
-final class MessengerSendClientImpl extends MessengerRestClientAbstract<MessagingPayload, MessengerResponse>
+final class MessengerSendClientImpl extends MessengerRestClientAbstract<MessagingPayload, MessageResponse>
         implements MessengerSendClient {
 
     private static final String FB_GRAPH_API_URL = "https://graph.facebook.com/v2.8/me/messages?access_token=%s";
@@ -32,7 +32,7 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendSenderAction(String recipientId, SenderAction senderAction)
+    public MessageResponse sendSenderAction(String recipientId, SenderAction senderAction)
             throws MessengerApiException, MessengerIOException {
 
         final MessagingPayload payload = MessagingPayload.newBuilder(buildRecipient(recipientId))
@@ -42,8 +42,8 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendSenderAction(Recipient recipient, NotificationType notificationType,
-                                              SenderAction senderAction)
+    public MessageResponse sendSenderAction(Recipient recipient, NotificationType notificationType,
+                                            SenderAction senderAction)
             throws MessengerApiException, MessengerIOException {
 
         final MessagingPayload payload = MessagingPayload.newBuilder(recipient)
@@ -54,7 +54,7 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendTextMessage(String recipientId, String text)
+    public MessageResponse sendTextMessage(String recipientId, String text)
             throws MessengerApiException, MessengerIOException {
 
         final MessagingPayload payload = MessagingPayload.newBuilder(buildRecipient(recipientId))
@@ -64,7 +64,7 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendTextMessage(String recipientId, String text, List<QuickReply> quickReplies)
+    public MessageResponse sendTextMessage(String recipientId, String text, List<QuickReply> quickReplies)
             throws MessengerApiException, MessengerIOException {
 
         final MessagingPayload payload = MessagingPayload.newBuilder(buildRecipient(recipientId))
@@ -74,7 +74,7 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendTextMessage(Recipient recipient, NotificationType notificationType, String text)
+    public MessageResponse sendTextMessage(Recipient recipient, NotificationType notificationType, String text)
             throws MessengerApiException, MessengerIOException {
 
         final MessagingPayload payload = MessagingPayload.newBuilder(recipient)
@@ -85,8 +85,8 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendTextMessage(Recipient recipient, NotificationType notificationType, String text,
-                                             List<QuickReply> quickReplies)
+    public MessageResponse sendTextMessage(Recipient recipient, NotificationType notificationType, String text,
+                                           List<QuickReply> quickReplies)
             throws MessengerApiException, MessengerIOException {
 
         final MessagingPayload payload = MessagingPayload.newBuilder(recipient)
@@ -97,8 +97,8 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendTextMessage(Recipient recipient, NotificationType notificationType, String text,
-                                             String metadata)
+    public MessageResponse sendTextMessage(Recipient recipient, NotificationType notificationType, String text,
+                                           String metadata)
             throws MessengerApiException, MessengerIOException {
 
         final MessagingPayload payload = MessagingPayload.newBuilder(recipient)
@@ -109,8 +109,8 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendTextMessage(Recipient recipient, NotificationType notificationType, String text,
-                                             List<QuickReply> quickReplies, String metadata)
+    public MessageResponse sendTextMessage(Recipient recipient, NotificationType notificationType, String text,
+                                           List<QuickReply> quickReplies, String metadata)
             throws MessengerApiException, MessengerIOException {
 
         final MessagingPayload payload = MessagingPayload.newBuilder(recipient)
@@ -121,7 +121,7 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendImageAttachment(String recipientId, String imageUrl)
+    public MessageResponse sendImageAttachment(String recipientId, String imageUrl)
             throws MessengerApiException, MessengerIOException {
 
         final BinaryAttachment imageAttachment = BinaryAttachment.newBuilder(BinaryAttachment.Type.IMAGE)
@@ -131,7 +131,7 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendImageAttachment(String recipientId, String imageUrl, List<QuickReply> quickReplies)
+    public MessageResponse sendImageAttachment(String recipientId, String imageUrl, List<QuickReply> quickReplies)
             throws MessengerApiException, MessengerIOException {
 
         final BinaryAttachment imageAttachment = BinaryAttachment.newBuilder(BinaryAttachment.Type.IMAGE)
@@ -144,7 +144,7 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendAudioAttachment(String recipientId, String audioUrl)
+    public MessageResponse sendAudioAttachment(String recipientId, String audioUrl)
             throws MessengerApiException, MessengerIOException {
 
         final BinaryAttachment audioAttachment = BinaryAttachment.newBuilder(BinaryAttachment.Type.AUDIO)
@@ -154,7 +154,7 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendVideoAttachment(String recipientId, String videoUrl)
+    public MessageResponse sendVideoAttachment(String recipientId, String videoUrl)
             throws MessengerApiException, MessengerIOException {
 
         final BinaryAttachment videoAttachment = BinaryAttachment.newBuilder(BinaryAttachment.Type.VIDEO)
@@ -164,7 +164,7 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendFileAttachment(String recipientId, String fileUrl)
+    public MessageResponse sendFileAttachment(String recipientId, String fileUrl)
             throws MessengerApiException, MessengerIOException {
 
         final BinaryAttachment fileAttachment = BinaryAttachment.newBuilder(BinaryAttachment.Type.FILE)
@@ -174,7 +174,7 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendBinaryAttachment(String recipientId, BinaryAttachment binaryAttachment)
+    public MessageResponse sendBinaryAttachment(String recipientId, BinaryAttachment binaryAttachment)
             throws MessengerApiException, MessengerIOException {
 
         final MessagingPayload payload = MessagingPayload.newBuilder(buildRecipient(recipientId))
@@ -184,8 +184,8 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendBinaryAttachment(Recipient recipient, NotificationType notificationType,
-                                                  BinaryAttachment binaryAttachment)
+    public MessageResponse sendBinaryAttachment(Recipient recipient, NotificationType notificationType,
+                                                BinaryAttachment binaryAttachment)
             throws MessengerApiException, MessengerIOException {
 
         final MessagingPayload payload = MessagingPayload.newBuilder(recipient)
@@ -196,8 +196,8 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendBinaryAttachment(Recipient recipient, NotificationType notificationType,
-                                                  BinaryAttachment binaryAttachment, List<QuickReply> quickReplies)
+    public MessageResponse sendBinaryAttachment(Recipient recipient, NotificationType notificationType,
+                                                BinaryAttachment binaryAttachment, List<QuickReply> quickReplies)
             throws MessengerApiException, MessengerIOException {
 
         checkBinaryAttachmentTypeUsageWithQuickReplies(binaryAttachment);
@@ -209,8 +209,8 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendBinaryAttachment(Recipient recipient, NotificationType notificationType,
-                                                  BinaryAttachment binaryAttachment, String metadata)
+    public MessageResponse sendBinaryAttachment(Recipient recipient, NotificationType notificationType,
+                                                BinaryAttachment binaryAttachment, String metadata)
             throws MessengerApiException, MessengerIOException {
 
         final MessagingPayload payload = MessagingPayload.newBuilder(recipient)
@@ -221,9 +221,9 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendBinaryAttachment(Recipient recipient, NotificationType notificationType,
-                                                  BinaryAttachment binaryAttachment, List<QuickReply> quickReplies,
-                                                  String metadata)
+    public MessageResponse sendBinaryAttachment(Recipient recipient, NotificationType notificationType,
+                                                BinaryAttachment binaryAttachment, List<QuickReply> quickReplies,
+                                                String metadata)
             throws MessengerApiException, MessengerIOException {
 
         checkBinaryAttachmentTypeUsageWithQuickReplies(binaryAttachment);
@@ -240,7 +240,7 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendTemplate(String recipientId, Template template)
+    public MessageResponse sendTemplate(String recipientId, Template template)
             throws MessengerApiException, MessengerIOException {
 
         final MessagingPayload payload = MessagingPayload.newBuilder(buildRecipient(recipientId))
@@ -250,7 +250,7 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendTemplate(Recipient recipient, NotificationType notificationType, Template template)
+    public MessageResponse sendTemplate(Recipient recipient, NotificationType notificationType, Template template)
             throws MessengerApiException, MessengerIOException {
 
         final MessagingPayload payload = MessagingPayload.newBuilder(recipient)
@@ -261,8 +261,8 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendTemplate(Recipient recipient, NotificationType notificationType, Template template,
-                                          List<QuickReply> quickReplies)
+    public MessageResponse sendTemplate(Recipient recipient, NotificationType notificationType, Template template,
+                                        List<QuickReply> quickReplies)
             throws MessengerApiException, MessengerIOException {
 
         final MessagingPayload payload = MessagingPayload.newBuilder(recipient)
@@ -273,8 +273,8 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendTemplate(Recipient recipient, NotificationType notificationType, Template template,
-                                          String metadata)
+    public MessageResponse sendTemplate(Recipient recipient, NotificationType notificationType, Template template,
+                                        String metadata)
             throws MessengerApiException, MessengerIOException {
 
         final MessagingPayload payload = MessagingPayload.newBuilder(recipient)
@@ -285,8 +285,8 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    public MessengerResponse sendTemplate(Recipient recipient, NotificationType notificationType, Template template,
-                                          List<QuickReply> quickReplies, String metadata)
+    public MessageResponse sendTemplate(Recipient recipient, NotificationType notificationType, Template template,
+                                        List<QuickReply> quickReplies, String metadata)
             throws MessengerApiException, MessengerIOException {
 
         final MessagingPayload payload = MessagingPayload.newBuilder(recipient)
@@ -296,7 +296,7 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
         return sendPayload(payload);
     }
 
-    private MessengerResponse sendPayload(MessagingPayload payload) throws MessengerApiException, MessengerIOException {
+    private MessageResponse sendPayload(MessagingPayload payload) throws MessengerApiException, MessengerIOException {
         return doRequest(POST, this.requestUrl, payload);
     }
 
@@ -305,7 +305,7 @@ final class MessengerSendClientImpl extends MessengerRestClientAbstract<Messagin
     }
 
     @Override
-    protected MessengerResponse responseFromJson(JsonObject responseJsonObject) {
-        return MessengerResponse.fromJson(responseJsonObject);
+    protected MessageResponse responseFromJson(JsonObject responseJsonObject) {
+        return MessageResponse.fromJson(responseJsonObject);
     }
 }

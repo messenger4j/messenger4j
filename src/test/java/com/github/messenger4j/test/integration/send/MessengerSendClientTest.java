@@ -1,6 +1,8 @@
 package com.github.messenger4j.test.integration.send;
 
 import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.POST;
+import static com.github.messenger4j.v3.RichMedia.Type.IMAGE;
+import static com.github.messenger4j.v3.RichMedia.Type.VIDEO;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -13,15 +15,12 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.github.messenger4j.MessengerPlatform;
 import com.github.messenger4j.common.MessengerHttpClient;
 import com.github.messenger4j.common.MessengerHttpClient.HttpMethod;
 import com.github.messenger4j.common.MessengerHttpClient.HttpResponse;
 import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.exceptions.MessengerApiException;
-import com.github.messenger4j.send.BinaryAttachment;
-import com.github.messenger4j.send.MessengerResponse;
-import com.github.messenger4j.send.MessengerSendClient;
+import com.github.messenger4j.send.MessageResponse;
 import com.github.messenger4j.send.NotificationType;
 import com.github.messenger4j.send.QuickReply;
 import com.github.messenger4j.send.Recipient;
@@ -31,9 +30,15 @@ import com.github.messenger4j.send.templates.ButtonTemplate;
 import com.github.messenger4j.send.templates.GenericTemplate;
 import com.github.messenger4j.send.templates.ListTemplate;
 import com.github.messenger4j.send.templates.ReceiptTemplate;
+import com.github.messenger4j.v3.Message;
+import com.github.messenger4j.v3.MessagePayload;
+import com.github.messenger4j.v3.Messenger;
+import com.github.messenger4j.v3.RichMedia;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
  * @author Max Grabenhorst
@@ -43,9 +48,9 @@ public class MessengerSendClientTest {
 
     private static final String PAGE_ACCESS_TOKEN = "PAGE_ACCESS_TOKEN";
 
-    private MessengerSendClient messengerSendClient;
-    private MessengerHttpClient mockHttpClient = mock(MessengerHttpClient.class);
+    private Messenger messenger;
 
+    private final MessengerHttpClient mockHttpClient = mock(MessengerHttpClient.class);
     private final HttpResponse fakeResponse = new HttpResponse(200, "{\n" +
             "  \"recipient_id\": \"USER_ID\",\n" +
             "  \"message_id\": \"mid.1473372944816:94f72b88c597657974\"\n" +
@@ -54,9 +59,7 @@ public class MessengerSendClientTest {
     @Before
     public void beforeEach() throws Exception {
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(fakeResponse);
-        messengerSendClient = MessengerPlatform.newSendClientBuilder(PAGE_ACCESS_TOKEN)
-                .httpClient(mockHttpClient)
-                .build();
+        messenger = Messenger.create(PAGE_ACCESS_TOKEN, "test", "test", mockHttpClient);
     }
 
     @Test
@@ -66,12 +69,18 @@ public class MessengerSendClientTest {
         final SenderAction senderAction = SenderAction.MARK_SEEN;
 
         //when
-        messengerSendClient.sendSenderAction(recipientId, senderAction);
+        final MessagePayload messagePayload = MessagePayload.newBuilder()
+                .recipientId(recipientId)
+                .senderAction(senderAction)
+                .build();
+        messenger.send(messagePayload);
 
         //then
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
                 + "\"sender_action\":\"mark_seen\"}";
-        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
 
     @Test
@@ -81,12 +90,18 @@ public class MessengerSendClientTest {
         final String text = "Hello Messenger Platform";
 
         //when
-        messengerSendClient.sendTextMessage(recipientId, text);
+        final MessagePayload messagePayload = MessagePayload.newBuilder()
+                .recipientId(recipientId)
+                .message(Message.create(text))
+                .build();
+        messenger.send(messagePayload);
 
         //then
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
                 + "\"message\":{\"text\":\"Hello Messenger Platform\"}}";
-        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
 
     @Test
@@ -101,9 +116,16 @@ public class MessengerSendClientTest {
                 .build();
 
         //when
-        messengerSendClient.sendTextMessage(recipient, notificationType, text, quickReplies);
+        final Message message = Message.newBuilder().text(text).quickReplies(quickReplies).build();
+        final MessagePayload messagePayload = MessagePayload.newBuilder()
+                .recipient(recipient)
+                .message(message)
+                .notificationType(notificationType)
+                .build();
+        messenger.send(messagePayload);
 
         //then
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
                 + "\"notification_type\":\"SILENT_PUSH\","
                 + "\"message\":{\"text\":\"Pick a color:\","
@@ -111,7 +133,8 @@ public class MessengerSendClientTest {
                 + "{\"content_type\":\"text\",\"title\":\"Red\",\"payload\":\"PAYLOAD_FOR_PICKING_RED\"},"
                 + "{\"content_type\":\"text\",\"title\":\"Green\",\"payload\":\"PAYLOAD_FOR_PICKING_GREEN\"}"
                 + "]}}";
-        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
 
     @Test
@@ -123,16 +146,24 @@ public class MessengerSendClientTest {
         final String metadata = "DEVELOPER_DEFINED_METADATA";
 
         //when
-        messengerSendClient.sendTextMessage(recipient, notificationType, text, metadata);
+        final Message message = Message.newBuilder().text(text).metadata(metadata).build();
+        final MessagePayload messagePayload = MessagePayload.newBuilder()
+                .recipient(recipient)
+                .message(message)
+                .notificationType(notificationType)
+                .build();
+        messenger.send(messagePayload);
 
         //then
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
                 + "\"notification_type\":\"SILENT_PUSH\","
                 + "\"message\":{"
                 + "\"text\":\"Hello Messenger Platform\","
                 + "\"metadata\":\"DEVELOPER_DEFINED_METADATA\""
                 + "}}";
-        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
 
     @Test
@@ -142,15 +173,22 @@ public class MessengerSendClientTest {
         final String imageUrl = "https://petersapparel.com/img/shirt.png";
 
         //when
-        messengerSendClient.sendImageAttachment(recipientId, imageUrl);
+        final Message message = Message.create(RichMedia.createByUrl(IMAGE, imageUrl));
+        final MessagePayload messagePayload = MessagePayload.newBuilder()
+                .recipientId(recipientId)
+                .message(message)
+                .build();
+        messenger.send(messagePayload);
 
         //then
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
                 + "\"message\":{\"attachment\":{"
                 + "\"type\":\"image\","
                 + "\"payload\":{\"url\":\"https://petersapparel.com/img/shirt.png\"}"
                 + "}}}";
-        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
 
     @Test
@@ -158,22 +196,27 @@ public class MessengerSendClientTest {
         //given
         final Recipient recipient = Recipient.newBuilder().recipientId("USER_ID").build();
         final NotificationType notificationType = NotificationType.NO_PUSH;
-        final BinaryAttachment reusableImageAttachment = BinaryAttachment.newBuilder(BinaryAttachment.Type.IMAGE)
-                .url("https://petersapparel.com/img/shirt.png")
-                .isReusable(true)
-                .build();
+        final String imageUrl = "https://petersapparel.com/img/shirt.png";
 
         //when
-        messengerSendClient.sendBinaryAttachment(recipient, notificationType, reusableImageAttachment);
+        final RichMedia richMedia = RichMedia.createByUrl(IMAGE, imageUrl, true);
+        final MessagePayload messagePayload = MessagePayload.newBuilder()
+                .recipient(recipient)
+                .message(Message.create(richMedia))
+                .notificationType(notificationType)
+                .build();
+        messenger.send(messagePayload);
 
         //then
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
                 + "\"notification_type\":\"NO_PUSH\","
                 + "\"message\":{\"attachment\":{"
                 + "\"type\":\"image\","
                 + "\"payload\":{\"url\":\"https://petersapparel.com/img/shirt.png\",\"is_reusable\":true}"
                 + "}}}";
-        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
 
     @Test
@@ -181,38 +224,48 @@ public class MessengerSendClientTest {
         //given
         final Recipient recipient = Recipient.newBuilder().recipientId("USER_ID").build();
         final NotificationType notificationType = NotificationType.NO_PUSH;
-        final BinaryAttachment imageAttachment = BinaryAttachment.newBuilder(BinaryAttachment.Type.IMAGE)
-                .attachmentId("1745504518999123")
-                .build();
+        final String attachmentId = "1745504518999123";
 
         //when
-        messengerSendClient.sendBinaryAttachment(recipient, notificationType, imageAttachment);
+        final RichMedia richMedia = RichMedia.createByAttachmentId(IMAGE, attachmentId);
+        final MessagePayload messagePayload = MessagePayload.newBuilder()
+                .recipient(recipient)
+                .message(Message.create(richMedia))
+                .notificationType(notificationType)
+                .build();
+        messenger.send(messagePayload);
 
         //then
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
                 + "\"notification_type\":\"NO_PUSH\","
                 + "\"message\":{\"attachment\":{"
                 + "\"type\":\"image\","
                 + "\"payload\":{\"attachment_id\":\"1745504518999123\"}"
                 + "}}}";
-        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = IllegalStateException.class)
     public void shouldThrowExceptionWhenSendingVideoAttachmentMessageWithQuickReplies() throws Exception {
         //given
         final Recipient recipient = Recipient.newBuilder().recipientId("USER_ID").build();
         final NotificationType notificationType = NotificationType.REGULAR;
-        final BinaryAttachment videoAttachment = BinaryAttachment.newBuilder(BinaryAttachment.Type.VIDEO)
-                .url("https://www.example-video-url.com")
-                .build();
+        final RichMedia video = RichMedia.createByUrl(VIDEO, "url");
         final List<QuickReply> quickReplies = QuickReply.newListBuilder()
                 .addTextQuickReply("Red", "PAYLOAD_FOR_PICKING_RED").toList()
                 .addLocationQuickReply().toList()
                 .build();
 
         //when
-        messengerSendClient.sendBinaryAttachment(recipient, notificationType, videoAttachment, quickReplies);
+        final Message message = Message.newBuilder().richMedia(video).quickReplies(quickReplies).build();
+        final MessagePayload messagePayload = MessagePayload.newBuilder()
+                .recipient(recipient)
+                .message(message)
+                .notificationType(notificationType)
+                .build();
+        messenger.send(messagePayload);
 
         //then - throw exception
     }
@@ -232,12 +285,19 @@ public class MessengerSendClientTest {
                     .toList()
                 .build();
 
-        final ButtonTemplate buttonTemplate = ButtonTemplate.newBuilder("What do you want to do next?", buttons).build();
+        final ButtonTemplate buttonTemplate = ButtonTemplate
+                .newBuilder("What do you want to do next?", buttons)
+                .build();
 
         //when
-        messengerSendClient.sendTemplate(recipientId, buttonTemplate);
+        final MessagePayload messagePayload = MessagePayload.newBuilder()
+                .recipientId(recipientId)
+                .message(Message.create(buttonTemplate))
+                .build();
+        messenger.send(messagePayload);
 
         //then
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"}," +
                 "\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"text\":\"What do you want to do next?\"" +
                 ",\"buttons\":[{\"url\":\"https://petersapparel.parseapp.com\",\"title\":\"Show Website\"" +
@@ -245,7 +305,8 @@ public class MessengerSendClientTest {
                 ",\"type\":\"postback\"},{\"url\":\"https://petersapparel.parseapp.com\",\"webview_height_ratio\":\"full\"" +
                 ",\"messenger_extensions\":true,\"fallback_url\":\"https://petersfancyapparel.com/fallback\"" +
                 ",\"title\":\"Show Website\",\"type\":\"web_url\"}],\"template_type\":\"button\"}}}}";
-        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
 
     @Test
@@ -270,9 +331,14 @@ public class MessengerSendClientTest {
                 .build();
 
         //when
-        messengerSendClient.sendTemplate(recipientId, genericTemplate);
+        final MessagePayload messagePayload = MessagePayload.newBuilder()
+                .recipientId(recipientId)
+                .message(Message.create(genericTemplate))
+                .build();
+        messenger.send(messagePayload);
 
         //then
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"}," +
                 "\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"elements\":[{" +
                 "\"title\":\"Welcome to Peters Hats\",\"item_url\":\"https://petersfancybrownhats.com\"," +
@@ -281,7 +347,8 @@ public class MessengerSendClientTest {
                 "\"url\":\"https://petersfancybrownhats.com\",\"title\":\"View Website\",\"type\":\"web_url\"}," +
                 "{\"payload\":\"DEVELOPER_DEFINED_PAYLOAD\",\"title\":\"Start Chatting\",\"type\":\"postback\"}]}]," +
                 "\"template_type\":\"generic\"}}}}";
-        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
 
     @Test
@@ -304,15 +371,21 @@ public class MessengerSendClientTest {
                 .build();
 
         //when
-        messengerSendClient.sendTemplate(recipientId, genericTemplate);
+        final MessagePayload messagePayload = MessagePayload.newBuilder()
+                .recipientId(recipientId)
+                .message(Message.create(genericTemplate))
+                .build();
+        messenger.send(messagePayload);
 
         //then
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},\"message\":" +
                 "{\"attachment\":{\"type\":\"template\",\"payload\":{\"elements\":" +
                 "[{\"title\":\"Welcome to M-Bank\",\"image_url\":\"http://www.example.com/images/m-bank.png\"," +
                 "\"buttons\":[{\"url\":\"https://www.example.com/authorize\",\"type\":\"account_link\"}," +
                 "{\"type\":\"account_unlink\"}]}],\"template_type\":\"generic\"}}}}";
-        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
 
     @Test
@@ -353,9 +426,14 @@ public class MessengerSendClientTest {
                 .build();
 
         //when
-        messengerSendClient.sendTemplate(recipientId, receiptTemplate);
+        final MessagePayload messagePayload = MessagePayload.newBuilder()
+                .recipientId(recipientId)
+                .message(Message.create(receiptTemplate))
+                .build();
+        messenger.send(messagePayload);
 
         //then
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"}," +
                 "\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"recipient_name\":\"Stephane Crozatier\"," +
                 "\"order_number\":\"12345678902\",\"currency\":\"USD\",\"payment_method\":\"Visa 2345\"," +
@@ -369,7 +447,8 @@ public class MessengerSendClientTest {
                 "\"state\":\"CA\",\"country\":\"US\"},\"summary\":{\"total_cost\":56.14,\"total_tax\":6.19," +
                 "\"shipping_cost\":4.95,\"subtotal\":75.00},\"adjustments\":[{\"name\":\"New Customer Discount\"," +
                 "\"amount\":20.00},{\"name\":\"$10 Off Coupon\",\"amount\":10.00}],\"template_type\":\"receipt\"}}}}";
-        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
 
     @Test
@@ -428,9 +507,14 @@ public class MessengerSendClientTest {
                 .build();
 
         //when
-        messengerSendClient.sendTemplate(recipientId, listTemplate);
+        final MessagePayload messagePayload = MessagePayload.newBuilder()
+                .recipientId(recipientId)
+                .message(Message.create(listTemplate))
+                .build();
+        messenger.send(messagePayload);
 
         //then
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},\"message\":{\"attachment\":{\"type\":\"template\"," +
                 "\"payload\":{\"top_element_style\":\"large\",\"buttons\":[{\"payload\":\"payload\",\"title\":\"View More\"," +
                 "\"type\":\"postback\"}],\"elements\":[{\"title\":\"Classic T-Shirt Collection\"," +
@@ -455,7 +539,8 @@ public class MessengerSendClientTest {
                 "\"title\":\"Shop Now\",\"type\":\"web_url\"}],\"default_action\":{\"type\":\"web_url\"," +
                 "\"url\":\"https://peterssendreceiveapp.ngrok.io/view?item\\u003d102\",\"webview_height_ratio\":\"tall\"}}]," +
                 "\"template_type\":\"list\"}}}}";
-        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
 
     @Test
@@ -469,13 +554,17 @@ public class MessengerSendClientTest {
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(successfulResponse);
 
         //when
-        final MessengerResponse messengerResponse = messengerSendClient.sendTextMessage("recipient id", "text");
+        final MessagePayload messagePayload = MessagePayload.newBuilder()
+                .recipientId("recipientId")
+                .message(Message.create("text"))
+                .build();
+        final MessageResponse messageResponse = messenger.send(messagePayload);
 
         //then
-        assertThat(messengerResponse, is(notNullValue()));
-        assertThat(messengerResponse.getRecipientId(), is(equalTo("USER_ID")));
-        assertThat(messengerResponse.getMessageId(), is(equalTo("mid.1473372944816:94f72b88c597657974")));
-        assertThat(messengerResponse.getAttachmentId(), is(equalTo("1745504518999123")));
+        assertThat(messageResponse, is(notNullValue()));
+        assertThat(messageResponse.getRecipientId(), is(equalTo("USER_ID")));
+        assertThat(messageResponse.getMessageId(), is(equalTo("mid.1473372944816:94f72b88c597657974")));
+        assertThat(messageResponse.getAttachmentId(), is(equalTo("1745504518999123")));
     }
 
     @Test
@@ -494,7 +583,11 @@ public class MessengerSendClientTest {
         //when
         MessengerApiException messengerApiException = null;
         try {
-            messengerSendClient.sendTextMessage("recipient id", "text");
+            final MessagePayload messagePayload = MessagePayload.newBuilder()
+                    .recipientId("recipientId")
+                    .message(Message.create("text"))
+                    .build();
+            messenger.send(messagePayload);
         } catch (MessengerApiException e) {
             messengerApiException = e;
         }
