@@ -38,7 +38,7 @@ public final class MessengerApiException extends Exception {
         return new MessengerApiException(message, type, code, fbTraceId);
     }
 
-    private MessengerApiException(String message, String type, Integer code, String fbTraceId) {
+    public MessengerApiException(String message, String type, Integer code, String fbTraceId) {
         super(message);
         this.type = type;
         this.code = code;

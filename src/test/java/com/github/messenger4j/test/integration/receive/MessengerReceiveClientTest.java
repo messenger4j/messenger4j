@@ -35,8 +35,7 @@ import org.mockito.ArgumentCaptor;
 public class MessengerReceiveClientTest {
 
     @SuppressWarnings("unchecked")
-    private Consumer<Event> mockEventHandler = (Consumer<Event>) mock(Consumer.class);
-
+    private final Consumer<Event> mockEventHandler = (Consumer<Event>) mock(Consumer.class);
     private final Messenger messenger = Messenger.create("test", "60efff025951cddde78c8d03de52cc90", "CUSTOM_VERIFY_TOKEN");
 
     @Test(expected = IllegalArgumentException.class)
@@ -541,6 +540,7 @@ public class MessengerReceiveClientTest {
         assertThat(messageDeliveredEvent.senderId(), equalTo("USER_ID"));
         assertThat(messageDeliveredEvent.recipientId(), equalTo("PAGE_ID"));
         assertThat(messageDeliveredEvent.watermark(), equalTo(Instant.ofEpochMilli(1458668856253L)));
+        assertThat(messageDeliveredEvent.messageIds().isPresent(), is(true));
         assertThat(messageDeliveredEvent.messageIds().get(), hasSize(1));
         assertThat(messageDeliveredEvent.messageIds().get().get(0), equalTo("mid.1458668856218:ed81099e15d3f4f233"));
     }

@@ -7,6 +7,8 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 import com.github.messenger4j.common.MessengerHttpClient;
+import com.github.messenger4j.exceptions.MessengerApiException;
+import com.github.messenger4j.exceptions.MessengerIOException;
 import com.github.messenger4j.exceptions.MessengerVerificationException;
 import com.github.messenger4j.send.MessageResponse;
 import com.github.messenger4j.send.NotificationType;
@@ -181,7 +183,7 @@ public class MessengerTest {
         messenger.verifyWebhook(mode, verifyToken);
     }
 
-    public void should_query_the_user_profile_by_id() {
+    public void should_query_the_user_profile_by_id() throws MessengerApiException, MessengerIOException {
         final String userId = "userId";
 
         final UserProfile userProfile = messenger.queryUserProfileById(userId);

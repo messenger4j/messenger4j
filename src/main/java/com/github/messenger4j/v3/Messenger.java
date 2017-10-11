@@ -1,5 +1,6 @@
 package com.github.messenger4j.v3;
 
+import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.GET;
 import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.POST;
 import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_ENTRY;
 import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_MESSAGING;
@@ -45,8 +46,11 @@ public final class Messenger {
     private static final String OBJECT_TYPE_PAGE = "page";
     private static final String HUB_MODE_SUBSCRIBE = "subscribe";
 
-    private static final String FB_GRAPH_API_URL = "https://graph.facebook.com/v2.8/me/messages?access_token=%s";
+    private static final String FB_GRAPH_API_URL_MESSAGES = "https://graph.facebook.com/v2.8/me/messages?access_token=%s";
+    private static final String FB_GRAPH_API_URL_USER = "https://graph.facebook.com/v2.8/%s?fields=first_name," +
+            "last_name,profile_pic,locale,timezone,gender,is_payment_enabled,last_ad_referral&access_token=%s";
 
+    private final String pageAccessToken;
     private final String appSecret;
     private final String verifyToken;
     private final String requestUrl;
@@ -66,9 +70,10 @@ public final class Messenger {
     }
 
     private Messenger(String pageAccessToken, String appSecret, String verifyToken, MessengerHttpClient httpClient) {
+        this.pageAccessToken = pageAccessToken;
         this.appSecret = appSecret;
         this.verifyToken = verifyToken;
-        this.requestUrl = String.format(FB_GRAPH_API_URL, pageAccessToken);
+        this.requestUrl = String.format(FB_GRAPH_API_URL_MESSAGES, pageAccessToken);
         this.httpClient = httpClient == null ? new DefaultMessengerHttpClient() : httpClient;
 
         this.gson = GsonFactory.createGson();
@@ -112,11 +117,18 @@ public final class Messenger {
     }
 
     public void verifyWebhook(@NonNull String mode, @NonNull String verifyToken) throws MessengerVerificationException {
-
+        if (!mode.equals(HUB_MODE_SUBSCRIBE)) {
+            throw new MessengerVerificationException("Webhook verification failed. Mode '" + mode + "' is invalid.");
+        }
+        if (!verifyToken.equals(this.verifyToken)) {
+            throw new MessengerVerificationException("Webhook verification failed. Verification token '" +
+                    verifyToken + "' is invalid.");
+        }
     }
 
-    public UserProfile queryUserProfileById(String userId) {
-        return new UserProfile(null, null, null, null, null, null);
+    public UserProfile queryUserProfileById(String userId) throws MessengerApiException, MessengerIOException {
+        final String requestUrl = String.format(FB_GRAPH_API_URL_USER, userId, pageAccessToken);
+        return doRequest(GET, requestUrl, null, UserProfile::fromJson);
     }
 
     public SetupResponse setupPersistentMenu(PersistentMenu persistentMenu) {
@@ -139,6 +151,10 @@ public final class Messenger {
             final String jsonBody = payload == null ? null : this.gson.toJson(payload);
             final HttpResponse httpResponse = this.httpClient.execute(httpMethod, requestUrl, jsonBody);
             final JsonObject responseJsonObject = this.jsonParser.parse(httpResponse.getBody()).getAsJsonObject();
+
+            if (responseJsonObject.size() == 0) {
+                throw new MessengerApiException("The response JSON does not contain any key/value pair", null, null, null);
+            }
 
             if (httpResponse.getStatusCode() >= 200 && httpResponse.getStatusCode() < 300) {
                 return responseTransformer.apply(responseJsonObject);

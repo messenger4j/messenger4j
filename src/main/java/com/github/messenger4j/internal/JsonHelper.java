@@ -44,6 +44,11 @@ public final class JsonHelper {
         return jsonElement == null ? null : jsonElement.getAsString();
     }
 
+    public static Optional<Boolean> getPropertyAsBoolean(JsonObject jsonObject, Constants... propertyPath) {
+        final JsonElement jsonElement = getProperty(jsonObject, propertyPath);
+        return Optional.ofNullable(jsonElement).map(JsonElement::getAsBoolean);
+    }
+
     public static Integer getPropertyAsInt(JsonObject jsonObject, Constants... propertyPath) {
         final JsonElement jsonElement = getProperty(jsonObject, propertyPath);
         return jsonElement == null ? null : jsonElement.getAsInt();
@@ -139,7 +144,9 @@ public final class JsonHelper {
         PROP_TITLE("title"),
         PROP_REFERRAL("referral"),
         PROP_SOURCE("source"),
-        PROP_AD_ID("ad_id");
+        PROP_AD_ID("ad_id"),
+        PROP_IS_PAYMENT_ENABLED("is_payment_enabled"),
+        PROP_LAST_AD_REFERRAL("last_ad_referral");
 
         private final String value;
 

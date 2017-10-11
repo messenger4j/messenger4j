@@ -48,18 +48,17 @@ public class MessengerSendClientTest {
 
     private static final String PAGE_ACCESS_TOKEN = "PAGE_ACCESS_TOKEN";
 
-    private Messenger messenger;
-
     private final MessengerHttpClient mockHttpClient = mock(MessengerHttpClient.class);
     private final HttpResponse fakeResponse = new HttpResponse(200, "{\n" +
             "  \"recipient_id\": \"USER_ID\",\n" +
             "  \"message_id\": \"mid.1473372944816:94f72b88c597657974\"\n" +
             "}");
 
+    private final Messenger messenger = Messenger.create(PAGE_ACCESS_TOKEN, "test", "test", mockHttpClient);
+
     @Before
     public void beforeEach() throws Exception {
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(fakeResponse);
-        messenger = Messenger.create(PAGE_ACCESS_TOKEN, "test", "test", mockHttpClient);
     }
 
     @Test
