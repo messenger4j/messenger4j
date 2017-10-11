@@ -21,7 +21,6 @@ import com.github.messenger4j.user.UserProfile;
 import com.github.messenger4j.v3.receive.Event;
 import java.util.List;
 import java.util.function.Consumer;
-import org.junit.Test;
 
 /**
  * @author Max Grabenhorst
@@ -31,7 +30,6 @@ public class MessengerTest {
 
     private final Messenger messenger = Messenger.create("test", "test", "test");
 
-    @Test
     public void should_instantiate_a_messenger_instance() {
         final String pageAccessToken = "pageAccessToken";
         final String appSecret = "appSecret";
@@ -42,7 +40,6 @@ public class MessengerTest {
         assertThat(messenger, is(notNullValue()));
     }
 
-    @Test
     public void should_instantiate_a_messenger_instance_with_custom_http_client() {
         final String pageAccessToken = "pageAccessToken";
         final String appSecret = "appSecret";
@@ -54,7 +51,6 @@ public class MessengerTest {
         assertThat(messenger, is(notNullValue()));
     }
 
-    @Test
     public void should_send_a_text_message() throws Exception {
         final String text = "Hello World";
         final String recipientId = "recipientId";
@@ -69,7 +65,6 @@ public class MessengerTest {
         assertThat(response, is(notNullValue()));
     }
 
-    @Test
     public void should_send_a_text_message_with_notification_type() throws Exception {
         final String text = "Hello World";
         final Recipient recipient = Recipient.newBuilder().recipientId("recipientId").build();
@@ -86,7 +81,6 @@ public class MessengerTest {
         assertThat(response, is(notNullValue()));
     }
 
-    @Test
     public void should_send_a_sender_action() throws Exception {
         final SenderAction senderAction = SenderAction.MARK_SEEN;
         final Recipient recipient = Recipient.newBuilder().recipientId("recipientId").build();
@@ -100,7 +94,6 @@ public class MessengerTest {
         assertThat(response, is(notNullValue()));
     }
 
-    @Test
     public void should_send_a_sender_action_with_notification_type() throws Exception {
         final SenderAction senderAction = SenderAction.MARK_SEEN;
         final Recipient recipient = Recipient.newBuilder().recipientId("recipientId").build();
@@ -116,7 +109,6 @@ public class MessengerTest {
         assertThat(response, is(notNullValue()));
     }
 
-    @Test
     public void should_send_a_template() throws Exception {
         final GenericTemplate template = GenericTemplate.newBuilder()
                 .addElements()
@@ -134,7 +126,6 @@ public class MessengerTest {
         assertThat(response, is(notNullValue()));
     }
 
-    @Test
     public void should_send_a_video_message() throws Exception {
         final String recipientId = "recipientId";
         final String videoUrl = "http://video.url";
@@ -150,7 +141,6 @@ public class MessengerTest {
         assertThat(response, is(notNullValue()));
     }
 
-    @Test
     public void should_send_an_image_message_with_quick_replies() throws Exception {
         final String recipientId = "recipientId";
         final String imageUrl = "http://image.url";
@@ -169,16 +159,13 @@ public class MessengerTest {
         assertThat(response, is(notNullValue()));
     }
 
-    @Test
     public void should_handle_MessengerApiException() {
     }
 
-    @Test
     public void should_handle_MessengerIOException() {
     }
 
 
-    @Test
     public void should_handle_incoming_event_check_signature() throws MessengerVerificationException {
         final String requestPayload = "{}";
         final String signature = "signature";
@@ -187,7 +174,6 @@ public class MessengerTest {
         messenger.onReceiveEvents(requestPayload, signature, eventHandler);
     }
 
-    @Test
     public void should_verify_the_webhook() throws MessengerVerificationException {
         final String mode = "mode";
         final String verifyToken = "verifyToken";
@@ -195,7 +181,6 @@ public class MessengerTest {
         messenger.verifyWebhook(mode, verifyToken);
     }
 
-    @Test
     public void should_query_the_user_profile_by_id() {
         final String userId = "userId";
 
@@ -204,7 +189,6 @@ public class MessengerTest {
         assertThat(userProfile, is(notNullValue()));
     }
 
-    @Test
     public void should_setup_the_persistent_menu() {
         final SupportedLocale localeZA = SupportedLocale.af_ZA;
         final SupportedLocale localeDE = SupportedLocale.de_DE;
@@ -234,7 +218,6 @@ public class MessengerTest {
         assertThat(setupResponse, is(notNullValue()));
     }
 
-    @Test
     public void should_setup_the_get_started_button() {
         final String payload = "payload";
 
@@ -243,7 +226,6 @@ public class MessengerTest {
         assertThat(setupResponse, is(notNullValue()));
     }
 
-    @Test
     public void should_setup_the_greeting_text() {
         final SupportedLocale localeZA = SupportedLocale.af_ZA;
         final String text = "text";
