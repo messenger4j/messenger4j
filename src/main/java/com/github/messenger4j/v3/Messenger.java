@@ -25,7 +25,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.sun.istack.internal.NotNull;
 import java.io.IOException;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -61,7 +60,7 @@ public final class Messenger {
     }
 
     public static Messenger create(@NonNull String pageAccessToken, @NonNull String appSecret,
-                                   @NonNull String verifyToken, @NotNull MessengerHttpClient customHttpClient) {
+                                   @NonNull String verifyToken, @NonNull MessengerHttpClient customHttpClient) {
 
         return new Messenger(pageAccessToken, appSecret, verifyToken, customHttpClient);
     }

@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/messenger4j/messenger4j.svg?branch=master)](https://travis-ci.org/messenger4j/messenger4j)
+
 # messenger4j: A Java library for the Messenger Platform
 
 If you are excited about building Chatbots on the Facebook Messenger Platform, messenger4j is all you need ✌
