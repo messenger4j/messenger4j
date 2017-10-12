@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/messenger4j/messenger4j.svg?branch=master)](https://travis-ci.org/messenger4j/messenger4j)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/b26d8f1fe4794b89b2ba439f35ac2af4)](https://www.codacy.com/app/max_11/messenger4j?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=messenger4j/messenger4j&amp;utm_campaign=Badge_Grade)
+[![Coverage Status](https://coveralls.io/repos/github/messenger4j/messenger4j/badge.svg)](https://coveralls.io/github/messenger4j/messenger4j)
 
 # messenger4j: A Java library for the Messenger Platform
 
