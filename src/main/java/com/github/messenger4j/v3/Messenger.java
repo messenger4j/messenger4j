@@ -47,13 +47,15 @@ public final class Messenger {
     private static final String HUB_MODE_SUBSCRIBE = "subscribe";
 
     private static final String FB_GRAPH_API_URL_MESSAGES = "https://graph.facebook.com/v2.8/me/messages?access_token=%s";
+    private static final String FB_GRAPH_API_URL_MESSENGER_PROFILE = "https://graph.facebook.com/v2.8/me/messenger_profile?access_token=%s";
     private static final String FB_GRAPH_API_URL_USER = "https://graph.facebook.com/v2.8/%s?fields=first_name," +
             "last_name,profile_pic,locale,timezone,gender,is_payment_enabled,last_ad_referral&access_token=%s";
 
     private final String pageAccessToken;
     private final String appSecret;
     private final String verifyToken;
-    private final String requestUrl;
+    private final String messagesRequestUrl;
+    private final String messengerProfileRequestUrl;
     private final MessengerHttpClient httpClient;
 
     private final Gson gson;
@@ -73,7 +75,8 @@ public final class Messenger {
         this.pageAccessToken = pageAccessToken;
         this.appSecret = appSecret;
         this.verifyToken = verifyToken;
-        this.requestUrl = String.format(FB_GRAPH_API_URL_MESSAGES, pageAccessToken);
+        this.messagesRequestUrl = String.format(FB_GRAPH_API_URL_MESSAGES, pageAccessToken);
+        this.messengerProfileRequestUrl = String.format(FB_GRAPH_API_URL_MESSENGER_PROFILE, pageAccessToken);
         this.httpClient = httpClient == null ? new DefaultMessengerHttpClient() : httpClient;
 
         this.gson = GsonFactory.createGson();
@@ -83,7 +86,7 @@ public final class Messenger {
     public MessageResponse send(@NonNull MessagePayload messagePayload)
             throws MessengerApiException, MessengerIOException {
 
-        return doRequest(POST, requestUrl, messagePayload, MessageResponse::fromJson);
+        return doRequest(POST, messagesRequestUrl, messagePayload, MessageResponse::fromJson);
     }
 
     public void onReceiveEvents(@NonNull String requestPayload, String signature,
@@ -131,16 +134,11 @@ public final class Messenger {
         return doRequest(GET, requestUrl, null, UserProfile::fromJson);
     }
 
-    public SetupResponse setupPersistentMenu(PersistentMenu persistentMenu) {
-        return new SetupResponse(null);
-    }
 
-    public SetupResponse setupGetStartedButton(String payload) {
-        return new SetupResponse(null);
-    }
+    public SetupResponse updateSettings(@NonNull MessengerSettings messengerSettings)
+            throws MessengerApiException, MessengerIOException {
 
-    public SetupResponse setupGreetingText(GreetingText greetingText) {
-        return new SetupResponse(null);
+        return doRequest(POST, messengerProfileRequestUrl, messengerSettings, SetupResponse::fromJson);
     }
 
     private <R> R doRequest(@NonNull HttpMethod httpMethod, @NonNull String requestUrl, Object payload,

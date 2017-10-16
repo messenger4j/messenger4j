@@ -1,9 +1,6 @@
 package com.github.messenger4j.test.integration.setup;
 
-import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.DELETE;
 import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.POST;
-import static com.github.messenger4j.setup.CallToActionType.POSTBACK;
-import static com.github.messenger4j.setup.CallToActionType.WEB_URL;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -16,21 +13,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.github.messenger4j.MessengerPlatform;
 import com.github.messenger4j.common.MessengerHttpClient;
 import com.github.messenger4j.common.MessengerHttpClient.HttpMethod;
 import com.github.messenger4j.common.MessengerHttpClient.HttpResponse;
-import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.exceptions.MessengerApiException;
-import com.github.messenger4j.setup.CallToAction;
-import com.github.messenger4j.setup.MessengerSetupClient;
 import com.github.messenger4j.setup.SetupResponse;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.github.messenger4j.v3.Messenger;
+import com.github.messenger4j.v3.MessengerSettings;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
  * @author Andriy Koretskyy
@@ -40,35 +33,37 @@ public class MessengerSetupClientTest {
 
     private static final String PAGE_ACCESS_TOKEN = "PAGE_ACCESS_TOKEN";
 
-    private MessengerSetupClient messengerSetupClient;
-    private MessengerHttpClient mockHttpClient = mock(MessengerHttpClient.class);
-
+    private final MessengerHttpClient mockHttpClient = mock(MessengerHttpClient.class);
     private final HttpResponse fakeResponse = new HttpResponse(200,
             "{\"result\": \"Successfully added new_thread's CTAs\"}");
+
+    private final Messenger messenger = Messenger.create(PAGE_ACCESS_TOKEN, "test", "test", mockHttpClient);
 
     @Before
     public void beforeEach() throws Exception {
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(fakeResponse);
-        messengerSetupClient = MessengerPlatform.newSetupClientBuilder(PAGE_ACCESS_TOKEN)
-                .httpClient(mockHttpClient)
-                .build();
     }
 
     @Test
-    public void shouldSetupStartButton() throws Exception {
+    public void shouldSetupGetStartedButton() throws Exception {
         //given
-        final String payload = "Button pressed";
+        final MessengerSettings messengerSettings = MessengerSettings.newBuilder().startButton("Button pressed").build();
 
         //when
-        messengerSetupClient.setupStartButton(payload);
+        messenger.updateSettings(messengerSettings);
 
         //then
-        final String expectedJsonBody =
-                "{\"setting_type\":\"call_to_actions\",\"thread_state\":\"new_thread\",\"call_to_actions\":[" +
-                        "{\"payload\":\"Button pressed\"}]}";
-        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{ \n" +
+                "  \"get_started\":{\n" +
+                "    \"payload\":\"Button pressed\"\n" +
+                "  }\n" +
+                "}";
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
 
+    /*
     @Test
     public void shouldRemoveStartButton() throws Exception {
         //when
@@ -162,25 +157,27 @@ public class MessengerSetupClientTest {
                 "{\"setting_type\":\"call_to_actions\",\"thread_state\":\"existing_thread\"}";
         verify(mockHttpClient).execute(eq(DELETE), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
+    */
 
     @Test
     public void shouldHandleSuccessResponse() throws Exception {
         //given
-        final HttpResponse successfulResponse = new HttpResponse(200,
-                "{\"result\": \"Successfully added new_thread's CTAs\"}");
+        final MessengerSettings messengerSettings = MessengerSettings.newBuilder().startButton("test").build();
+        final HttpResponse successfulResponse = new HttpResponse(200, "{\"result\": \"success\"}");
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(successfulResponse);
 
         //when
-        final SetupResponse setupResponse = messengerSetupClient.setupStartButton("button pressed");
+        final SetupResponse setupResponse = messenger.updateSettings(messengerSettings);
 
         //then
         assertThat(setupResponse, is(notNullValue()));
-        assertThat(setupResponse.getResult(), is(equalTo("Successfully added new_thread's CTAs")));
+        assertThat(setupResponse.getResult(), is(equalTo("success")));
     }
 
     @Test
     public void shouldHandleErrorResponse() throws Exception {
         //given
+        final MessengerSettings messengerSettings = MessengerSettings.newBuilder().startButton("test").build();
         final HttpResponse errorResponse = new HttpResponse(401, "{\n" +
                 "  \"error\": {\n" +
                 "    \"message\": \"Invalid OAuth access token.\",\n" +
@@ -194,7 +191,7 @@ public class MessengerSetupClientTest {
         //when
         MessengerApiException messengerApiException = null;
         try {
-            messengerSetupClient.setupStartButton("text");
+            messenger.updateSettings(messengerSettings);
         } catch (MessengerApiException e) {
             messengerApiException = e;
         }

@@ -215,28 +215,31 @@ public class MessengerTest {
                 .addConfiguration(localeDE, persistentMenuConfigDE)
                 .build();
 
-        final SetupResponse setupResponse = messenger.setupPersistentMenu(persistentMenu);
+        //final SetupResponse setupResponse = messenger.setupPersistentMenu(persistentMenu);
 
-        assertThat(setupResponse, is(notNullValue()));
+        //assertThat(setupResponse, is(notNullValue()));
     }
 
-    public void should_setup_the_get_started_button() {
+    public void should_setup_the_get_started_button() throws MessengerApiException, MessengerIOException {
         final String payload = "payload";
+        final MessengerSettings messengerSettings = MessengerSettings.newBuilder().startButton(payload).build();
 
-        final SetupResponse setupResponse = messenger.setupGetStartedButton(payload);
+        final SetupResponse setupResponse = messenger.updateSettings(messengerSettings);
 
         assertThat(setupResponse, is(notNullValue()));
     }
 
-    public void should_setup_the_greeting_text() {
+    public void should_setup_the_greeting_text() throws MessengerApiException, MessengerIOException {
         final SupportedLocale localeZA = SupportedLocale.af_ZA;
+        final SupportedLocale localeIT = SupportedLocale.it_IT;
         final String text = "text";
 
-        final GreetingText greetingText = GreetingText.newBuilder()
-                .defaultGreeting(text)
-                .addGreeting(localeZA, text)
-                .build();
-        final SetupResponse setupResponse = messenger.setupGreetingText(greetingText);
+        final LocalizedGreeting localizedGreetingZA = LocalizedGreeting.create(localeZA, text);
+        final LocalizedGreeting localizedGreetingIT = LocalizedGreeting.create(localeIT, text);
+        final Greeting greeting = Greeting.create(text, localizedGreetingZA, localizedGreetingIT);
+        final MessengerSettings messengerSettings = MessengerSettings.newBuilder().greeting(greeting).build();
+
+        final SetupResponse setupResponse = messenger.updateSettings(messengerSettings);
 
         assertThat(setupResponse, is(notNullValue()));
     }
