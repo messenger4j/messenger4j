@@ -16,7 +16,7 @@ public final class LocalizedGreeting {
     private final String text;
 
     public static LocalizedGreeting create(@NonNull SupportedLocale locale, @NonNull String text) {
-        return new LocalizedGreeting(locale.name(), text);
+        return create(locale.name(), text);
     }
 
     public static LocalizedGreeting create(@NonNull String locale, @NonNull String text) {

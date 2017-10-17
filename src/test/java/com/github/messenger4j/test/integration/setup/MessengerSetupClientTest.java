@@ -18,8 +18,11 @@ import com.github.messenger4j.common.MessengerHttpClient.HttpMethod;
 import com.github.messenger4j.common.MessengerHttpClient.HttpResponse;
 import com.github.messenger4j.exceptions.MessengerApiException;
 import com.github.messenger4j.setup.SetupResponse;
+import com.github.messenger4j.v3.Greeting;
+import com.github.messenger4j.v3.LocalizedGreeting;
 import com.github.messenger4j.v3.Messenger;
 import com.github.messenger4j.v3.MessengerSettings;
+import com.github.messenger4j.v3.SupportedLocale;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -74,21 +77,36 @@ public class MessengerSetupClientTest {
                 "{\"setting_type\":\"call_to_actions\",\"thread_state\":\"new_thread\"}";
         verify(mockHttpClient).execute(eq(DELETE), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
+    */
 
     @Test
-    public void shouldSetupWelcomeMessage() throws Exception {
+    public void shouldSetupGreetingText() throws Exception {
         //given
-        final String greeting = "Hi, we welcome you at our page";
+        final Greeting greeting = Greeting.create("Hello!", LocalizedGreeting.create(SupportedLocale.en_US,
+                "Timeless apparel for the masses."));
+        final MessengerSettings messengerSettings = MessengerSettings.newBuilder().greeting(greeting).build();
 
         //when
-        messengerSetupClient.setupWelcomeMessage(greeting);
+        messenger.updateSettings(messengerSettings);
 
         //then
-        final String expectedJsonBody =
-                "{\"setting_type\":\"greeting\",\"greeting\":{\"text\":\"Hi, we welcome you at our page\"}}";
-        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "  \"greeting\":[\n" +
+                "    {\n" +
+                "      \"locale\":\"default\",\n" +
+                "      \"text\":\"Hello!\"\n" +
+                "    }, {\n" +
+                "      \"locale\":\"en_US\",\n" +
+                "      \"text\":\"Timeless apparel for the masses.\"\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
 
+    /*
     @Test
     public void shouldResetWelcomeMessage() throws Exception {
         //when

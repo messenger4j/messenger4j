@@ -18,11 +18,11 @@ public final class Greeting {
 
     private final List<LocalizedGreeting> localizedGreetings;
 
-    public static Greeting create(@NonNull String defaultGreetingText, @NonNull LocalizedGreeting... localizedGreeting) {
-        final ArrayList<LocalizedGreeting> localizedGreetings = new ArrayList<>(localizedGreeting.length + 1);
-        localizedGreetings.add(LocalizedGreeting.create("default", defaultGreetingText));
-        localizedGreetings.addAll(Arrays.asList(localizedGreeting));
-        return new Greeting(localizedGreetings);
+    public static Greeting create(@NonNull String defaultGreetingText, @NonNull LocalizedGreeting... localizedGreetings) {
+        final List<LocalizedGreeting> localizedGreetingList = new ArrayList<>(localizedGreetings.length + 1);
+        localizedGreetingList.add(LocalizedGreeting.create("default", defaultGreetingText));
+        localizedGreetingList.addAll(Arrays.asList(localizedGreetings));
+        return new Greeting(localizedGreetingList);
     }
 
     private Greeting(List<LocalizedGreeting> localizedGreetings) {

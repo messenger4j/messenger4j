@@ -4,6 +4,8 @@ import static com.google.gson.FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES;
 
 import com.github.messenger4j.v3.Message;
 import com.github.messenger4j.v3.MessageSerializer;
+import com.github.messenger4j.v3.MessengerSettings;
+import com.github.messenger4j.v3.MessengerSettingsSerializer;
 import com.github.messenger4j.v3.RichMedia;
 import com.github.messenger4j.v3.RichMediaSerializer;
 import com.google.gson.Gson;
@@ -40,6 +42,7 @@ public final class GsonFactory {
                 .registerTypeAdapter(Float.class, new FloatSerializer())
                 .registerTypeAdapter(Message.class, new MessageSerializer())
                 .registerTypeAdapter(RichMedia.class, new RichMediaSerializer())
+                .registerTypeAdapter(MessengerSettings.class, new MessengerSettingsSerializer())
                 .setFieldNamingPolicy(LOWER_CASE_WITH_UNDERSCORES)
                 .create();
     }

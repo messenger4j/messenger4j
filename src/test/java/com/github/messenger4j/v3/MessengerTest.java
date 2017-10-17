@@ -21,6 +21,7 @@ import com.github.messenger4j.setup.CallToActionType;
 import com.github.messenger4j.setup.SetupResponse;
 import com.github.messenger4j.user.UserProfile;
 import com.github.messenger4j.v3.receive.Event;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -191,7 +192,7 @@ public class MessengerTest {
         assertThat(userProfile, is(notNullValue()));
     }
 
-    public void should_setup_the_persistent_menu() {
+    public void should_setup_the_persistent_menu() throws MessengerApiException, MessengerIOException {
         final SupportedLocale localeZA = SupportedLocale.af_ZA;
         final SupportedLocale localeDE = SupportedLocale.de_DE;
         final CallToAction callToAction1 = CallToAction.newBuilder()
@@ -200,24 +201,17 @@ public class MessengerTest {
         final CallToAction callToAction2 = CallToAction.newBuilder()
                 .type(CallToActionType.POSTBACK).payload("payload").title("Test")
                 .build();
+        final List<CallToAction> callToActions = Arrays.asList(callToAction1, callToAction2);
 
+        final LocalizedPersistentMenu localizedPersistentMenuZA = LocalizedPersistentMenu.create(localeZA, false, null);
+        final LocalizedPersistentMenu localizedPersistentMenuDE = LocalizedPersistentMenu.create(localeDE, true, callToActions);
+        final PersistentMenu persistentMenu = PersistentMenu.create(true, callToActions, localizedPersistentMenuZA,
+                localizedPersistentMenuDE);
+        final MessengerSettings messengerSettings = MessengerSettings.newBuilder().persistentMenu(persistentMenu).build();
 
-        //TODO: rewrite
-        final PersistentMenuConfiguration persistentMenuConfigZA = PersistentMenuConfiguration
-                .create(true, callToAction1, callToAction2);
-        final PersistentMenuConfiguration persistentMenuConfigDE = PersistentMenuConfiguration
-                .create(callToAction1, callToAction2);
-        final PersistentMenuConfiguration persistentMenuConfigDefault = PersistentMenuConfiguration.create(false);
+        final SetupResponse setupResponse = messenger.updateSettings(messengerSettings);
 
-        final PersistentMenu persistentMenu = PersistentMenu.newBuilder()
-                .defaultConfiguration(persistentMenuConfigDefault)
-                .addConfiguration(localeZA, persistentMenuConfigZA)
-                .addConfiguration(localeDE, persistentMenuConfigDE)
-                .build();
-
-        //final SetupResponse setupResponse = messenger.setupPersistentMenu(persistentMenu);
-
-        //assertThat(setupResponse, is(notNullValue()));
+        assertThat(setupResponse, is(notNullValue()));
     }
 
     public void should_setup_the_get_started_button() throws MessengerApiException, MessengerIOException {
