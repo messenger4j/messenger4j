@@ -1,5 +1,6 @@
 package com.github.messenger4j.v3;
 
+import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.DELETE;
 import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.GET;
 import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.POST;
 import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_ENTRY;
@@ -27,6 +28,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import lombok.NonNull;
@@ -139,6 +143,15 @@ public final class Messenger {
             throws MessengerApiException, MessengerIOException {
 
         return doRequest(POST, messengerProfileRequestUrl, messengerSettings, SetupResponse::fromJson);
+    }
+
+    public SetupResponse deleteSettings(@NonNull MessengerSettingProperty property, @NonNull MessengerSettingProperty... properties)
+            throws MessengerApiException, MessengerIOException {
+
+        final List<MessengerSettingProperty> messengerSettingPropertyList = new ArrayList<>(Arrays.asList(properties));
+        messengerSettingPropertyList.add(property);
+        final DeleteMessengerSettingsPayload payload = DeleteMessengerSettingsPayload.of(messengerSettingPropertyList);
+        return doRequest(DELETE, messengerProfileRequestUrl, payload, SetupResponse::fromJson);
     }
 
     private <R> R doRequest(@NonNull HttpMethod httpMethod, @NonNull String requestUrl, Object payload,

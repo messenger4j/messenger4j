@@ -1,5 +1,6 @@
 package com.github.messenger4j.test.integration.setup;
 
+import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.DELETE;
 import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.POST;
 import static com.github.messenger4j.common.WebviewHeightRatio.FULL;
 import static com.github.messenger4j.setup.CallToActionType.NESTED;
@@ -27,6 +28,7 @@ import com.github.messenger4j.v3.Greeting;
 import com.github.messenger4j.v3.LocalizedGreeting;
 import com.github.messenger4j.v3.LocalizedPersistentMenu;
 import com.github.messenger4j.v3.Messenger;
+import com.github.messenger4j.v3.MessengerSettingProperty;
 import com.github.messenger4j.v3.MessengerSettings;
 import com.github.messenger4j.v3.PersistentMenu;
 import com.github.messenger4j.v3.SupportedLocale;
@@ -57,7 +59,7 @@ public class MessengerSetupClientTest {
     }
 
     @Test
-    public void shouldSetupGetStartedButton() throws Exception {
+    public void shouldSetupStartButton() throws Exception {
         //given
         final MessengerSettings messengerSettings = MessengerSettings.newBuilder().startButton("Button pressed").build();
 
@@ -75,18 +77,21 @@ public class MessengerSetupClientTest {
         JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
 
-    /*
     @Test
-    public void shouldRemoveStartButton() throws Exception {
+    public void shouldDeleteStartButton() throws Exception {
         //when
-        messengerSetupClient.removeStartButton();
+        messenger.deleteSettings(MessengerSettingProperty.START_BUTTON);
 
         //then
-        final String expectedJsonBody =
-                "{\"setting_type\":\"call_to_actions\",\"thread_state\":\"new_thread\"}";
-        verify(mockHttpClient).execute(eq(DELETE), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "  \"fields\": [\n" +
+                "    \"get_started\"\n" +
+                "  ]\n" +
+                "}";
+        verify(mockHttpClient).execute(eq(DELETE), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
-    */
 
     @Test
     public void shouldSetupGreetingText() throws Exception {
@@ -115,17 +120,21 @@ public class MessengerSetupClientTest {
         JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
 
-    /*
     @Test
-    public void shouldResetWelcomeMessage() throws Exception {
+    public void shouldDeleteGreetingText() throws Exception {
         //when
-        messengerSetupClient.resetWelcomeMessage();
+        messenger.deleteSettings(MessengerSettingProperty.GREETING);
 
         //then
-        final String expectedJsonBody = "{\"setting_type\":\"greeting\"}";
-        verify(mockHttpClient).execute(eq(DELETE), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "  \"fields\": [\n" +
+                "    \"greeting\"\n" +
+                "  ]\n" +
+                "}";
+        verify(mockHttpClient).execute(eq(DELETE), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
-    */
 
     @Test
     public void shouldSetupPersistentMenu() throws Exception {
@@ -216,21 +225,24 @@ public class MessengerSetupClientTest {
         JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
 
-    /*
     @Test
-    public void shouldRemovePersistentMenu() throws Exception {
+    public void shouldDeletePersistentMenu() throws Exception {
         //when
-        messengerSetupClient.removePersistentMenu();
+        messenger.deleteSettings(MessengerSettingProperty.PERSISTENT_MENU);
 
         //then
-        final String expectedJsonBody =
-                "{\"setting_type\":\"call_to_actions\",\"thread_state\":\"existing_thread\"}";
-        verify(mockHttpClient).execute(eq(DELETE), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "  \"fields\": [\n" +
+                "    \"persistent_menu\"\n" +
+                "  ]\n" +
+                "}";
+        verify(mockHttpClient).execute(eq(DELETE), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
-    */
 
     @Test
-    public void shouldHandleSuccessResponse() throws Exception {
+    public void shouldHandleUpdateSuccessResponse() throws Exception {
         //given
         final MessengerSettings messengerSettings = MessengerSettings.newBuilder().startButton("test").build();
         final HttpResponse successfulResponse = new HttpResponse(200, "{\"result\": \"success\"}");
@@ -245,7 +257,7 @@ public class MessengerSetupClientTest {
     }
 
     @Test
-    public void shouldHandleErrorResponse() throws Exception {
+    public void shouldHandleUpdateErrorResponse() throws Exception {
         //given
         final MessengerSettings messengerSettings = MessengerSettings.newBuilder().startButton("test").build();
         final HttpResponse errorResponse = new HttpResponse(401, "{\n" +
@@ -262,6 +274,49 @@ public class MessengerSetupClientTest {
         MessengerApiException messengerApiException = null;
         try {
             messenger.updateSettings(messengerSettings);
+        } catch (MessengerApiException e) {
+            messengerApiException = e;
+        }
+
+        //then
+        assertThat(messengerApiException, is(notNullValue()));
+        assertThat(messengerApiException.getMessage(), is(equalTo("Invalid OAuth access token.")));
+        assertThat(messengerApiException.getType(), is(equalTo("OAuthException")));
+        assertThat(messengerApiException.getCode(), is(equalTo(190)));
+        assertThat(messengerApiException.getFbTraceId(), is(equalTo("BLBz/WZt8dN")));
+    }
+
+    @Test
+    public void shouldHandleDeleteSuccessResponse() throws Exception {
+        //given
+        final HttpResponse successfulResponse = new HttpResponse(200, "{\"result\": \"success\"}");
+        when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(successfulResponse);
+
+        //when
+        final SetupResponse setupResponse = messenger.deleteSettings(MessengerSettingProperty.GREETING);
+
+        //then
+        assertThat(setupResponse, is(notNullValue()));
+        assertThat(setupResponse.getResult(), is(equalTo("success")));
+    }
+
+    @Test
+    public void shouldHandleDeleteErrorResponse() throws Exception {
+        //given
+        final HttpResponse errorResponse = new HttpResponse(401, "{\n" +
+                "  \"error\": {\n" +
+                "    \"message\": \"Invalid OAuth access token.\",\n" +
+                "    \"type\": \"OAuthException\",\n" +
+                "    \"code\": 190,\n" +
+                "    \"fbtrace_id\": \"BLBz/WZt8dN\"\n" +
+                "  }\n" +
+                "}");
+        when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(errorResponse);
+
+        //when
+        MessengerApiException messengerApiException = null;
+        try {
+            messenger.deleteSettings(MessengerSettingProperty.GREETING);
         } catch (MessengerApiException e) {
             messengerApiException = e;
         }
