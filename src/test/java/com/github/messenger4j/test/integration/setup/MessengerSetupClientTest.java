@@ -1,6 +1,10 @@
 package com.github.messenger4j.test.integration.setup;
 
 import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.POST;
+import static com.github.messenger4j.common.WebviewHeightRatio.FULL;
+import static com.github.messenger4j.setup.CallToActionType.NESTED;
+import static com.github.messenger4j.setup.CallToActionType.POSTBACK;
+import static com.github.messenger4j.setup.CallToActionType.WEB_URL;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -17,12 +21,17 @@ import com.github.messenger4j.common.MessengerHttpClient;
 import com.github.messenger4j.common.MessengerHttpClient.HttpMethod;
 import com.github.messenger4j.common.MessengerHttpClient.HttpResponse;
 import com.github.messenger4j.exceptions.MessengerApiException;
+import com.github.messenger4j.setup.CallToAction;
 import com.github.messenger4j.setup.SetupResponse;
 import com.github.messenger4j.v3.Greeting;
 import com.github.messenger4j.v3.LocalizedGreeting;
+import com.github.messenger4j.v3.LocalizedPersistentMenu;
 import com.github.messenger4j.v3.Messenger;
 import com.github.messenger4j.v3.MessengerSettings;
+import com.github.messenger4j.v3.PersistentMenu;
 import com.github.messenger4j.v3.SupportedLocale;
+import java.net.URL;
+import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -116,55 +125,98 @@ public class MessengerSetupClientTest {
         final String expectedJsonBody = "{\"setting_type\":\"greeting\"}";
         verify(mockHttpClient).execute(eq(DELETE), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
     }
+    */
 
     @Test
     public void shouldSetupPersistentMenu() throws Exception {
         //given
-        final CallToAction firstMenuItem = CallToAction.newBuilder()
+        final CallToAction callToActionAA = CallToAction.newBuilder()
+                .title("Pay Bill")
                 .type(POSTBACK)
-                .title("Help")
-                .payload("DEVELOPER_DEFINED_PAYLOAD_FOR_HELP")
+                .payload("PAYBILL_PAYLOAD")
                 .build();
 
-        final CallToAction secondMenuItem = CallToAction.newBuilder()
+        final CallToAction callToActionAB = CallToAction.newBuilder()
+                .title("History")
                 .type(POSTBACK)
-                .title("Start a New Order")
-                .payload("DEVELOPER_DEFINED_PAYLOAD_FOR_START_ORDER")
+                .payload("HISTORY_PAYLOAD")
                 .build();
 
-        final CallToAction thirdMenuItem = CallToAction.newBuilder()
+        final CallToAction callToActionAC = CallToAction.newBuilder()
+                .title("Contact Info")
+                .type(POSTBACK)
+                .payload("CONTACT_INFO_PAYLOAD")
+                .build();
+
+        final CallToAction callToActionA = CallToAction.newBuilder()
+                .title("My Account")
+                .type(NESTED)
+                .callToActions(Arrays.asList(callToActionAA, callToActionAB, callToActionAC))
+                .build();
+
+        final CallToAction callToActionB = CallToAction.newBuilder()
+                .title("Latest News")
                 .type(WEB_URL)
-                .title("Checkout")
-                .url(new URL("http://petersapparel.parseapp.com/checkout"))
-                .webviewHeightRatio(WebviewHeightRatio.COMPACT)
-                .messengerExtensions(true)
-                .fallbackUrl(new URL("https://peterssendreceiveapp.ngrok.io/fallback"))
+                .url(new URL("http://petershats.parseapp.com/hat-news"))
+                .webviewHeightRatio(FULL)
                 .build();
 
-        final CallToAction fourthMenuItem = CallToAction.newBuilder()
-                .type(WEB_URL)
-                .title("View Website")
-                .url(new URL("http://petersapparel.parseapp.com/"))
-                .build();
+        final PersistentMenu persistentMenu = PersistentMenu.create(true, Arrays.asList(callToActionA, callToActionB),
+                LocalizedPersistentMenu.create(SupportedLocale.zh_CN, false, null));
 
-        final List<CallToAction> menuItems = new ArrayList<>(Arrays.asList(firstMenuItem, secondMenuItem,
-                thirdMenuItem, fourthMenuItem));
+        final MessengerSettings messengerSettings = MessengerSettings.newBuilder().persistentMenu(persistentMenu).build();
 
         //when
-        messengerSetupClient.setupPersistentMenu(menuItems);
+        messenger.updateSettings(messengerSettings);
 
         //then
-        final String expectedJsonBody = "{\"setting_type\":\"call_to_actions\",\"thread_state\":\"existing_thread\"" +
-                ",\"call_to_actions\":[{\"type\":\"postback\",\"title\":\"Help\"" +
-                ",\"payload\":\"DEVELOPER_DEFINED_PAYLOAD_FOR_HELP\"},{\"type\":\"postback\"" +
-                ",\"title\":\"Start a New Order\",\"payload\":\"DEVELOPER_DEFINED_PAYLOAD_FOR_START_ORDER\"}" +
-                ",{\"type\":\"web_url\",\"title\":\"Checkout\",\"url\":\"http://petersapparel.parseapp.com/checkout\"" +
-                ",\"webview_height_ratio\":\"compact\",\"messenger_extensions\":true" +
-                ",\"fallback_url\":\"https://peterssendreceiveapp.ngrok.io/fallback\"},{\"type\":\"web_url\"" +
-                ",\"title\":\"View Website\",\"url\":\"http://petersapparel.parseapp.com/\"}]}";
-        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), eq(expectedJsonBody));
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "  \"persistent_menu\":[\n" +
+                "    {\n" +
+                "      \"locale\":\"default\",\n" +
+                "      \"composer_input_disabled\": true,\n" +
+                "      \"call_to_actions\":[\n" +
+                "        {\n" +
+                "          \"title\":\"My Account\",\n" +
+                "          \"type\":\"nested\",\n" +
+                "          \"call_to_actions\":[\n" +
+                "            {\n" +
+                "              \"title\":\"Pay Bill\",\n" +
+                "              \"type\":\"postback\",\n" +
+                "              \"payload\":\"PAYBILL_PAYLOAD\"\n" +
+                "            },\n" +
+                "            {\n" +
+                "              \"title\":\"History\",\n" +
+                "              \"type\":\"postback\",\n" +
+                "              \"payload\":\"HISTORY_PAYLOAD\"\n" +
+                "            },\n" +
+                "            {\n" +
+                "              \"title\":\"Contact Info\",\n" +
+                "              \"type\":\"postback\",\n" +
+                "              \"payload\":\"CONTACT_INFO_PAYLOAD\"\n" +
+                "            }\n" +
+                "          ]\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"type\":\"web_url\",\n" +
+                "          \"title\":\"Latest News\",\n" +
+                "          \"url\":\"http://petershats.parseapp.com/hat-news\",\n" +
+                "          \"webview_height_ratio\":\"full\"\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"locale\":\"zh_CN\",\n" +
+                "      \"composer_input_disabled\":false\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
 
+    /*
     @Test
     public void shouldRemovePersistentMenu() throws Exception {
         //when

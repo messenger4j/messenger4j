@@ -1,105 +1,94 @@
 package com.github.messenger4j.setup;
 
+import static com.github.messenger4j.setup.CallToActionType.NESTED;
 import static com.github.messenger4j.setup.CallToActionType.POSTBACK;
 import static com.github.messenger4j.setup.CallToActionType.WEB_URL;
+import static com.github.messenger4j.setup.WebviewShareButtonState.HIDE;
 
 import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.internal.PreConditions;
+import com.google.gson.annotations.SerializedName;
 import java.net.URL;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.ToString;
 
 /**
  * @author Andriy Koretskyy
  * @since 0.8.0
  */
+@ToString
+@EqualsAndHashCode
 public final class CallToAction {
 
     private final CallToActionType type;
     private final String title;
     private final URL url;
     private final String payload;
+    private final List<CallToAction> callToActions;
     private final WebviewHeightRatio webviewHeightRatio;
     private final Boolean messengerExtensions;
     private final URL fallbackUrl;
+    @SerializedName("webviewShareButton")
+    private final WebviewShareButtonState webviewShareButtonState;
 
-    public static CallToAction.Builder newBuilder() {
-        return new CallToAction.Builder();
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
-    public CallToAction(String payload) {
-        this(null, null, null, payload, null, null, null);
-    }
-
-    public CallToAction(CallToActionType type, String title, URL url, String payload,
-                        WebviewHeightRatio webviewHeightRatio, Boolean messengerExtensions, URL fallbackUrl) {
+    public CallToAction(@NonNull CallToActionType type, @NonNull String title, URL url, String payload,
+                        List<CallToAction> callToActions, WebviewHeightRatio webviewHeightRatio,
+                        Boolean messengerExtensions, URL fallbackUrl, Boolean hideWebviewShareButton) {
 
         this.type = type;
         this.title = title;
         this.url = url;
         this.payload = payload;
+        this.callToActions = callToActions != null ? Collections.unmodifiableList(new ArrayList<>(callToActions)) : null;
         this.webviewHeightRatio = webviewHeightRatio;
         this.messengerExtensions = messengerExtensions;
         this.fallbackUrl = fallbackUrl;
+        this.webviewShareButtonState = hideWebviewShareButton != null && hideWebviewShareButton ? HIDE : null;
     }
 
-    public CallToActionType getType() {
+    public CallToActionType type() {
         return type;
     }
 
-    public String getTitle() {
+    public String title() {
         return title;
     }
 
-    public java.net.URL getUrl() {
-        return url;
+    public Optional<URL> url() {
+        return Optional.ofNullable(url);
     }
 
-    public String getPayload() {
-        return payload;
+    public Optional<String> payload() {
+        return Optional.ofNullable(payload);
     }
 
-    public WebviewHeightRatio getWebviewHeightRatio() {
-        return webviewHeightRatio;
+    public Optional<List<CallToAction>> callToActions() {
+        return Optional.ofNullable(callToActions);
     }
 
-    public Boolean getMessengerExtensions() {
-        return messengerExtensions;
+    public Optional<WebviewHeightRatio> webviewHeightRatio() {
+        return Optional.ofNullable(webviewHeightRatio);
     }
 
-    public URL getFallbackUrl() {
-        return fallbackUrl;
+    public Optional<Boolean> messengerExtensions() {
+        return Optional.ofNullable(messengerExtensions);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CallToAction that = (CallToAction) o;
-        return type == that.type &&
-                Objects.equals(title, that.title) &&
-                Objects.equals(url, that.url) &&
-                Objects.equals(payload, that.payload) &&
-                webviewHeightRatio == that.webviewHeightRatio &&
-                Objects.equals(messengerExtensions, that.messengerExtensions) &&
-                Objects.equals(fallbackUrl, that.fallbackUrl);
+    public Optional<URL> fallbackUrl() {
+        return Optional.ofNullable(fallbackUrl);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(type, title, url, payload, webviewHeightRatio, messengerExtensions, fallbackUrl);
-    }
-
-    @Override
-    public String toString() {
-        return "CallToAction{" +
-                "type=" + type +
-                ", title='" + title + '\'' +
-                ", url=" + url +
-                ", payload='" + payload + '\'' +
-                ", webviewHeightRatio=" + webviewHeightRatio +
-                ", messengerExtensions=" + messengerExtensions +
-                ", fallbackUrl='" + fallbackUrl + '\'' +
-                '}';
+    public boolean isWebviewShareButtonHidden() {
+        return webviewShareButtonState != null && webviewShareButtonState == HIDE;
     }
 
     public static final class Builder {
@@ -108,58 +97,70 @@ public final class CallToAction {
         private String title;
         private URL url;
         private String payload;
+        private List<CallToAction> callToActions;
         private WebviewHeightRatio webviewHeightRatio;
         private Boolean messengerExtensions;
         private URL fallbackUrl;
+        private Boolean hideWebviewShareButton;
 
-        public Builder type(CallToActionType callToActionType) {
+        public Builder type(@NonNull CallToActionType callToActionType) {
             this.callToActionType = callToActionType;
             return this;
         }
 
-        public Builder title(String title) {
+        public Builder title(@NonNull String title) {
             this.title = title;
             return this;
         }
 
-        public Builder url(URL url) {
+        public Builder url(@NonNull URL url) {
             this.url = url;
             return this;
         }
 
-        public Builder payload(String payload) {
+        public Builder payload(@NonNull String payload) {
             this.payload = payload;
             return this;
         }
 
-        public Builder webviewHeightRatio(WebviewHeightRatio webviewHeightRatio) {
+        public Builder callToActions(@NonNull List<CallToAction> callToActions) {
+            this.callToActions = callToActions;
+            return this;
+        }
+
+        public Builder webviewHeightRatio(@NonNull WebviewHeightRatio webviewHeightRatio) {
             this.webviewHeightRatio = webviewHeightRatio;
             return this;
         }
 
-        public Builder messengerExtensions(Boolean messengerExtensions) {
+        public Builder messengerExtensions(boolean messengerExtensions) {
             this.messengerExtensions = messengerExtensions;
             return this;
         }
 
-        public Builder fallbackUrl(URL fallbackUrl) {
+        public Builder fallbackUrl(@NonNull URL fallbackUrl) {
             this.fallbackUrl = fallbackUrl;
             return this;
         }
 
+        public Builder hideWebviewShareButton(boolean hideWebviewShareButton) {
+            this.hideWebviewShareButton = hideWebviewShareButton;
+            return this;
+        }
+
         public CallToAction build() {
-            PreConditions.notNull(callToActionType, "type");
-            PreConditions.notNullOrBlank(title, "title");
             if (callToActionType == WEB_URL) {
                 PreConditions.notNull(url, "url");
             }
-
             if (callToActionType == POSTBACK) {
-                PreConditions.notNullOrBlank(payload, "payload");
+                PreConditions.notNull(payload, "payload");
+            }
+            if (callToActionType == NESTED) {
+                PreConditions.notNull(callToActions, "callToActions");
             }
 
-            return new CallToAction(callToActionType, title, url, payload, webviewHeightRatio,
-                    messengerExtensions, fallbackUrl);
+            return new CallToAction(callToActionType, title, url, payload, callToActions, webviewHeightRatio,
+                    messengerExtensions, fallbackUrl, hideWebviewShareButton);
         }
     }
 }

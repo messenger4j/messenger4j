@@ -2,6 +2,7 @@ package com.github.messenger4j.v3;
 
 import com.github.messenger4j.setup.CallToAction;
 import java.util.List;
+import java.util.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
@@ -43,7 +44,7 @@ public final class LocalizedPersistentMenu {
         return composerInputDisabled;
     }
 
-    public List<CallToAction> callToActions() {
-        return callToActions;
+    public Optional<List<CallToAction>> callToActions() {
+        return Optional.ofNullable(callToActions);
     }
 }

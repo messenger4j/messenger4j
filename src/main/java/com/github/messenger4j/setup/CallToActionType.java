@@ -7,5 +7,6 @@ package com.github.messenger4j.setup;
 public enum CallToActionType {
 
     WEB_URL,
-    POSTBACK
+    POSTBACK,
+    NESTED
 }

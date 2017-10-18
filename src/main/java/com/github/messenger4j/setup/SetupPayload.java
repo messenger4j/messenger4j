@@ -1,7 +1,5 @@
 package com.github.messenger4j.setup;
 
-import static java.util.Collections.singletonList;
-
 import com.github.messenger4j.internal.PreConditions;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -71,7 +69,7 @@ final class SetupPayload {
         }
 
         public SetupPayload.Builder payload(String payload) {
-            this.callToActions = singletonList(new CallToAction(payload));
+            this.callToActions = null;
             return this;
         }
 
