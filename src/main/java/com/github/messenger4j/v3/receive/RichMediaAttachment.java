@@ -39,6 +39,6 @@ public final class RichMediaAttachment extends Attachment {
     }
 
     public enum Type {
-        IMAGE, AUDIO, VIDEO, FILE;
+        IMAGE, AUDIO, VIDEO, FILE
     }
 }

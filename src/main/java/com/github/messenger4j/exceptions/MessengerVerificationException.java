@@ -1,5 +1,7 @@
 package com.github.messenger4j.exceptions;
 
+import lombok.NonNull;
+
 /**
  * Thrown to indicate that a verification failed.
  *
@@ -12,7 +14,7 @@ package com.github.messenger4j.exceptions;
  */
 public final class MessengerVerificationException extends Exception {
 
-    public MessengerVerificationException(String message) {
+    public MessengerVerificationException(@NonNull String message) {
         super(message);
     }
 }

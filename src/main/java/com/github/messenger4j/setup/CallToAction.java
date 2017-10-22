@@ -3,10 +3,10 @@ package com.github.messenger4j.setup;
 import static com.github.messenger4j.setup.CallToActionType.NESTED;
 import static com.github.messenger4j.setup.CallToActionType.POSTBACK;
 import static com.github.messenger4j.setup.CallToActionType.WEB_URL;
-import static com.github.messenger4j.setup.WebviewShareButtonState.HIDE;
+import static com.github.messenger4j.setup.WebviewShareButtonState.HIDDEN;
 
 import com.github.messenger4j.common.WebviewHeightRatio;
-import com.github.messenger4j.internal.PreConditions;
+import com.github.messenger4j.internal.Assert;
 import com.google.gson.annotations.SerializedName;
 import java.net.URL;
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public final class CallToAction {
         this.webviewHeightRatio = webviewHeightRatio;
         this.messengerExtensions = messengerExtensions;
         this.fallbackUrl = fallbackUrl;
-        this.webviewShareButtonState = hideWebviewShareButton != null && hideWebviewShareButton ? HIDE : null;
+        this.webviewShareButtonState = hideWebviewShareButton != null && hideWebviewShareButton ? HIDDEN : null;
     }
 
     public CallToActionType type() {
@@ -88,7 +88,7 @@ public final class CallToAction {
     }
 
     public boolean isWebviewShareButtonHidden() {
-        return webviewShareButtonState != null && webviewShareButtonState == HIDE;
+        return webviewShareButtonState != null && webviewShareButtonState == HIDDEN;
     }
 
     public static final class Builder {
@@ -150,13 +150,13 @@ public final class CallToAction {
 
         public CallToAction build() {
             if (callToActionType == WEB_URL) {
-                PreConditions.notNull(url, "url");
+                Assert.notNull(url, "url");
             }
             if (callToActionType == POSTBACK) {
-                PreConditions.notNull(payload, "payload");
+                Assert.notNull(payload, "payload");
             }
             if (callToActionType == NESTED) {
-                PreConditions.notNull(callToActions, "callToActions");
+                Assert.notNull(callToActions, "callToActions");
             }
 
             return new CallToAction(callToActionType, title, url, payload, callToActions, webviewHeightRatio,

@@ -1,11 +1,14 @@
 package com.github.messenger4j.send.templates;
 
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * @author Max Grabenhorst
  * @since 0.6.0
  */
+@ToString
+@EqualsAndHashCode
 public abstract class Template {
 
     private final TemplateType templateType;
@@ -14,28 +17,8 @@ public abstract class Template {
         this.templateType = templateType;
     }
 
-    public TemplateType getTemplateType() {
+    public TemplateType templateType() {
         return templateType;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Template template = (Template) o;
-        return templateType == template.templateType;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(templateType);
-    }
-
-    @Override
-    public String toString() {
-        return "Template{" +
-                "templateType=" + templateType +
-                '}';
     }
 
     /**

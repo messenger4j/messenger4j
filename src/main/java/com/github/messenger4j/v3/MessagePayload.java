@@ -3,6 +3,7 @@ package com.github.messenger4j.v3;
 import com.github.messenger4j.send.NotificationType;
 import com.github.messenger4j.send.Recipient;
 import com.github.messenger4j.send.SenderAction;
+import java.util.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
@@ -24,7 +25,7 @@ public final class MessagePayload {
         return new Builder();
     }
 
-    private MessagePayload(Recipient recipient, SenderAction senderAction, Message message, NotificationType notificationType) {
+    private MessagePayload(@NonNull Recipient recipient, SenderAction senderAction, Message message, NotificationType notificationType) {
         this.recipient = recipient;
         this.senderAction = senderAction;
         this.message = message;
@@ -35,16 +36,16 @@ public final class MessagePayload {
         return recipient;
     }
 
-    public SenderAction senderAction() {
-        return senderAction;
+    public Optional<SenderAction> senderAction() {
+        return Optional.ofNullable(senderAction);
     }
 
-    public Message message() {
-        return message;
+    public Optional<Message> message() {
+        return Optional.ofNullable(message);
     }
 
-    public NotificationType notificationType() {
-        return notificationType;
+    public Optional<NotificationType> notificationType() {
+        return Optional.ofNullable(notificationType);
     }
 
     public static final class Builder {
@@ -60,7 +61,7 @@ public final class MessagePayload {
         }
 
         public Builder recipientId(@NonNull String recipientId) {
-            this.recipient = Recipient.newBuilder().recipientId(recipientId).build();
+            this.recipient = Recipient.createById(recipientId);
             return this;
         }
 
@@ -80,9 +81,6 @@ public final class MessagePayload {
         }
 
         public MessagePayload build() {
-            if (recipient == null) {
-                throw new IllegalStateException("recipient must be set");
-            }
             if (message != null && senderAction != null) {
                 throw new IllegalStateException("Either message or senderAction can be set - not both");
             }

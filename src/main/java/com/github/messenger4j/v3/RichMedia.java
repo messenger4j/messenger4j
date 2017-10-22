@@ -56,6 +56,6 @@ public final class RichMedia {
         IMAGE,
         AUDIO,
         VIDEO,
-        FILE;
+        FILE
     }
 }

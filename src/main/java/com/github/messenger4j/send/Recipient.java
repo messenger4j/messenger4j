@@ -1,110 +1,39 @@
 package com.github.messenger4j.send;
 
-import com.github.messenger4j.internal.PreConditions;
-import java.util.Objects;
+import java.util.Optional;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.ToString;
 
 /**
  * @author Max Grabenhorst
  * @since 0.6.0
  */
+@ToString
+@EqualsAndHashCode
 public final class Recipient {
 
     private final String id;
     private final String phoneNumber;
 
-    public static Builder newBuilder() {
-        return new Builder();
+    public static Recipient createById(@NonNull String userId) {
+        return new Recipient(userId, null);
     }
 
-    private Recipient(RecipientIdBuilder builder) {
-        id = builder.recipientId;
-        phoneNumber = null;
+    public static Recipient createByPhoneNumber(@NonNull String phoneNumber) {
+        return new Recipient(null, phoneNumber);
     }
 
-    private Recipient(PhoneNumberBuilder builder) {
-        phoneNumber = builder.phoneNumber;
-        id = null;
+    private Recipient(String id, String phoneNumber) {
+        this.id = id;
+        this.phoneNumber = phoneNumber;
     }
 
-    public String getId() {
-        return this.id;
+    public Optional<String> id() {
+        return Optional.ofNullable(id);
     }
 
-    public String getPhoneNumber() {
-        return this.phoneNumber;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Recipient recipient = (Recipient) o;
-        return Objects.equals(id, recipient.id) &&
-                Objects.equals(phoneNumber, recipient.phoneNumber);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, phoneNumber);
-    }
-
-    @Override
-    public String toString() {
-        return "Recipient{" +
-                "id='" + id + '\'' +
-                ", phoneNumber='" + phoneNumber + '\'' +
-                '}';
-    }
-
-    /**
-     * @author Max Grabenhorst
-     * @since 0.6.0
-     */
-    public static final class Builder {
-
-        private Builder() {
-        }
-
-        public RecipientIdBuilder recipientId(String recipientId) {
-            return new RecipientIdBuilder(recipientId);
-        }
-
-        public PhoneNumberBuilder phoneNumber(String phoneNumber) {
-            return new PhoneNumberBuilder(phoneNumber);
-        }
-    }
-
-    /**
-     * @author Max Grabenhorst
-     * @since 0.6.0
-     */
-    public static final class RecipientIdBuilder {
-        private final String recipientId;
-
-        private RecipientIdBuilder(String recipientId) {
-            PreConditions.notNullOrBlank(recipientId, "recipientId");
-            this.recipientId = recipientId;
-        }
-
-        public Recipient build() {
-            return new Recipient(this);
-        }
-    }
-
-    /**
-     * @author Max Grabenhorst
-     * @since 0.6.0
-     */
-    public static final class PhoneNumberBuilder {
-        private final String phoneNumber;
-
-        private PhoneNumberBuilder(String phoneNumber) {
-            PreConditions.notNullOrBlank(phoneNumber, "phoneNumber");
-            this.phoneNumber = phoneNumber;
-        }
-
-        public Recipient build() {
-            return new Recipient(this);
-        }
+    public Optional<String> phoneNumber() {
+        return Optional.ofNullable(phoneNumber);
     }
 }

@@ -25,13 +25,13 @@ public final class JsonHelper {
         }
         JsonObject internalValue = jsonObject;
         for (int i = 0; i <= propertyPath.length - 2; i++) {
-            final JsonElement property = internalValue.get(propertyPath[i].getValue());
+            final JsonElement property = internalValue.get(propertyPath[i].value());
             if (property == null || !property.isJsonObject()) {
                 return null;
             }
             internalValue = property.getAsJsonObject();
         }
-        final JsonElement property = internalValue.get(propertyPath[propertyPath.length - 1].getValue());
+        final JsonElement property = internalValue.get(propertyPath[propertyPath.length - 1].value());
         return property == null || property.isJsonNull() ? null : property;
     }
 
@@ -154,7 +154,7 @@ public final class JsonHelper {
             this.value = value;
         }
 
-        String getValue() {
+        String value() {
             return value;
         }
     }

@@ -1,14 +1,19 @@
 package com.github.messenger4j.send.buttons;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.ToString;
 
 /**
  * @author Max Grabenhorst
  * @since 0.6.0
  */
+@ToString
+@EqualsAndHashCode
 public abstract class Button {
 
     private final ButtonType type;
@@ -69,28 +74,8 @@ public abstract class Button {
         throw new UnsupportedOperationException("not a LogOutButton");
     }
 
-    public ButtonType getType() {
+    public ButtonType type() {
         return type;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Button button = (Button) o;
-        return type == button.type;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(type);
-    }
-
-    @Override
-    public String toString() {
-        return "Button{" +
-                "type=" + type +
-                '}';
     }
 
     /**
@@ -123,15 +108,15 @@ public abstract class Button {
             return this;
         }
 
-        public UrlButton.Builder addUrlButton(String title, String url) {
+        public UrlButton.Builder addUrlButton(@NonNull String title, @NonNull URL url) {
             return new UrlButton.Builder(title, url, this);
         }
 
-        public PostbackButton.Builder addPostbackButton(String title, String payload) {
+        public PostbackButton.Builder addPostbackButton(@NonNull String title, @NonNull String payload) {
             return new PostbackButton.Builder(title, payload, this);
         }
 
-        public CallButton.Builder addCallButton(String title, String payload) {
+        public CallButton.Builder addCallButton(@NonNull String title, @NonNull String payload) {
             return new CallButton.Builder(title, payload, this);
         }
 
@@ -142,7 +127,7 @@ public abstract class Button {
         /**
          * @since 0.7.0
          */
-        public LogInButton.Builder addLogInButton(String url) {
+        public LogInButton.Builder addLogInButton(@NonNull URL url) {
             return new LogInButton.Builder(url, this);
         }
 

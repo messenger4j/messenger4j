@@ -2,7 +2,8 @@ package com.github.messenger4j.test.integration.send;
 
 import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.POST;
 import static com.github.messenger4j.v3.RichMedia.Type.IMAGE;
-import static com.github.messenger4j.v3.RichMedia.Type.VIDEO;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -26,15 +27,28 @@ import com.github.messenger4j.send.QuickReply;
 import com.github.messenger4j.send.Recipient;
 import com.github.messenger4j.send.SenderAction;
 import com.github.messenger4j.send.buttons.Button;
+import com.github.messenger4j.send.templates.Address;
+import com.github.messenger4j.send.templates.Adjustment;
 import com.github.messenger4j.send.templates.ButtonTemplate;
+import com.github.messenger4j.send.templates.DefaultAction;
+import com.github.messenger4j.send.templates.Element;
 import com.github.messenger4j.send.templates.GenericTemplate;
 import com.github.messenger4j.send.templates.ListTemplate;
+import com.github.messenger4j.send.templates.ListTemplate.TopElementStyle;
+import com.github.messenger4j.send.templates.ReceiptElement;
 import com.github.messenger4j.send.templates.ReceiptTemplate;
+import com.github.messenger4j.send.templates.Summary;
 import com.github.messenger4j.v3.Message;
 import com.github.messenger4j.v3.MessagePayload;
 import com.github.messenger4j.v3.Messenger;
 import com.github.messenger4j.v3.RichMedia;
+import java.net.URL;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -106,7 +120,7 @@ public class MessengerSendClientTest {
     @Test
     public void shouldSendTextMessageWithQuickReplies() throws Exception {
         //given
-        final Recipient recipient = Recipient.newBuilder().recipientId("USER_ID").build();
+        final Recipient recipient = Recipient.createById("USER_ID");
         final NotificationType notificationType = NotificationType.SILENT_PUSH;
         final String text = "Pick a color:";
         final List<QuickReply> quickReplies = QuickReply.newListBuilder()
@@ -139,7 +153,7 @@ public class MessengerSendClientTest {
     @Test
     public void shouldSendTextMessageWithMetadata() throws Exception {
         //given
-        final Recipient recipient = Recipient.newBuilder().recipientId("USER_ID").build();
+        final Recipient recipient = Recipient.createById("USER_ID");
         final NotificationType notificationType = NotificationType.SILENT_PUSH;
         final String text = "Hello Messenger Platform";
         final String metadata = "DEVELOPER_DEFINED_METADATA";
@@ -193,7 +207,7 @@ public class MessengerSendClientTest {
     @Test
     public void shouldSendReusableImageAttachmentMessageWithUrl() throws Exception {
         //given
-        final Recipient recipient = Recipient.newBuilder().recipientId("USER_ID").build();
+        final Recipient recipient = Recipient.createById("USER_ID");
         final NotificationType notificationType = NotificationType.NO_PUSH;
         final String imageUrl = "https://petersapparel.com/img/shirt.png";
 
@@ -221,7 +235,7 @@ public class MessengerSendClientTest {
     @Test
     public void shouldSendImageAttachmentMessageWithAttachmentId() throws Exception {
         //given
-        final Recipient recipient = Recipient.newBuilder().recipientId("USER_ID").build();
+        final Recipient recipient = Recipient.createById("USER_ID");
         final NotificationType notificationType = NotificationType.NO_PUSH;
         final String attachmentId = "1745504518999123";
 
@@ -246,47 +260,22 @@ public class MessengerSendClientTest {
         JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldThrowExceptionWhenSendingVideoAttachmentMessageWithQuickReplies() throws Exception {
-        //given
-        final Recipient recipient = Recipient.newBuilder().recipientId("USER_ID").build();
-        final NotificationType notificationType = NotificationType.REGULAR;
-        final RichMedia video = RichMedia.createByUrl(VIDEO, "url");
-        final List<QuickReply> quickReplies = QuickReply.newListBuilder()
-                .addTextQuickReply("Red", "PAYLOAD_FOR_PICKING_RED").toList()
-                .addLocationQuickReply().toList()
-                .build();
-
-        //when
-        final Message message = Message.newBuilder().richMedia(video).quickReplies(quickReplies).build();
-        final MessagePayload messagePayload = MessagePayload.newBuilder()
-                .recipient(recipient)
-                .message(message)
-                .notificationType(notificationType)
-                .build();
-        messenger.send(messagePayload);
-
-        //then - throw exception
-    }
-
     @Test
     public void shouldSendButtonTemplateMessage() throws Exception {
         //given
         final String recipientId = "USER_ID";
 
         final List<Button> buttons = Button.newListBuilder()
-                .addUrlButton("Show Website", "https://petersapparel.parseapp.com").toList()
+                .addUrlButton("Show Website", new URL("https://petersapparel.parseapp.com")).toList()
                 .addPostbackButton("Start Chatting", "USER_DEFINED_PAYLOAD").toList()
-                .addUrlButton("Show Website", "https://petersapparel.parseapp.com")
-                    .webviewHeightRatio(WebviewHeightRatio.FULL)
-                    .messengerExtensions(true)
-                    .fallbackUrl("https://petersfancyapparel.com/fallback")
-                    .toList()
+                .addUrlButton("Show Website", new URL("https://petersapparel.parseapp.com"))
+                .webviewHeightRatio(WebviewHeightRatio.FULL)
+                .messengerExtensions(true)
+                .fallbackUrl("https://petersfancyapparel.com/fallback")
+                .toList()
                 .build();
 
-        final ButtonTemplate buttonTemplate = ButtonTemplate
-                .newBuilder("What do you want to do next?", buttons)
-                .build();
+        final ButtonTemplate buttonTemplate = ButtonTemplate.create("What do you want to do next?", buttons);
 
         //when
         final MessagePayload messagePayload = MessagePayload.newBuilder()
@@ -314,20 +303,24 @@ public class MessengerSendClientTest {
         final String recipientId = "USER_ID";
 
         final List<Button> buttons = Button.newListBuilder()
-                .addUrlButton("View Website", "https://petersfancybrownhats.com").toList()
+                .addUrlButton("View Website", new URL("https://petersfancybrownhats.com")).toList()
                 .addPostbackButton("Start Chatting", "DEVELOPER_DEFINED_PAYLOAD").toList()
                 .build();
 
-        final GenericTemplate genericTemplate = GenericTemplate.newBuilder()
-                .addElements()
-                .addElement("Welcome to Peters Hats")
-                .itemUrl("https://petersfancybrownhats.com")
-                .imageUrl("https://petersfancybrownhats.com/company_image.png")
-                .subtitle("We have got the right hat for everyone.")
-                .buttons(buttons)
-                .toList()
-                .done()
+        final DefaultAction defaultAction = DefaultAction.newBuilder(new URL("https://peterssendreceiveapp.ngrok.io/view?item=103"))
+                .messengerExtensions(true)
+                .webviewHeightRatio(WebviewHeightRatio.TALL)
+                .fallbackUrl(new URL("https://peterssendreceiveapp.ngrok.io/"))
                 .build();
+
+        final Element element = Element.newBuilder("Welcome to Peters Hats")
+                .imageUrl(new URL("https://petersfancybrownhats.com/company_image.png"))
+                .subtitle("We have got the right hat for everyone.")
+                .defaultAction(defaultAction)
+                .buttons(buttons)
+                .build();
+
+        final GenericTemplate genericTemplate = GenericTemplate.newBuilder(Collections.singletonList(element)).build();
 
         //when
         final MessagePayload messagePayload = MessagePayload.newBuilder()
@@ -338,14 +331,44 @@ public class MessengerSendClientTest {
 
         //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
-        final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"}," +
-                "\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"elements\":[{" +
-                "\"title\":\"Welcome to Peters Hats\",\"item_url\":\"https://petersfancybrownhats.com\"," +
-                "\"image_url\":\"https://petersfancybrownhats.com/company_image.png\"," +
-                "\"subtitle\":\"We have got the right hat for everyone.\",\"buttons\":[{" +
-                "\"url\":\"https://petersfancybrownhats.com\",\"title\":\"View Website\",\"type\":\"web_url\"}," +
-                "{\"payload\":\"DEVELOPER_DEFINED_PAYLOAD\",\"title\":\"Start Chatting\",\"type\":\"postback\"}]}]," +
-                "\"template_type\":\"generic\"}}}}";
+        final String expectedJsonBody = "{\n" +
+                "  \"recipient\":{\n" +
+                "    \"id\":\"USER_ID\"\n" +
+                "  },\n" +
+                "  \"message\":{\n" +
+                "    \"attachment\":{\n" +
+                "      \"type\":\"template\",\n" +
+                "      \"payload\":{\n" +
+                "        \"template_type\":\"generic\",\n" +
+                "        \"elements\":[\n" +
+                "           {\n" +
+                "            \"title\":\"Welcome to Peters Hats\",\n" +
+                "            \"image_url\":\"https://petersfancybrownhats.com/company_image.png\",\n" +
+                "            \"subtitle\":\"We have got the right hat for everyone.\",\n" +
+                "            \"default_action\": {\n" +
+                "              \"type\": \"web_url\",\n" +
+                "              \"url\": \"https://peterssendreceiveapp.ngrok.io/view?item=103\",\n" +
+                "              \"messenger_extensions\": true,\n" +
+                "              \"webview_height_ratio\": \"tall\",\n" +
+                "              \"fallback_url\": \"https://peterssendreceiveapp.ngrok.io/\"\n" +
+                "            },\n" +
+                "            \"buttons\":[\n" +
+                "              {\n" +
+                "                \"type\":\"web_url\",\n" +
+                "                \"url\":\"https://petersfancybrownhats.com\",\n" +
+                "                \"title\":\"View Website\"\n" +
+                "              },{\n" +
+                "                \"type\":\"postback\",\n" +
+                "                \"title\":\"Start Chatting\",\n" +
+                "                \"payload\":\"DEVELOPER_DEFINED_PAYLOAD\"\n" +
+                "              }              \n" +
+                "            ]      \n" +
+                "          }\n" +
+                "        ]\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
         verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
         JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
@@ -356,18 +379,16 @@ public class MessengerSendClientTest {
         final String recipientId = "USER_ID";
 
         final List<Button> buttons = Button.newListBuilder()
-                .addLogInButton("https://www.example.com/authorize").toList()
+                .addLogInButton(new URL("https://www.example.com/authorize")).toList()
                 .addLogOutButton().toList()
                 .build();
 
-        final GenericTemplate genericTemplate = GenericTemplate.newBuilder()
-                .addElements()
-                .addElement("Welcome to M-Bank")
-                .imageUrl("http://www.example.com/images/m-bank.png")
+        final Element element = Element.newBuilder("Welcome to M-Bank")
+                .imageUrl(new URL("http://www.example.com/images/m-bank.png"))
                 .buttons(buttons)
-                .toList()
-                .done()
                 .build();
+
+        final GenericTemplate genericTemplate = GenericTemplate.newBuilder(Collections.singletonList(element)).build();
 
         //when
         final MessagePayload messagePayload = MessagePayload.newBuilder()
@@ -392,37 +413,25 @@ public class MessengerSendClientTest {
         //given
         final String recipientId = "USER_ID";
 
-        final ReceiptTemplate receiptTemplate = ReceiptTemplate.newBuilder("Stephane Crozatier", "12345678902", "USD",
-                "Visa 2345")
-                .orderUrl("http://petersapparel.parseapp.com/order?order_id=123456")
-                .timestamp(1428444852L)
-                .addElements()
-                .addElement("Classic White T-Shirt", 50F)
-                .subtitle("100% Soft and Luxurious Cotton")
-                .quantity(2)
-                .currency("USD")
-                .imageUrl("http://petersapparel.parseapp.com/img/whiteshirt.png")
-                .toList()
-                .addElement("Classic Gray T-Shirt", 25F)
-                .subtitle("100% Soft and Luxurious Cotton")
-                .quantity(1)
-                .currency("USD")
-                .imageUrl("http://petersapparel.parseapp.com/img/grayshirt.png")
-                .toList()
-                .done()
-                .addAddress("1 Hacker Way", "Menlo Park", "94025", "CA", "US").street2("").done()
-                .addSummary(56.14F).subtotal(75.00F).shippingCost(4.95F).totalTax(6.19F).done()
-                .addAdjustments()
-                .addAdjustment()
-                .name("New Customer Discount")
-                .amount(20.00F)
-                .toList()
-                .addAdjustment()
-                .name("$10 Off Coupon")
-                .amount(10.00F)
-                .toList()
-                .done()
-                .build();
+        final Adjustment adjustment1 = Adjustment.create("New Customer Discount", 20.00F);
+        final Adjustment adjustment2 = Adjustment.create("$10 Off Coupon", 10.00F);
+
+        final ReceiptElement receiptElement1 = ReceiptElement.create("Classic White T-Shirt", 50F,
+                of("100% Soft and Luxurious Cotton"), of(2), of("USD"),
+                of(new URL("http://petersapparel.parseapp.com/img/whiteshirt.png")));
+
+        final ReceiptElement receiptElement2 = ReceiptElement.create("Classic Gray T-Shirt", 25F,
+                of("100% Soft and Luxurious Cotton"), of(1), of("USD"),
+                of(new URL("http://petersapparel.parseapp.com/img/grayshirt.png")));
+
+        final Address address = Address.create("1 Hacker Way", of(""), "Menlo Park", "94025", "CA", "US");
+        final Summary summary = Summary.create(56.14F, of(75.00F), of(6.19F), of(4.95F));
+
+        final ReceiptTemplate receiptTemplate = ReceiptTemplate.create("Stephane Crozatier", "12345678902",
+                "Visa 2345", "USD", summary, of(address), of(Arrays.asList(receiptElement1, receiptElement2)),
+                of(Arrays.asList(adjustment1, adjustment2)), empty(),
+                of(new URL("http://petersapparel.parseapp.com/order?order_id=123456")), empty(),
+                of(ZonedDateTime.of(2015, 4, 7, 22, 14, 12, 0, ZoneOffset.UTC).toInstant()));
 
         //when
         final MessagePayload messagePayload = MessagePayload.newBuilder()
@@ -455,54 +464,58 @@ public class MessengerSendClientTest {
         //given
         final String recipientId = "USER_ID";
 
-        final ListTemplate listTemplate = ListTemplate.newBuilder(ListTemplate.TopElementStyle.LARGE)
-                .buttons(Button.newListBuilder().addPostbackButton("View More", "payload").toList().build())
-                .addElements()
-                    .addElement("Classic T-Shirt Collection")
+        final Element element1 = Element.newBuilder("Classic T-Shirt Collection")
                 .subtitle("See all our colors")
-                .imageUrl("https://peterssendreceiveapp.ngrok.io/img/collection.png")
+                .imageUrl(new URL("https://peterssendreceiveapp.ngrok.io/img/collection.png"))
                 .buttons(Button.newListBuilder()
-                        .addUrlButton("View", "https://peterssendreceiveapp.ngrok.io/collection")
+                        .addUrlButton("View", new URL("https://peterssendreceiveapp.ngrok.io/collection"))
                         .webviewHeightRatio(WebviewHeightRatio.TALL)
                         .toList()
                         .build())
-                .addDefaultAction("https://peterssendreceiveapp.ngrok.io/shop_collection")
-                    .webviewHeightRatio(WebviewHeightRatio.TALL)
-                    .messengerExtensions(true)
-                    .fallbackUrl("https://peterssendreceiveapp.ngrok.io/fallback")
-                    .done()
-                .toList()
-                    .addElement("Classic White T-Shirt")
-                    .subtitle("100% Cotton, 200% Comfortable")
-                    .imageUrl("https://peterssendreceiveapp.ngrok.io/img/white-t-shirt.png")
-                    .buttons(Button.newListBuilder()
-                            .addUrlButton("Shop Now", "https://peterssendreceiveapp.ngrok.io/shop?item=100")
-                            .webviewHeightRatio(WebviewHeightRatio.TALL).toList().build())
-                .addDefaultAction("https://peterssendreceiveapp.ngrok.io/view?item=100")
+                .defaultAction(DefaultAction.newBuilder(new URL("https://peterssendreceiveapp.ngrok.io/shop_collection"))
+                        .webviewHeightRatio(WebviewHeightRatio.TALL).messengerExtensions(true)
+                        .fallbackUrl(new URL("https://peterssendreceiveapp.ngrok.io/fallback"))
+                        .build())
+                .build();
+
+        final Element element2 = Element.newBuilder("Classic White T-Shirt")
+                .subtitle("100% Cotton, 200% Comfortable")
+                .imageUrl(new URL("https://peterssendreceiveapp.ngrok.io/img/white-t-shirt.png"))
+                .buttons(Button.newListBuilder()
+                        .addUrlButton("Shop Now", new URL("https://peterssendreceiveapp.ngrok.io/shop?item=100"))
+                        .webviewHeightRatio(WebviewHeightRatio.TALL).toList().build())
+                .defaultAction(DefaultAction.newBuilder(new URL("https://peterssendreceiveapp.ngrok.io/view?item=100"))
                         .webviewHeightRatio(WebviewHeightRatio.TALL)
-                .done()
-                .toList()
-                    .addElement("Classic Blue T-Shirt")
-                    .subtitle("100% Cotton, 200% Comfortable")
-                    .imageUrl("https://peterssendreceiveapp.ngrok.io/img/blue-t-shirt.png")
-                    .buttons(Button.newListBuilder()
-                            .addUrlButton("Shop Now", "https://peterssendreceiveapp.ngrok.io/shop?item=101")
-                            .webviewHeightRatio(WebviewHeightRatio.TALL).toList().build())
-                .addDefaultAction("https://peterssendreceiveapp.ngrok.io/view?item=101")
+                        .build())
+                .build();
+
+        final Element element3 = Element.newBuilder("Classic Blue T-Shirt")
+                .subtitle("100% Cotton, 200% Comfortable")
+                .imageUrl(new URL("https://peterssendreceiveapp.ngrok.io/img/blue-t-shirt.png"))
+                .buttons(Button.newListBuilder()
+                        .addUrlButton("Shop Now", new URL("https://peterssendreceiveapp.ngrok.io/shop?item=101"))
+                        .webviewHeightRatio(WebviewHeightRatio.TALL).toList().build())
+                .defaultAction(DefaultAction.newBuilder(new URL("https://peterssendreceiveapp.ngrok.io/view?item=101"))
                         .webviewHeightRatio(WebviewHeightRatio.TALL)
-                .done()
-                .toList()
-                    .addElement("Classic Black T-Shirt")
-                    .subtitle("100% Cotton, 200% Comfortable")
-                    .imageUrl("https://peterssendreceiveapp.ngrok.io/img/black-t-shirt.png")
-                    .buttons(Button.newListBuilder()
-                            .addUrlButton("Shop Now", "https://peterssendreceiveapp.ngrok.io/shop?item=102")
-                            .webviewHeightRatio(WebviewHeightRatio.TALL).toList().build())
-                .addDefaultAction("https://peterssendreceiveapp.ngrok.io/view?item=102")
+                        .build())
+                .build();
+
+        final Element element4 = Element.newBuilder("Classic Black T-Shirt")
+                .subtitle("100% Cotton, 200% Comfortable")
+                .imageUrl(new URL("https://peterssendreceiveapp.ngrok.io/img/black-t-shirt.png"))
+                .buttons(Button.newListBuilder()
+                        .addUrlButton("Shop Now", new URL("https://peterssendreceiveapp.ngrok.io/shop?item=102"))
+                        .webviewHeightRatio(WebviewHeightRatio.TALL).toList().build())
+                .defaultAction(DefaultAction.newBuilder(new URL("https://peterssendreceiveapp.ngrok.io/view?item=102"))
                         .webviewHeightRatio(WebviewHeightRatio.TALL)
-                .done()
-                .toList()
-                .done()
+                        .build())
+                .build();
+
+        final ListTemplate listTemplate = ListTemplate.newBuilder(Arrays.asList(element1, element2, element3, element4))
+                .topElementStyle(TopElementStyle.LARGE)
+                .buttons(Button.newListBuilder()
+                        .addPostbackButton("View More", "payload").toList()
+                        .build())
                 .build();
 
         //when
@@ -561,9 +574,9 @@ public class MessengerSendClientTest {
 
         //then
         assertThat(messageResponse, is(notNullValue()));
-        assertThat(messageResponse.getRecipientId(), is(equalTo("USER_ID")));
-        assertThat(messageResponse.getMessageId(), is(equalTo("mid.1473372944816:94f72b88c597657974")));
-        assertThat(messageResponse.getAttachmentId(), is(equalTo("1745504518999123")));
+        assertThat(messageResponse.recipientId(), is(equalTo("USER_ID")));
+        assertThat(messageResponse.messageId(), is(equalTo("mid.1473372944816:94f72b88c597657974")));
+        assertThat(messageResponse.attachmentId(), is(equalTo(Optional.of("1745504518999123"))));
     }
 
     @Test
@@ -593,9 +606,9 @@ public class MessengerSendClientTest {
 
         //then
         assertThat(messengerApiException, is(notNullValue()));
-        assertThat(messengerApiException.getMessage(), is(equalTo("Invalid OAuth access token.")));
-        assertThat(messengerApiException.getType(), is(equalTo("OAuthException")));
-        assertThat(messengerApiException.getCode(), is(equalTo(190)));
-        assertThat(messengerApiException.getFbTraceId(), is(equalTo("BLBz/WZt8dN")));
+        assertThat(messengerApiException.message(), is(equalTo("Invalid OAuth access token.")));
+        assertThat(messengerApiException.type(), is(equalTo(Optional.of("OAuthException"))));
+        assertThat(messengerApiException.code(), is(equalTo(Optional.of(190))));
+        assertThat(messengerApiException.fbTraceId(), is(equalTo(Optional.of("BLBz/WZt8dN"))));
     }
 }

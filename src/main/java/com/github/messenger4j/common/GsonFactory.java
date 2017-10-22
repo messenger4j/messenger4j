@@ -26,6 +26,7 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * @author Andriy Koretskyy
@@ -39,12 +40,24 @@ public final class GsonFactory {
     public static Gson createGson() {
         return new GsonBuilder()
                 .registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory())
+                .registerTypeAdapter(Optional.class, new OptionalSerializer())
                 .registerTypeAdapter(Float.class, new FloatSerializer())
                 .registerTypeAdapter(Message.class, new MessageSerializer())
                 .registerTypeAdapter(RichMedia.class, new RichMediaSerializer())
                 .registerTypeAdapter(MessengerSettings.class, new MessengerSettingsSerializer())
                 .setFieldNamingPolicy(LOWER_CASE_WITH_UNDERSCORES)
                 .create();
+    }
+
+    private static final class OptionalSerializer implements JsonSerializer<Optional> {
+
+        @Override
+        public JsonElement serialize(Optional src, Type typeOfSrc, JsonSerializationContext context) {
+            if (!src.isPresent()) {
+                return null;
+            }
+            return context.serialize(src.get());
+        }
     }
 
     /**

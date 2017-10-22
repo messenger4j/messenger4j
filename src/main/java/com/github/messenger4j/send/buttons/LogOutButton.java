@@ -1,9 +1,14 @@
 package com.github.messenger4j.send.buttons;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
 /**
  * @author Max Grabenhorst
  * @since 0.7.0
  */
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public final class LogOutButton extends Button {
 
     private LogOutButton() {
@@ -18,21 +23,6 @@ public final class LogOutButton extends Button {
     @Override
     public LogOutButton asLogOutButton() {
         return this;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "LogOutButton{} super=" + super.toString();
     }
 
     /**

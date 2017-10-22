@@ -15,18 +15,16 @@ public final class MessageSerializer implements JsonSerializer<Message> {
     @Override
     public JsonElement serialize(Message src, Type typeOfSrc, JsonSerializationContext context) {
         final JsonObject messageObject = new JsonObject();
-        messageObject.addProperty("text", src.text());
-        if (src.richMedia() != null) {
-            messageObject.add("attachment", context.serialize(src.richMedia()));
-        }
-        if (src.template() != null) {
+        src.text().ifPresent(text -> messageObject.addProperty("text", text));
+        src.richMedia().ifPresent(richMedia -> messageObject.add("attachment", context.serialize(richMedia)));
+        src.template().ifPresent(template -> {
             final JsonObject attachmentObject = new JsonObject();
             attachmentObject.addProperty("type", "template");
-            attachmentObject.add("payload", context.serialize(src.template()));
+            attachmentObject.add("payload", context.serialize(template));
             messageObject.add("attachment", attachmentObject);
-        }
-        messageObject.add("quick_replies", context.serialize(src.quickReplies()));
-        messageObject.addProperty("metadata", src.metadata());
+        });
+        src.quickReplies().ifPresent(quickReplies -> messageObject.add("quick_replies", context.serialize(quickReplies)));
+        src.metadata().ifPresent(metadata -> messageObject.addProperty("metadata", metadata));
         return messageObject;
     }
 }

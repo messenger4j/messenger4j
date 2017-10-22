@@ -1,15 +1,19 @@
 package com.github.messenger4j.send;
 
-import com.github.messenger4j.internal.PreConditions;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.ToString;
 
 /**
  * @author Max Grabenhorst
  * @since 0.6.0
  */
+@ToString
+@EqualsAndHashCode
 public final class QuickReply {
 
     private final ContentType contentType;
@@ -35,46 +39,20 @@ public final class QuickReply {
         imageUrl = null;
     }
 
-    public ContentType getContentType() {
+    public ContentType contentType() {
         return contentType;
     }
 
-    public String getTitle() {
-        return this.title;
+    public Optional<String> title() {
+        return Optional.ofNullable(this.title);
     }
 
-    public String getPayload() {
-        return this.payload;
+    public Optional<String> payload() {
+        return Optional.ofNullable(this.payload);
     }
 
-    public String getImageUrl() {
-        return this.imageUrl;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        QuickReply that = (QuickReply) o;
-        return contentType == that.contentType &&
-                Objects.equals(title, that.title) &&
-                Objects.equals(payload, that.payload) &&
-                Objects.equals(imageUrl, that.imageUrl);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(contentType, title, payload, imageUrl);
-    }
-
-    @Override
-    public String toString() {
-        return "QuickReply{" +
-                "contentType=" + contentType +
-                ", title='" + title + '\'' +
-                ", payload='" + payload + '\'' +
-                ", imageUrl='" + imageUrl + '\'' +
-                '}';
+    public Optional<String> imageUrl() {
+        return Optional.ofNullable(this.imageUrl);
     }
 
     /**
@@ -98,7 +76,7 @@ public final class QuickReply {
             this.quickReplies = new ArrayList<>(10);
         }
 
-        public TextBuilder addTextQuickReply(String title, String payload) {
+        public TextBuilder addTextQuickReply(@NonNull String title, @NonNull String payload) {
             return new TextBuilder(title, payload, this);
         }
 
@@ -122,9 +100,6 @@ public final class QuickReply {
      */
     public static final class TextBuilder {
 
-        private static final int TITLE_CHARACTER_LIMIT = 20;
-        private static final int PAYLOAD_CHARACTER_LIMIT = 1000;
-
         private final ContentType contentType;
         private final String title;
         private final String payload;
@@ -132,20 +107,13 @@ public final class QuickReply {
         private final ListBuilder listBuilder;
 
         private TextBuilder(String title, String payload, ListBuilder listBuilder) {
-            PreConditions.notNullOrBlank(title, "title");
-            PreConditions.lengthNotGreaterThan(title, TITLE_CHARACTER_LIMIT, "title");
-
-            PreConditions.notNullOrBlank(payload, "payload");
-            PreConditions.lengthNotGreaterThan(payload, PAYLOAD_CHARACTER_LIMIT, "payload");
-
             this.contentType = ContentType.TEXT;
             this.title = title;
             this.payload = payload;
             this.listBuilder = listBuilder;
         }
 
-        public TextBuilder imageUrl(String imageUrl) {
-            PreConditions.notNullOrBlank(imageUrl, "imageUrl");
+        public TextBuilder imageUrl(@NonNull String imageUrl) {
             this.imageUrl = imageUrl;
             return this;
         }

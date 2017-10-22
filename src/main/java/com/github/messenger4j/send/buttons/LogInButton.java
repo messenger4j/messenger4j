@@ -1,15 +1,18 @@
 package com.github.messenger4j.send.buttons;
 
-import com.github.messenger4j.internal.PreConditions;
-import java.util.Objects;
+import java.net.URL;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * @author Max Grabenhorst
  * @since 0.7.0
  */
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public final class LogInButton extends Button {
 
-    private final String url;
+    private final URL url;
 
     private LogInButton(Builder builder) {
         super(ButtonType.ACCOUNT_LINK);
@@ -26,29 +29,8 @@ public final class LogInButton extends Button {
         return this;
     }
 
-    public String getUrl() {
+    public URL url() {
         return url;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        LogInButton that = (LogInButton) o;
-        return Objects.equals(url, that.url);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(super.hashCode(), url);
-    }
-
-    @Override
-    public String toString() {
-        return "LogInButton{" +
-                "url='" + url + '\'' +
-                "} super=" + super.toString();
     }
 
     /**
@@ -57,13 +39,10 @@ public final class LogInButton extends Button {
      */
     public static final class Builder {
 
-        private final String url;
+        private final URL url;
         private final ListBuilder listBuilder;
 
-        Builder(String url, ListBuilder listBuilder) {
-            PreConditions.notNullOrBlank(url, "url");
-            PreConditions.startsWith(url, "https", "url");
-
+        Builder(URL url, ListBuilder listBuilder) {
             this.url = url;
             this.listBuilder = listBuilder;
         }

@@ -16,8 +16,7 @@ public final class OptInEvent extends BaseEvent {
 
     private final String refPayload;
 
-    public OptInEvent(@NonNull String senderId, @NonNull String recipientId, @NonNull Instant timestamp,
-                      String refPayload) {
+    public OptInEvent(@NonNull String senderId, @NonNull String recipientId, @NonNull Instant timestamp, String refPayload) {
         super(senderId, recipientId, timestamp);
         this.refPayload = refPayload;
     }

@@ -33,6 +33,6 @@ public final class AccountLinkingEvent extends BaseEvent {
     }
 
     public enum Status {
-        LINKED, UNLINKED;
+        LINKED, UNLINKED
     }
 }

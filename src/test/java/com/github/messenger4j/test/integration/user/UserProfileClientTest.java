@@ -4,7 +4,6 @@ import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.GET;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -18,6 +17,7 @@ import com.github.messenger4j.common.MessengerHttpClient.HttpResponse;
 import com.github.messenger4j.exceptions.MessengerApiException;
 import com.github.messenger4j.user.UserProfile;
 import com.github.messenger4j.v3.Messenger;
+import java.util.Optional;
 import org.junit.Test;
 
 /**
@@ -56,7 +56,7 @@ public class UserProfileClientTest {
         when(mockHttpClient.execute(eq(GET), anyString(), isNull())).thenReturn(successfulResponse);
 
         //when
-        final UserProfile userProfile = messenger.queryUserProfileById(userId);
+        final UserProfile userProfile = messenger.queryUserProfile(userId);
 
         //then
         final String expectedRequestUrl = String.format(FB_GRAPH_API_URL, userId, PAGE_ACCESS_TOKEN);
@@ -75,8 +75,7 @@ public class UserProfileClientTest {
         assertThat(userProfile.lastAdReferral().isPresent(), is(true));
         assertThat(userProfile.lastAdReferral().get().source(), is(equalTo("ADS")));
         assertThat(userProfile.lastAdReferral().get().type(), is(equalTo("OPEN_THREAD")));
-        assertThat(userProfile.lastAdReferral().get().adId().isPresent(), is(true));
-        assertThat(userProfile.lastAdReferral().get().adId().get(), is(equalTo("6045246247433")));
+        assertThat(userProfile.lastAdReferral().get().adId(), is(equalTo(Optional.of("6045246247433"))));
     }
 
     @Test
@@ -88,17 +87,17 @@ public class UserProfileClientTest {
         //when
         MessengerApiException messengerApiException = null;
         try {
-            messenger.queryUserProfileById("USER_ID");
+            messenger.queryUserProfile("USER_ID");
         } catch (MessengerApiException e) {
             messengerApiException = e;
         }
 
         //then
         assertThat(messengerApiException, is(notNullValue()));
-        assertThat(messengerApiException.getMessage(), is(equalTo("The response JSON does not contain any key/value pair")));
-        assertThat(messengerApiException.getType(), is(nullValue()));
-        assertThat(messengerApiException.getCode(), is(nullValue()));
-        assertThat(messengerApiException.getFbTraceId(), is(nullValue()));
+        assertThat(messengerApiException.message(), is(equalTo("The response JSON does not contain any key/value pair")));
+        assertThat(messengerApiException.type(), is(Optional.empty()));
+        assertThat(messengerApiException.code(), is(Optional.empty()));
+        assertThat(messengerApiException.fbTraceId(), is(Optional.empty()));
     }
 
     @Test
@@ -117,16 +116,16 @@ public class UserProfileClientTest {
         //when
         MessengerApiException messengerApiException = null;
         try {
-            messenger.queryUserProfileById("USER_ID");
+            messenger.queryUserProfile("USER_ID");
         } catch (MessengerApiException e) {
             messengerApiException = e;
         }
 
         //then
         assertThat(messengerApiException, is(notNullValue()));
-        assertThat(messengerApiException.getMessage(), is(equalTo("Invalid OAuth access token.")));
-        assertThat(messengerApiException.getType(), is(equalTo("OAuthException")));
-        assertThat(messengerApiException.getCode(), is(equalTo(190)));
-        assertThat(messengerApiException.getFbTraceId(), is(equalTo("BLBz/WZt8dN")));
+        assertThat(messengerApiException.message(), is(equalTo("Invalid OAuth access token.")));
+        assertThat(messengerApiException.type(), is(equalTo(Optional.of("OAuthException"))));
+        assertThat(messengerApiException.code(), is(equalTo(Optional.of(190))));
+        assertThat(messengerApiException.fbTraceId(), is(equalTo(Optional.of("BLBz/WZt8dN"))));
     }
 }

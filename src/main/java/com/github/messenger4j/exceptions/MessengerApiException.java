@@ -1,14 +1,9 @@
 package com.github.messenger4j.exceptions;
 
-import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_CODE;
-import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_ERROR;
-import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_FB_TRACE_ID;
-import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_MESSAGE;
-import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_TYPE;
-import static com.github.messenger4j.internal.JsonHelper.getPropertyAsInt;
-import static com.github.messenger4j.internal.JsonHelper.getPropertyAsString;
-
-import com.google.gson.JsonObject;
+import java.util.Optional;
+import lombok.EqualsAndHashCode;
+import lombok.NonNull;
+import lombok.ToString;
 
 /**
  * Thrown to indicate that a Messenger Platform Send API request failed.
@@ -24,52 +19,34 @@ import com.google.gson.JsonObject;
  * @author Max Grabenhorst
  * @since 0.6.0
  */
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public final class MessengerApiException extends Exception {
 
     private final String type;
     private final Integer code;
     private final String fbTraceId;
 
-    public static MessengerApiException fromJson(JsonObject jsonObject) {
-        final String message = getPropertyAsString(jsonObject, PROP_ERROR, PROP_MESSAGE);
-        final String type = getPropertyAsString(jsonObject, PROP_ERROR, PROP_TYPE);
-        final Integer code = getPropertyAsInt(jsonObject, PROP_ERROR, PROP_CODE);
-        final String fbTraceId = getPropertyAsString(jsonObject, PROP_ERROR, PROP_FB_TRACE_ID);
-        return new MessengerApiException(message, type, code, fbTraceId);
-    }
-
-    public MessengerApiException(String message, String type, Integer code, String fbTraceId) {
+    public MessengerApiException(@NonNull String message, String type, Integer code, String fbTraceId) {
         super(message);
         this.type = type;
         this.code = code;
         this.fbTraceId = fbTraceId;
     }
 
-    @Override
-    public String getMessage() {
+    public String message() {
         return super.getMessage();
     }
 
-    public String getType() {
-        return type;
+    public Optional<String> type() {
+        return Optional.ofNullable(type);
     }
 
-    public Integer getCode() {
-        return code;
+    public Optional<Integer> code() {
+        return Optional.ofNullable(code);
     }
 
-    public String getFbTraceId() {
-        return fbTraceId;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("MessengerApiException{");
-        sb.append("message='").append(getMessage()).append('\'');
-        sb.append(", type='").append(type).append('\'');
-        sb.append(", code=").append(code);
-        sb.append(", fbTraceId='").append(fbTraceId).append('\'');
-        sb.append('}');
-        return sb.toString();
+    public Optional<String> fbTraceId() {
+        return Optional.ofNullable(fbTraceId);
     }
 }

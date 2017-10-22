@@ -1,5 +1,7 @@
 package com.github.messenger4j.exceptions;
 
+import lombok.NonNull;
+
 /**
  * Thrown to indicate that a Messenger Platform I/O operation failed or was interrupted.
  *
@@ -8,7 +10,7 @@ package com.github.messenger4j.exceptions;
  */
 public final class MessengerIOException extends Exception {
 
-    public MessengerIOException(Throwable cause) {
+    public MessengerIOException(@NonNull Throwable cause) {
         super(cause);
     }
 }

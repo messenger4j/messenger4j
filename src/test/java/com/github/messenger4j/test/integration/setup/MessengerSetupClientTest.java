@@ -34,6 +34,7 @@ import com.github.messenger4j.v3.PersistentMenu;
 import com.github.messenger4j.v3.SupportedLocale;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -253,7 +254,7 @@ public class MessengerSetupClientTest {
 
         //then
         assertThat(setupResponse, is(notNullValue()));
-        assertThat(setupResponse.getResult(), is(equalTo("success")));
+        assertThat(setupResponse.result(), is(equalTo("success")));
     }
 
     @Test
@@ -280,10 +281,10 @@ public class MessengerSetupClientTest {
 
         //then
         assertThat(messengerApiException, is(notNullValue()));
-        assertThat(messengerApiException.getMessage(), is(equalTo("Invalid OAuth access token.")));
-        assertThat(messengerApiException.getType(), is(equalTo("OAuthException")));
-        assertThat(messengerApiException.getCode(), is(equalTo(190)));
-        assertThat(messengerApiException.getFbTraceId(), is(equalTo("BLBz/WZt8dN")));
+        assertThat(messengerApiException.message(), is(equalTo("Invalid OAuth access token.")));
+        assertThat(messengerApiException.type(), is(equalTo(Optional.of("OAuthException"))));
+        assertThat(messengerApiException.code(), is(equalTo(Optional.of(190))));
+        assertThat(messengerApiException.fbTraceId(), is(equalTo(Optional.of("BLBz/WZt8dN"))));
     }
 
     @Test
@@ -297,7 +298,7 @@ public class MessengerSetupClientTest {
 
         //then
         assertThat(setupResponse, is(notNullValue()));
-        assertThat(setupResponse.getResult(), is(equalTo("success")));
+        assertThat(setupResponse.result(), is(equalTo("success")));
     }
 
     @Test
@@ -323,9 +324,9 @@ public class MessengerSetupClientTest {
 
         //then
         assertThat(messengerApiException, is(notNullValue()));
-        assertThat(messengerApiException.getMessage(), is(equalTo("Invalid OAuth access token.")));
-        assertThat(messengerApiException.getType(), is(equalTo("OAuthException")));
-        assertThat(messengerApiException.getCode(), is(equalTo(190)));
-        assertThat(messengerApiException.getFbTraceId(), is(equalTo("BLBz/WZt8dN")));
+        assertThat(messengerApiException.message(), is(equalTo("Invalid OAuth access token.")));
+        assertThat(messengerApiException.type(), is(equalTo(Optional.of("OAuthException"))));
+        assertThat(messengerApiException.code(), is(equalTo(Optional.of(190))));
+        assertThat(messengerApiException.fbTraceId(), is(equalTo(Optional.of("BLBz/WZt8dN"))));
     }
 }

@@ -15,12 +15,16 @@ import com.github.messenger4j.common.MessengerHttpClient;
 import com.github.messenger4j.common.MessengerHttpClient.HttpMethod;
 import com.github.messenger4j.common.MessengerHttpClient.HttpResponse;
 import com.github.messenger4j.exceptions.MessengerApiException;
+import com.github.messenger4j.exceptions.MessengerApiExceptionFactory;
 import com.github.messenger4j.exceptions.MessengerIOException;
 import com.github.messenger4j.exceptions.MessengerVerificationException;
 import com.github.messenger4j.receive.SignatureVerifier;
 import com.github.messenger4j.send.MessageResponse;
+import com.github.messenger4j.send.MessageResponseFactory;
 import com.github.messenger4j.setup.SetupResponse;
+import com.github.messenger4j.setup.SetupResponseFactory;
 import com.github.messenger4j.user.UserProfile;
+import com.github.messenger4j.user.UserProfileFactory;
 import com.github.messenger4j.v3.receive.Event;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -42,6 +46,26 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class Messenger {
+
+    /**
+     * Constant for the {@code hub.mode} request parameter name.
+     */
+    public static final String MODE_REQUEST_PARAM_NAME = "hub.mode";
+
+    /**
+     * Constant for the {@code hub.challenge} request parameter name.
+     */
+    public static final String CHALLENGE_REQUEST_PARAM_NAME = "hub.challenge";
+
+    /**
+     * Constant for the {@code hub.verify_token} request parameter name.
+     */
+    public static final String VERIFY_TOKEN_REQUEST_PARAM_NAME = "hub.verify_token";
+
+    /**
+     * Constant for the {@code X-Hub-Signature} header name.
+     */
+    public static final String SIGNATURE_HEADER_NAME = "X-Hub-Signature";
 
     public static final String GREETING_TEXT_USER_FIRST_NAME = "{{user_first_name}}";
     public static final String GREETING_TEXT_USER_LAST_NAME = "{{user_last_name}}";
@@ -90,7 +114,7 @@ public final class Messenger {
     public MessageResponse send(@NonNull MessagePayload messagePayload)
             throws MessengerApiException, MessengerIOException {
 
-        return doRequest(POST, messagesRequestUrl, messagePayload, MessageResponse::fromJson);
+        return doRequest(POST, messagesRequestUrl, messagePayload, MessageResponseFactory::create);
     }
 
     public void onReceiveEvents(@NonNull String requestPayload, String signature,
@@ -133,16 +157,16 @@ public final class Messenger {
         }
     }
 
-    public UserProfile queryUserProfileById(String userId) throws MessengerApiException, MessengerIOException {
+    public UserProfile queryUserProfile(@NonNull String userId) throws MessengerApiException, MessengerIOException {
         final String requestUrl = String.format(FB_GRAPH_API_URL_USER, userId, pageAccessToken);
-        return doRequest(GET, requestUrl, null, UserProfile::fromJson);
+        return doRequest(GET, requestUrl, null, UserProfileFactory::create);
     }
 
 
     public SetupResponse updateSettings(@NonNull MessengerSettings messengerSettings)
             throws MessengerApiException, MessengerIOException {
 
-        return doRequest(POST, messengerProfileRequestUrl, messengerSettings, SetupResponse::fromJson);
+        return doRequest(POST, messengerProfileRequestUrl, messengerSettings, SetupResponseFactory::create);
     }
 
     public SetupResponse deleteSettings(@NonNull MessengerSettingProperty property, @NonNull MessengerSettingProperty... properties)
@@ -151,7 +175,7 @@ public final class Messenger {
         final List<MessengerSettingProperty> messengerSettingPropertyList = new ArrayList<>(Arrays.asList(properties));
         messengerSettingPropertyList.add(property);
         final DeleteMessengerSettingsPayload payload = DeleteMessengerSettingsPayload.of(messengerSettingPropertyList);
-        return doRequest(DELETE, messengerProfileRequestUrl, payload, SetupResponse::fromJson);
+        return doRequest(DELETE, messengerProfileRequestUrl, payload, SetupResponseFactory::create);
     }
 
     private <R> R doRequest(@NonNull HttpMethod httpMethod, @NonNull String requestUrl, Object payload,
@@ -170,7 +194,7 @@ public final class Messenger {
             if (httpResponse.getStatusCode() >= 200 && httpResponse.getStatusCode() < 300) {
                 return responseTransformer.apply(responseJsonObject);
             } else {
-                throw MessengerApiException.fromJson(responseJsonObject);
+                throw MessengerApiExceptionFactory.create(responseJsonObject);
             }
         } catch (IOException e) {
             throw new MessengerIOException(e);

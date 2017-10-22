@@ -1,12 +1,11 @@
 package com.github.messenger4j.v3;
 
-import static com.github.messenger4j.v3.RichMedia.Type.IMAGE;
-
 import com.github.messenger4j.send.QuickReply;
 import com.github.messenger4j.send.templates.Template;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
@@ -49,24 +48,24 @@ public final class Message {
         this.metadata = metadata;
     }
 
-    public String text() {
-        return text;
+    public Optional<String> text() {
+        return Optional.ofNullable(text);
     }
 
-    public RichMedia richMedia() {
-        return richMedia;
+    public Optional<RichMedia> richMedia() {
+        return Optional.ofNullable(richMedia);
     }
 
-    public Template template() {
-        return template;
+    public Optional<Template> template() {
+        return Optional.ofNullable(template);
     }
 
-    public List<QuickReply> quickReplies() {
-        return quickReplies;
+    public Optional<List<QuickReply>> quickReplies() {
+        return Optional.ofNullable(quickReplies);
     }
 
-    public String metadata() {
-        return metadata;
+    public Optional<String> metadata() {
+        return Optional.ofNullable(metadata);
     }
 
     public static final class Builder {
@@ -113,9 +112,6 @@ public final class Message {
         public Message build() {
             if (text == null && richMedia == null && template == null) {
                 throw new IllegalStateException("At least text, or richMedia, or template must be set");
-            }
-            if (quickReplies != null && richMedia != null && richMedia.type() != IMAGE) {
-                throw new IllegalStateException("Not allowed to set quickReplies when richMedia type is other than IMAGE");
             }
             return new Message(text, richMedia, template, quickReplies, metadata);
         }

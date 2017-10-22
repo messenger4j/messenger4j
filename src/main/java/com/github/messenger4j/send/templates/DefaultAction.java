@@ -1,6 +1,9 @@
-package com.github.messenger4j.send.buttons;
+package com.github.messenger4j.send.templates;
+
+import static com.github.messenger4j.send.buttons.Button.ButtonType.WEB_URL;
 
 import com.github.messenger4j.common.WebviewHeightRatio;
+import com.github.messenger4j.send.buttons.Button;
 import java.net.URL;
 import java.util.Optional;
 import lombok.EqualsAndHashCode;
@@ -9,39 +12,29 @@ import lombok.ToString;
 
 /**
  * @author Max Grabenhorst
- * @since 0.6.0
+ * @since 1.0.0
  */
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
-public final class UrlButton extends Button {
+@ToString
+@EqualsAndHashCode
+public final class DefaultAction {
 
-    private final String title;
+    private final Button.ButtonType type;
     private final URL url;
     private final WebviewHeightRatio webviewHeightRatio;
     private final Boolean messengerExtensions;
-    private final String fallbackUrl;
+    private final URL fallbackUrl;
 
-    private UrlButton(Builder builder) {
-        super(ButtonType.WEB_URL);
-        title = builder.title;
-        url = builder.url;
-        webviewHeightRatio = builder.webviewHeightRatio;
-        messengerExtensions = builder.messengerExtensions;
-        fallbackUrl = builder.fallbackUrl;
+    public static Builder newBuilder(@NonNull URL url) {
+        return new Builder(url);
     }
 
-    @Override
-    public boolean isUrlButton() {
-        return true;
-    }
-
-    @Override
-    public UrlButton asUrlButton() {
-        return this;
-    }
-
-    public String title() {
-        return title;
+    public DefaultAction(@NonNull URL url, WebviewHeightRatio webviewHeightRatio, Boolean messengerExtensions,
+                         URL fallbackUrl) {
+        this.type = WEB_URL;
+        this.url = url;
+        this.webviewHeightRatio = webviewHeightRatio;
+        this.messengerExtensions = messengerExtensions;
+        this.fallbackUrl = fallbackUrl;
     }
 
     public URL url() {
@@ -56,27 +49,23 @@ public final class UrlButton extends Button {
         return Optional.ofNullable(messengerExtensions);
     }
 
-    public Optional<String> fallbackUrl() {
+    public Optional<URL> fallbackUrl() {
         return Optional.ofNullable(fallbackUrl);
     }
 
     /**
      * @author Max Grabenhorst
-     * @since 0.6.0
+     * @since 0.1.0
      */
     public static final class Builder {
 
-        private final String title;
         private final URL url;
         private WebviewHeightRatio webviewHeightRatio;
         private Boolean messengerExtensions;
-        private String fallbackUrl;
-        private final ListBuilder listBuilder;
+        private URL fallbackUrl;
 
-        Builder(String title, URL url, ListBuilder listBuilder) {
-            this.title = title;
+        private Builder(URL url) {
             this.url = url;
-            this.listBuilder = listBuilder;
         }
 
         public Builder webviewHeightRatio(@NonNull WebviewHeightRatio webviewHeightRatio) {
@@ -89,13 +78,13 @@ public final class UrlButton extends Button {
             return this;
         }
 
-        public Builder fallbackUrl(@NonNull String fallbackUrl) {
+        public Builder fallbackUrl(@NonNull URL fallbackUrl) {
             this.fallbackUrl = fallbackUrl;
             return this;
         }
 
-        public ListBuilder toList() {
-            return this.listBuilder.addButtonToList(new UrlButton(this));
+        public DefaultAction build() {
+            return new DefaultAction(url, webviewHeightRatio, messengerExtensions, fallbackUrl);
         }
     }
 }
