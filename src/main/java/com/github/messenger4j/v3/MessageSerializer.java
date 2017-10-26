@@ -13,18 +13,28 @@ import java.lang.reflect.Type;
 public final class MessageSerializer implements JsonSerializer<Message> {
 
     @Override
-    public JsonElement serialize(Message src, Type typeOfSrc, JsonSerializationContext context) {
+    public JsonElement serialize(Message message, Type typeOfSrc, JsonSerializationContext context) {
         final JsonObject messageObject = new JsonObject();
-        src.text().ifPresent(text -> messageObject.addProperty("text", text));
-        src.richMedia().ifPresent(richMedia -> messageObject.add("attachment", context.serialize(richMedia)));
-        src.template().ifPresent(template -> {
+
+        if (message instanceof TextMessage) {
+            final TextMessage textMessage = (TextMessage) message;
+            messageObject.addProperty("text", textMessage.text());
+        }
+        if (message instanceof RichMediaMessage) {
+            final RichMediaMessage richMediaMessage = (RichMediaMessage) message;
+            messageObject.add("attachment", context.serialize(richMediaMessage.richMediaAsset(), RichMediaAsset.class));
+        }
+        if (message instanceof TemplateMessage) {
+            final TemplateMessage templateMessage = (TemplateMessage) message;
             final JsonObject attachmentObject = new JsonObject();
             attachmentObject.addProperty("type", "template");
-            attachmentObject.add("payload", context.serialize(template));
+            attachmentObject.add("payload", context.serialize(templateMessage.template()));
             messageObject.add("attachment", attachmentObject);
-        });
-        src.quickReplies().ifPresent(quickReplies -> messageObject.add("quick_replies", context.serialize(quickReplies)));
-        src.metadata().ifPresent(metadata -> messageObject.addProperty("metadata", metadata));
+        }
+
+        message.quickReplies().ifPresent(quickReplies -> messageObject.add("quick_replies", context.serialize(quickReplies)));
+        message.metadata().ifPresent(metadata -> messageObject.addProperty("metadata", metadata));
+
         return messageObject;
     }
 }

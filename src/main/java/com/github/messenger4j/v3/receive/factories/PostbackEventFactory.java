@@ -13,6 +13,7 @@ import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_TIMESTAM
 import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_TITLE;
 import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_TYPE;
 import static com.github.messenger4j.internal.JsonHelper.getPropertyAsInstant;
+import static com.github.messenger4j.internal.JsonHelper.getPropertyAsJsonObject;
 import static com.github.messenger4j.internal.JsonHelper.getPropertyAsString;
 import static com.github.messenger4j.internal.JsonHelper.hasProperty;
 
@@ -20,6 +21,7 @@ import com.github.messenger4j.v3.receive.PostbackEvent;
 import com.github.messenger4j.v3.receive.Referral;
 import com.google.gson.JsonObject;
 import java.time.Instant;
+import java.util.Optional;
 import lombok.NonNull;
 
 /**
@@ -35,21 +37,25 @@ public final class PostbackEventFactory implements BaseEventFactory<PostbackEven
 
     @Override
     public PostbackEvent createEventFromJson(@NonNull JsonObject messagingEvent) {
-        final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID);
-        final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID);
-        final Instant timestamp = getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP).get();
-        final String title = getPropertyAsString(messagingEvent, PROP_POSTBACK, PROP_TITLE);
-        final String payload = getPropertyAsString(messagingEvent, PROP_POSTBACK, PROP_PAYLOAD);
+        final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
+                .orElseThrow(IllegalArgumentException::new);
+        final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
+                .orElseThrow(IllegalArgumentException::new);
+        final Instant timestamp = getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP)
+                .orElseThrow(IllegalArgumentException::new);
+        final String title = getPropertyAsString(messagingEvent, PROP_POSTBACK, PROP_TITLE)
+                .orElseThrow(IllegalArgumentException::new);
+        final Optional<String> payload = getPropertyAsString(messagingEvent, PROP_POSTBACK, PROP_PAYLOAD);
 
-        Referral referral = null;
-        if (hasProperty(messagingEvent, PROP_POSTBACK, PROP_REFERRAL)) {
-            final String source = getPropertyAsString(messagingEvent, PROP_POSTBACK, PROP_REFERRAL, PROP_SOURCE);
-            final String type = getPropertyAsString(messagingEvent, PROP_POSTBACK, PROP_REFERRAL, PROP_TYPE);
-            final String refPayload = getPropertyAsString(messagingEvent, PROP_POSTBACK, PROP_REFERRAL, PROP_REF);
-            final String adId = getPropertyAsString(messagingEvent, PROP_POSTBACK, PROP_REFERRAL, PROP_AD_ID);
+        final Optional<Referral> referral = getPropertyAsJsonObject(messagingEvent, PROP_POSTBACK, PROP_REFERRAL)
+                .map(jsonObject -> {
+                    final String source = getPropertyAsString(jsonObject, PROP_SOURCE).orElseThrow(IllegalArgumentException::new);
+                    final String type = getPropertyAsString(jsonObject, PROP_TYPE).orElseThrow(IllegalArgumentException::new);
+                    final Optional<String> refPayload = getPropertyAsString(jsonObject, PROP_REF);
+                    final Optional<String> adId = getPropertyAsString(jsonObject, PROP_AD_ID);
 
-            referral = new Referral(source, type, refPayload, adId);
-        }
+                    return new Referral(source, type, refPayload, adId);
+                });
 
         return new PostbackEvent(senderId, recipientId, timestamp, title, payload, referral);
     }

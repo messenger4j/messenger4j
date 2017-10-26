@@ -2,10 +2,8 @@ package com.github.messenger4j.test.integration.setup;
 
 import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.DELETE;
 import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.POST;
-import static com.github.messenger4j.common.WebviewHeightRatio.FULL;
-import static com.github.messenger4j.setup.CallToActionType.NESTED;
-import static com.github.messenger4j.setup.CallToActionType.POSTBACK;
-import static com.github.messenger4j.setup.CallToActionType.WEB_URL;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -21,9 +19,12 @@ import static org.mockito.Mockito.when;
 import com.github.messenger4j.common.MessengerHttpClient;
 import com.github.messenger4j.common.MessengerHttpClient.HttpMethod;
 import com.github.messenger4j.common.MessengerHttpClient.HttpResponse;
+import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.exceptions.MessengerApiException;
-import com.github.messenger4j.setup.CallToAction;
+import com.github.messenger4j.setup.NestedCallToAction;
+import com.github.messenger4j.setup.PostbackCallToAction;
 import com.github.messenger4j.setup.SetupResponse;
+import com.github.messenger4j.setup.UrlCallToAction;
 import com.github.messenger4j.v3.Greeting;
 import com.github.messenger4j.v3.LocalizedGreeting;
 import com.github.messenger4j.v3.LocalizedPersistentMenu;
@@ -31,10 +32,10 @@ import com.github.messenger4j.v3.Messenger;
 import com.github.messenger4j.v3.MessengerSettingProperty;
 import com.github.messenger4j.v3.MessengerSettings;
 import com.github.messenger4j.v3.PersistentMenu;
+import com.github.messenger4j.v3.StartButton;
 import com.github.messenger4j.v3.SupportedLocale;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -42,6 +43,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
  * @author Andriy Koretskyy
+ * @author Max Grabenhorst
  * @since 0.8.0
  */
 public class MessengerSetupClientTest {
@@ -49,20 +51,20 @@ public class MessengerSetupClientTest {
     private static final String PAGE_ACCESS_TOKEN = "PAGE_ACCESS_TOKEN";
 
     private final MessengerHttpClient mockHttpClient = mock(MessengerHttpClient.class);
-    private final HttpResponse fakeResponse = new HttpResponse(200,
-            "{\"result\": \"Successfully added new_thread's CTAs\"}");
+    private final HttpResponse fakeResponse = new HttpResponse(200, "{\"result\": \"Successfully added new_thread's CTAs\"}");
 
-    private final Messenger messenger = Messenger.create(PAGE_ACCESS_TOKEN, "test", "test", mockHttpClient);
+    private final Messenger messenger = Messenger.create(PAGE_ACCESS_TOKEN, "test", "test", of(mockHttpClient));
 
     @Before
     public void beforeEach() throws Exception {
-        when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(fakeResponse);
+        when(mockHttpClient.execute(any(HttpMethod.class), anyString(), any())).thenReturn(fakeResponse);
     }
 
     @Test
     public void shouldSetupStartButton() throws Exception {
         //given
-        final MessengerSettings messengerSettings = MessengerSettings.newBuilder().startButton("Button pressed").build();
+        final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("Button pressed")),
+                empty(), empty());
 
         //when
         messenger.updateSettings(messengerSettings);
@@ -99,7 +101,7 @@ public class MessengerSetupClientTest {
         //given
         final Greeting greeting = Greeting.create("Hello!", LocalizedGreeting.create(SupportedLocale.en_US,
                 "Timeless apparel for the masses."));
-        final MessengerSettings messengerSettings = MessengerSettings.newBuilder().greeting(greeting).build();
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), of(greeting), empty());
 
         //when
         messenger.updateSettings(messengerSettings);
@@ -140,41 +142,20 @@ public class MessengerSetupClientTest {
     @Test
     public void shouldSetupPersistentMenu() throws Exception {
         //given
-        final CallToAction callToActionAA = CallToAction.newBuilder()
-                .title("Pay Bill")
-                .type(POSTBACK)
-                .payload("PAYBILL_PAYLOAD")
-                .build();
+        final PostbackCallToAction callToActionAA = PostbackCallToAction.create("Pay Bill", "PAYBILL_PAYLOAD");
+        final PostbackCallToAction callToActionAB = PostbackCallToAction.create("History", "HISTORY_PAYLOAD");
+        final PostbackCallToAction callToActionAC = PostbackCallToAction.create("Contact Info", "CONTACT_INFO_PAYLOAD");
 
-        final CallToAction callToActionAB = CallToAction.newBuilder()
-                .title("History")
-                .type(POSTBACK)
-                .payload("HISTORY_PAYLOAD")
-                .build();
+        final NestedCallToAction callToActionA = NestedCallToAction.create("My Account",
+                Arrays.asList(callToActionAA, callToActionAB, callToActionAC));
 
-        final CallToAction callToActionAC = CallToAction.newBuilder()
-                .title("Contact Info")
-                .type(POSTBACK)
-                .payload("CONTACT_INFO_PAYLOAD")
-                .build();
+        final UrlCallToAction callToActionB = UrlCallToAction.create("Latest News",
+                new URL("http://petershats.parseapp.com/hat-news"), of(WebviewHeightRatio.FULL), empty(), empty());
 
-        final CallToAction callToActionA = CallToAction.newBuilder()
-                .title("My Account")
-                .type(NESTED)
-                .callToActions(Arrays.asList(callToActionAA, callToActionAB, callToActionAC))
-                .build();
+        final PersistentMenu persistentMenu = PersistentMenu.create(true, of(Arrays.asList(callToActionA, callToActionB)),
+                LocalizedPersistentMenu.create(SupportedLocale.zh_CN, false, empty()));
 
-        final CallToAction callToActionB = CallToAction.newBuilder()
-                .title("Latest News")
-                .type(WEB_URL)
-                .url(new URL("http://petershats.parseapp.com/hat-news"))
-                .webviewHeightRatio(FULL)
-                .build();
-
-        final PersistentMenu persistentMenu = PersistentMenu.create(true, Arrays.asList(callToActionA, callToActionB),
-                LocalizedPersistentMenu.create(SupportedLocale.zh_CN, false, null));
-
-        final MessengerSettings messengerSettings = MessengerSettings.newBuilder().persistentMenu(persistentMenu).build();
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(), of(persistentMenu));
 
         //when
         messenger.updateSettings(messengerSettings);
@@ -245,7 +226,7 @@ public class MessengerSetupClientTest {
     @Test
     public void shouldHandleUpdateSuccessResponse() throws Exception {
         //given
-        final MessengerSettings messengerSettings = MessengerSettings.newBuilder().startButton("test").build();
+        final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("test")), empty(), empty());
         final HttpResponse successfulResponse = new HttpResponse(200, "{\"result\": \"success\"}");
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(successfulResponse);
 
@@ -260,7 +241,7 @@ public class MessengerSetupClientTest {
     @Test
     public void shouldHandleUpdateErrorResponse() throws Exception {
         //given
-        final MessengerSettings messengerSettings = MessengerSettings.newBuilder().startButton("test").build();
+        final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("test")), empty(), empty());
         final HttpResponse errorResponse = new HttpResponse(401, "{\n" +
                 "  \"error\": {\n" +
                 "    \"message\": \"Invalid OAuth access token.\",\n" +
@@ -282,9 +263,9 @@ public class MessengerSetupClientTest {
         //then
         assertThat(messengerApiException, is(notNullValue()));
         assertThat(messengerApiException.message(), is(equalTo("Invalid OAuth access token.")));
-        assertThat(messengerApiException.type(), is(equalTo(Optional.of("OAuthException"))));
-        assertThat(messengerApiException.code(), is(equalTo(Optional.of(190))));
-        assertThat(messengerApiException.fbTraceId(), is(equalTo(Optional.of("BLBz/WZt8dN"))));
+        assertThat(messengerApiException.type(), is(equalTo(of("OAuthException"))));
+        assertThat(messengerApiException.code(), is(equalTo(of(190))));
+        assertThat(messengerApiException.fbTraceId(), is(equalTo(of("BLBz/WZt8dN"))));
     }
 
     @Test
@@ -325,8 +306,8 @@ public class MessengerSetupClientTest {
         //then
         assertThat(messengerApiException, is(notNullValue()));
         assertThat(messengerApiException.message(), is(equalTo("Invalid OAuth access token.")));
-        assertThat(messengerApiException.type(), is(equalTo(Optional.of("OAuthException"))));
-        assertThat(messengerApiException.code(), is(equalTo(Optional.of(190))));
-        assertThat(messengerApiException.fbTraceId(), is(equalTo(Optional.of("BLBz/WZt8dN"))));
+        assertThat(messengerApiException.type(), is(equalTo(of("OAuthException"))));
+        assertThat(messengerApiException.code(), is(equalTo(of(190))));
+        assertThat(messengerApiException.fbTraceId(), is(equalTo(of("BLBz/WZt8dN"))));
     }
 }

@@ -39,8 +39,8 @@ public final class ReceiptTemplate extends Template {
                                          @NonNull String paymentMethod,
                                          @NonNull String currency,
                                          @NonNull Summary summary) {
-        return new ReceiptTemplate(recipientName, orderNumber, paymentMethod, currency, summary, empty(),
-                empty(), empty(), empty(), empty(), empty(), empty());
+        return create(recipientName, orderNumber, paymentMethod, currency, summary, empty(), empty(), empty(), empty(),
+                empty(), empty(), empty());
     }
 
     public static ReceiptTemplate create(@NonNull String recipientName,
@@ -63,7 +63,7 @@ public final class ReceiptTemplate extends Template {
                             Summary summary, Optional<Address> address, Optional<List<ReceiptElement>> elements,
                             Optional<List<Adjustment>> adjustments, Optional<String> merchantName,
                             Optional<URL> orderUrl, Optional<Boolean> sharable, Optional<Instant> timestamp) {
-        super(TemplateType.RECEIPT);
+        super(Type.RECEIPT);
         this.recipientName = recipientName;
         this.orderNumber = orderNumber;
         this.paymentMethod = paymentMethod;

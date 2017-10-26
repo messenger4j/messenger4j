@@ -22,7 +22,7 @@ public final class ButtonTemplate extends Template {
     }
 
     private ButtonTemplate(String text, List<Button> buttons) {
-        super(TemplateType.BUTTON);
+        super(Type.BUTTON);
         this.text = text;
         this.buttons = buttons;
     }

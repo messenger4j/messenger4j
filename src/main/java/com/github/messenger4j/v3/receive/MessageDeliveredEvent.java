@@ -1,8 +1,7 @@
 package com.github.messenger4j.v3.receive;
 
+import com.github.messenger4j.internal.Lists;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import lombok.EqualsAndHashCode;
@@ -18,13 +17,13 @@ import lombok.ToString;
 public final class MessageDeliveredEvent extends BaseEvent {
 
     private final Instant watermark;
-    private final List<String> messageIds;
+    private final Optional<List<String>> messageIds;
 
     public MessageDeliveredEvent(@NonNull String senderId, @NonNull String recipientId, @NonNull Instant timestamp,
-                                 @NonNull Instant watermark, List<String> messageIds) {
+                                 @NonNull Instant watermark, @NonNull Optional<List<String>> messageIds) {
         super(senderId, recipientId, timestamp);
         this.watermark = watermark;
-        this.messageIds = messageIds != null ? Collections.unmodifiableList(new ArrayList<>(messageIds)) : null;
+        this.messageIds = messageIds.map(Lists::immutableList);
     }
 
     public Instant watermark() {
@@ -32,6 +31,6 @@ public final class MessageDeliveredEvent extends BaseEvent {
     }
 
     public Optional<List<String>> messageIds() {
-        return Optional.ofNullable(messageIds);
+        return messageIds;
     }
 }

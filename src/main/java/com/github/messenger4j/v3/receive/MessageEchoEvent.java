@@ -16,10 +16,10 @@ public final class MessageEchoEvent extends BaseEvent {
 
     private final String messageId;
     private final String appId;
-    private final String metadata;
+    private final Optional<String> metadata;
 
     public MessageEchoEvent(@NonNull String senderId, @NonNull String recipientId, @NonNull Instant timestamp,
-                            @NonNull String messageId, @NonNull String appId, String metadata) {
+                            @NonNull String messageId, @NonNull String appId, @NonNull Optional<String> metadata) {
         super(senderId, recipientId, timestamp);
         this.messageId = messageId;
         this.appId = appId;
@@ -35,6 +35,6 @@ public final class MessageEchoEvent extends BaseEvent {
     }
 
     public Optional<String> metadata() {
-        return Optional.ofNullable(metadata);
+        return metadata;
     }
 }

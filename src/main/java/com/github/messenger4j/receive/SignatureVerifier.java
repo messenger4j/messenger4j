@@ -4,7 +4,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import lombok.NonNull;
 
 /**
  * The {@code SignatureVerifier} is used to verify the provided signature of the payload in order to ensure
@@ -29,8 +28,7 @@ public final class SignatureVerifier {
      * @param appSecret the {@code Application Secret} of the Facebook App
      * @return {@code true} if the verification was successful, otherwise {@code false}
      */
-    public static boolean isSignatureValid(@NonNull String payload, @NonNull String signature,
-                                           @NonNull String appSecret) {
+    public static boolean isSignatureValid(String payload, String signature, String appSecret) {
         try {
             final Mac mac = Mac.getInstance(HMAC_SHA1);
             mac.init(new SecretKeySpec(appSecret.getBytes(), HMAC_SHA1));

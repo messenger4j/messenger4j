@@ -17,17 +17,18 @@ import lombok.ToString;
 public final class Element {
 
     private final String title;
-    private final String subtitle;
-    private final URL imageUrl;
-    private final DefaultAction defaultAction;
-    private final List<Button> buttons;
+    private final Optional<String> subtitle;
+    private final Optional<URL> imageUrl;
+    private final Optional<DefaultAction> defaultAction;
+    private final Optional<List<Button>> buttons;
 
-    public static Builder newBuilder(@NonNull String title) {
-        return new Builder(title);
+    public static Element create(@NonNull String title, @NonNull Optional<String> subtitle, @NonNull Optional<URL> imageUrl,
+                                 @NonNull Optional<DefaultAction> defaultAction, @NonNull Optional<List<Button>> buttons) {
+        return new Element(title, subtitle, imageUrl, defaultAction, buttons);
     }
 
-    public Element(@NonNull String title, String subtitle, URL imageUrl, DefaultAction defaultAction,
-                   List<Button> buttons) {
+    private Element(String title, Optional<String> subtitle, Optional<URL> imageUrl, Optional<DefaultAction> defaultAction,
+                    Optional<List<Button>> buttons) {
         this.title = title;
         this.subtitle = subtitle;
         this.imageUrl = imageUrl;
@@ -40,59 +41,18 @@ public final class Element {
     }
 
     public Optional<String> subtitle() {
-        return Optional.ofNullable(subtitle);
+        return subtitle;
     }
 
     public Optional<URL> imageUrl() {
-        return Optional.ofNullable(imageUrl);
+        return imageUrl;
     }
 
     public Optional<DefaultAction> defaultAction() {
-        return Optional.ofNullable(defaultAction);
+        return defaultAction;
     }
 
     public Optional<List<Button>> buttons() {
-        return Optional.ofNullable(buttons);
-    }
-
-    /**
-     * @author Max Grabenhorst
-     * @since 1.0.0
-     */
-    public static final class Builder {
-
-        private final String title;
-        private String subtitle;
-        private URL imageUrl;
-        private DefaultAction defaultAction;
-        private List<Button> buttons;
-
-        private Builder(String title) {
-            this.title = title;
-        }
-
-        public Builder subtitle(@NonNull String subtitle) {
-            this.subtitle = subtitle;
-            return this;
-        }
-
-        public Builder imageUrl(@NonNull URL imageUrl) {
-            this.imageUrl = imageUrl;
-            return this;
-        }
-
-        public Builder defaultAction(@NonNull DefaultAction defaultAction) {
-            this.defaultAction = defaultAction;
-            return this;
-        }
-
-        public Builder buttons(@NonNull List<Button> buttons) {
-            this.buttons = buttons;
-            return this;
-        }
-
-        public Element build() {
-            return new Element(title, subtitle, imageUrl, defaultAction, buttons);
-        }
+        return buttons;
     }
 }

@@ -2,6 +2,7 @@ package com.github.messenger4j.send.buttons;
 
 import java.net.URL;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
 
 /**
@@ -14,9 +15,13 @@ public final class LogInButton extends Button {
 
     private final URL url;
 
-    private LogInButton(Builder builder) {
-        super(ButtonType.ACCOUNT_LINK);
-        this.url = builder.url;
+    public static LogInButton create(@NonNull URL url) {
+        return new LogInButton(url);
+    }
+
+    private LogInButton(URL url) {
+        super(Type.ACCOUNT_LINK);
+        this.url = url;
     }
 
     @Override
@@ -31,24 +36,5 @@ public final class LogInButton extends Button {
 
     public URL url() {
         return url;
-    }
-
-    /**
-     * @author Max Grabenhorst
-     * @since 0.7.0
-     */
-    public static final class Builder {
-
-        private final URL url;
-        private final ListBuilder listBuilder;
-
-        Builder(URL url, ListBuilder listBuilder) {
-            this.url = url;
-            this.listBuilder = listBuilder;
-        }
-
-        public ListBuilder toList() {
-            return this.listBuilder.addButtonToList(new LogInButton(this));
-        }
     }
 }

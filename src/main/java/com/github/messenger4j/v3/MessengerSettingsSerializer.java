@@ -15,15 +15,12 @@ public final class MessengerSettingsSerializer implements JsonSerializer<Messeng
     @Override
     public JsonElement serialize(MessengerSettings src, Type typeOfSrc, JsonSerializationContext context) {
         final JsonObject messengerSettingsObject = new JsonObject();
-        if (src.startButton() != null) {
-            messengerSettingsObject.add("get_started", context.serialize(src.startButton()));
-        }
-        if (src.greeting() != null) {
-            messengerSettingsObject.add("greeting", context.serialize(src.greeting().localizedGreetings()));
-        }
-        if (src.persistentMenu() != null) {
-            messengerSettingsObject.add("persistent_menu", context.serialize(src.persistentMenu().localizedPersistentMenus()));
-        }
+        src.startButton().ifPresent(startButton ->
+                messengerSettingsObject.add("get_started", context.serialize(startButton)));
+        src.greeting().ifPresent(greeting ->
+                messengerSettingsObject.add("greeting", context.serialize(greeting.localizedGreetings())));
+        src.persistentMenu().ifPresent(persistentMenu ->
+                messengerSettingsObject.add("persistent_menu", context.serialize(persistentMenu.localizedPersistentMenus())));
         return messengerSettingsObject;
     }
 }

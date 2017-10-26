@@ -11,8 +11,12 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class LogOutButton extends Button {
 
+    public static LogOutButton create() {
+        return new LogOutButton();
+    }
+
     private LogOutButton() {
-        super(ButtonType.ACCOUNT_UNLINK);
+        super(Type.ACCOUNT_UNLINK);
     }
 
     @Override
@@ -23,22 +27,5 @@ public final class LogOutButton extends Button {
     @Override
     public LogOutButton asLogOutButton() {
         return this;
-    }
-
-    /**
-     * @author Max Grabenhorst
-     * @since 0.7.0
-     */
-    public static final class Builder {
-
-        private final ListBuilder listBuilder;
-
-        Builder(ListBuilder listBuilder) {
-            this.listBuilder = listBuilder;
-        }
-
-        public ListBuilder toList() {
-            return this.listBuilder.addButtonToList(new LogOutButton());
-        }
     }
 }

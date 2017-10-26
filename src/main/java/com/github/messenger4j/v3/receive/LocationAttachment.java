@@ -20,14 +20,6 @@ public final class LocationAttachment extends Attachment {
         this.longitude = longitude;
     }
 
-    public Double latitude() {
-        return latitude;
-    }
-
-    public Double longitude() {
-        return longitude;
-    }
-
     @Override
     public boolean isLocationAttachment() {
         return true;
@@ -36,5 +28,13 @@ public final class LocationAttachment extends Attachment {
     @Override
     public LocationAttachment asLocationAttachment() {
         return this;
+    }
+
+    public Double latitude() {
+        return latitude;
+    }
+
+    public Double longitude() {
+        return longitude;
     }
 }

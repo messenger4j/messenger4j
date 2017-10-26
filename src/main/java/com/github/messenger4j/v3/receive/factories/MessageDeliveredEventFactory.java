@@ -13,12 +13,12 @@ import static com.github.messenger4j.internal.JsonHelper.getPropertyAsString;
 import static com.github.messenger4j.internal.JsonHelper.hasProperty;
 
 import com.github.messenger4j.v3.receive.MessageDeliveredEvent;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.NonNull;
 
 /**
@@ -34,19 +34,21 @@ public final class MessageDeliveredEventFactory implements BaseEventFactory<Mess
 
     @Override
     public MessageDeliveredEvent createEventFromJson(@NonNull JsonObject messagingEvent) {
-        final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID);
-        final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID);
+        final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
+                .orElseThrow(IllegalArgumentException::new);
+        final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
+                .orElseThrow(IllegalArgumentException::new);
         final Instant timestamp = getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP).orElse(Instant.now());
-        final Instant watermark = getPropertyAsInstant(messagingEvent, PROP_DELIVERY, PROP_WATERMARK).get();
-        final JsonArray messageIdsJsonArray = getPropertyAsJsonArray(messagingEvent, PROP_DELIVERY, PROP_MIDS);
-
-        List<String> messageIds = null;
-        if (messageIdsJsonArray != null) {
-            messageIds = new ArrayList<>(messageIdsJsonArray.size());
-            for (JsonElement messageIdJsonElement : messageIdsJsonArray) {
-                messageIds.add(messageIdJsonElement.getAsString());
-            }
-        }
+        final Instant watermark = getPropertyAsInstant(messagingEvent, PROP_DELIVERY, PROP_WATERMARK)
+                .orElseThrow(IllegalArgumentException::new);
+        final Optional<List<String>> messageIds = getPropertyAsJsonArray(messagingEvent, PROP_DELIVERY, PROP_MIDS)
+                .map(jsonArray -> {
+                    final List<String> messageIdList = new ArrayList<>(jsonArray.size());
+                    for (JsonElement messageIdJsonElement : jsonArray) {
+                        messageIdList.add(messageIdJsonElement.getAsString());
+                    }
+                    return messageIdList;
+                });
 
         return new MessageDeliveredEvent(senderId, recipientId, timestamp, watermark, messageIds);
     }

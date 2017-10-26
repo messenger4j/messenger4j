@@ -24,7 +24,7 @@ public final class ReceiptElement {
     private final Optional<URL> imageUrl;
 
     public static ReceiptElement create(@NonNull String title, float price) {
-        return new ReceiptElement(title, price, empty(), empty(), empty(), empty());
+        return create(title, price, empty(), empty(), empty(), empty());
     }
 
     public static ReceiptElement create(@NonNull String title, float price, @NonNull Optional<String> subtitle,

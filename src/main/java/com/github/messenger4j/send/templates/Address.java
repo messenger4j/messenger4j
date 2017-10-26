@@ -27,7 +27,7 @@ public final class Address {
 
     public static Address create(@NonNull String street1, @NonNull String city, @NonNull String postalCode,
                                  @NonNull String state, @NonNull String country) {
-        return new Address(street1, city, postalCode, state, country, empty());
+        return create(street1, empty(), city, postalCode, state, country);
     }
 
     public static Address create(@NonNull String street1, @NonNull Optional<String> street2, @NonNull String city,

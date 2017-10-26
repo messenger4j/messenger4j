@@ -18,10 +18,6 @@ public final class FallbackAttachment extends Attachment {
         this.json = json;
     }
 
-    public String json() {
-        return json;
-    }
-
     @Override
     public boolean isFallbackAttachment() {
         return true;
@@ -30,5 +26,9 @@ public final class FallbackAttachment extends Attachment {
     @Override
     public FallbackAttachment asFallbackAttachment() {
         return this;
+    }
+
+    public String json() {
+        return json;
     }
 }

@@ -37,11 +37,11 @@ public interface MessengerHttpClient {
             this.body = body;
         }
 
-        public int getStatusCode() {
+        public int statusCode() {
             return statusCode;
         }
 
-        public String getBody() {
+        public String body() {
             return body;
         }
     }

@@ -23,11 +23,12 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class MessengerApiException extends Exception {
 
-    private final String type;
-    private final Integer code;
-    private final String fbTraceId;
+    private final Optional<String> type;
+    private final Optional<Integer> code;
+    private final Optional<String> fbTraceId;
 
-    public MessengerApiException(@NonNull String message, String type, Integer code, String fbTraceId) {
+    public MessengerApiException(@NonNull String message, @NonNull Optional<String> type,
+                                 @NonNull Optional<Integer> code, @NonNull Optional<String> fbTraceId) {
         super(message);
         this.type = type;
         this.code = code;
@@ -39,14 +40,14 @@ public final class MessengerApiException extends Exception {
     }
 
     public Optional<String> type() {
-        return Optional.ofNullable(type);
+        return type;
     }
 
     public Optional<Integer> code() {
-        return Optional.ofNullable(code);
+        return code;
     }
 
     public Optional<String> fbTraceId() {
-        return Optional.ofNullable(fbTraceId);
+        return fbTraceId;
     }
 }

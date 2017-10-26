@@ -9,7 +9,7 @@ import static com.github.messenger4j.internal.JsonHelper.getPropertyAsInt;
 import static com.github.messenger4j.internal.JsonHelper.getPropertyAsString;
 
 import com.google.gson.JsonObject;
-import lombok.NonNull;
+import java.util.Optional;
 
 /**
  * @author Max Grabenhorst
@@ -20,11 +20,12 @@ public final class MessengerApiExceptionFactory {
     private MessengerApiExceptionFactory() {
     }
 
-    public static MessengerApiException create(@NonNull JsonObject jsonObject) {
-        final String message = getPropertyAsString(jsonObject, PROP_ERROR, PROP_MESSAGE);
-        final String type = getPropertyAsString(jsonObject, PROP_ERROR, PROP_TYPE);
-        final Integer code = getPropertyAsInt(jsonObject, PROP_ERROR, PROP_CODE);
-        final String fbTraceId = getPropertyAsString(jsonObject, PROP_ERROR, PROP_FB_TRACE_ID);
+    public static MessengerApiException create(JsonObject jsonObject) {
+        final String message = getPropertyAsString(jsonObject, PROP_ERROR, PROP_MESSAGE)
+                .orElseThrow(IllegalArgumentException::new);
+        final Optional<String> type = getPropertyAsString(jsonObject, PROP_ERROR, PROP_TYPE);
+        final Optional<Integer> code = getPropertyAsInt(jsonObject, PROP_ERROR, PROP_CODE);
+        final Optional<String> fbTraceId = getPropertyAsString(jsonObject, PROP_ERROR, PROP_FB_TRACE_ID);
         return new MessengerApiException(message, type, code, fbTraceId);
     }
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
@@ -19,7 +20,7 @@ public final class PersistentMenu {
 
     private final List<LocalizedPersistentMenu> localizedPersistentMenus;
 
-    public static PersistentMenu create(boolean composerInputDisabled, List<CallToAction> callToActions,
+    public static PersistentMenu create(boolean composerInputDisabled, @NonNull Optional<List<CallToAction>> callToActions,
                                         @NonNull LocalizedPersistentMenu... localizedPersistentMenus) {
 
         final List<LocalizedPersistentMenu> localizedPersistentMenuList = new ArrayList<>(localizedPersistentMenus.length + 1);

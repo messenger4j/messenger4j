@@ -15,10 +15,10 @@ import lombok.ToString;
 public final class AccountLinkingEvent extends BaseEvent {
 
     private final Status status;
-    private final String authorizationCode;
+    private final Optional<String> authorizationCode;
 
     public AccountLinkingEvent(@NonNull String senderId, @NonNull String recipientId, @NonNull Instant timestamp,
-                               @NonNull Status status, String authorizationCode) {
+                               @NonNull Status status, @NonNull Optional<String> authorizationCode) {
         super(senderId, recipientId, timestamp);
         this.status = status;
         this.authorizationCode = authorizationCode;
@@ -29,9 +29,12 @@ public final class AccountLinkingEvent extends BaseEvent {
     }
 
     public Optional<String> authorizationCode() {
-        return Optional.ofNullable(authorizationCode);
+        return authorizationCode;
     }
 
+    /**
+     * @since 1.0.0
+     */
     public enum Status {
         LINKED, UNLINKED
     }

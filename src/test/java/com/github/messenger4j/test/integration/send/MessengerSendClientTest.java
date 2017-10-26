@@ -1,7 +1,8 @@
 package com.github.messenger4j.test.integration.send;
 
 import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.POST;
-import static com.github.messenger4j.v3.RichMedia.Type.IMAGE;
+import static com.github.messenger4j.v3.RichMediaAsset.Type.IMAGE;
+import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.hamcrest.Matchers.equalTo;
@@ -21,12 +22,17 @@ import com.github.messenger4j.common.MessengerHttpClient.HttpMethod;
 import com.github.messenger4j.common.MessengerHttpClient.HttpResponse;
 import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.exceptions.MessengerApiException;
+import com.github.messenger4j.send.IdRecipient;
 import com.github.messenger4j.send.MessageResponse;
 import com.github.messenger4j.send.NotificationType;
 import com.github.messenger4j.send.QuickReply;
-import com.github.messenger4j.send.Recipient;
 import com.github.messenger4j.send.SenderAction;
+import com.github.messenger4j.send.TextQuickReply;
 import com.github.messenger4j.send.buttons.Button;
+import com.github.messenger4j.send.buttons.LogInButton;
+import com.github.messenger4j.send.buttons.LogOutButton;
+import com.github.messenger4j.send.buttons.PostbackButton;
+import com.github.messenger4j.send.buttons.UrlButton;
 import com.github.messenger4j.send.templates.Address;
 import com.github.messenger4j.send.templates.Adjustment;
 import com.github.messenger4j.send.templates.ButtonTemplate;
@@ -38,17 +44,19 @@ import com.github.messenger4j.send.templates.ListTemplate.TopElementStyle;
 import com.github.messenger4j.send.templates.ReceiptElement;
 import com.github.messenger4j.send.templates.ReceiptTemplate;
 import com.github.messenger4j.send.templates.Summary;
-import com.github.messenger4j.v3.Message;
 import com.github.messenger4j.v3.MessagePayload;
 import com.github.messenger4j.v3.Messenger;
-import com.github.messenger4j.v3.RichMedia;
+import com.github.messenger4j.v3.ReusableRichMediaAsset;
+import com.github.messenger4j.v3.RichMediaMessage;
+import com.github.messenger4j.v3.SenderActionPayload;
+import com.github.messenger4j.v3.TemplateMessage;
+import com.github.messenger4j.v3.TextMessage;
+import com.github.messenger4j.v3.UrlRichMediaAsset;
 import java.net.URL;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -68,7 +76,7 @@ public class MessengerSendClientTest {
             "  \"message_id\": \"mid.1473372944816:94f72b88c597657974\"\n" +
             "}");
 
-    private final Messenger messenger = Messenger.create(PAGE_ACCESS_TOKEN, "test", "test", mockHttpClient);
+    private final Messenger messenger = Messenger.create(PAGE_ACCESS_TOKEN, "test", "test", of(mockHttpClient));
 
     @Before
     public void beforeEach() throws Exception {
@@ -82,11 +90,8 @@ public class MessengerSendClientTest {
         final SenderAction senderAction = SenderAction.MARK_SEEN;
 
         //when
-        final MessagePayload messagePayload = MessagePayload.newBuilder()
-                .recipientId(recipientId)
-                .senderAction(senderAction)
-                .build();
-        messenger.send(messagePayload);
+        final SenderActionPayload payload = SenderActionPayload.create(recipientId, senderAction);
+        messenger.send(payload);
 
         //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
@@ -103,11 +108,8 @@ public class MessengerSendClientTest {
         final String text = "Hello Messenger Platform";
 
         //when
-        final MessagePayload messagePayload = MessagePayload.newBuilder()
-                .recipientId(recipientId)
-                .message(Message.create(text))
-                .build();
-        messenger.send(messagePayload);
+        final MessagePayload payload = MessagePayload.create(recipientId, TextMessage.create(text));
+        messenger.send(payload);
 
         //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
@@ -120,22 +122,19 @@ public class MessengerSendClientTest {
     @Test
     public void shouldSendTextMessageWithQuickReplies() throws Exception {
         //given
-        final Recipient recipient = Recipient.createById("USER_ID");
+        final IdRecipient recipient = IdRecipient.create("USER_ID");
         final NotificationType notificationType = NotificationType.SILENT_PUSH;
+
         final String text = "Pick a color:";
-        final List<QuickReply> quickReplies = QuickReply.newListBuilder()
-                .addTextQuickReply("Red", "PAYLOAD_FOR_PICKING_RED").toList()
-                .addTextQuickReply("Green", "PAYLOAD_FOR_PICKING_GREEN").toList()
-                .build();
+
+        final TextQuickReply textQuickReplyA = TextQuickReply.create("Red", "PAYLOAD_FOR_PICKING_RED");
+        final TextQuickReply textQuickReplyB = TextQuickReply.create("Green", "PAYLOAD_FOR_PICKING_GREEN");
+        final List<QuickReply> quickReplies = Arrays.asList(textQuickReplyA, textQuickReplyB);
 
         //when
-        final Message message = Message.newBuilder().text(text).quickReplies(quickReplies).build();
-        final MessagePayload messagePayload = MessagePayload.newBuilder()
-                .recipient(recipient)
-                .message(message)
-                .notificationType(notificationType)
-                .build();
-        messenger.send(messagePayload);
+        final TextMessage message = TextMessage.create(text, of(quickReplies), empty());
+        final MessagePayload payload = MessagePayload.create(recipient, message, of(notificationType));
+        messenger.send(payload);
 
         //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
@@ -153,19 +152,15 @@ public class MessengerSendClientTest {
     @Test
     public void shouldSendTextMessageWithMetadata() throws Exception {
         //given
-        final Recipient recipient = Recipient.createById("USER_ID");
+        final IdRecipient recipient = IdRecipient.create("USER_ID");
         final NotificationType notificationType = NotificationType.SILENT_PUSH;
         final String text = "Hello Messenger Platform";
         final String metadata = "DEVELOPER_DEFINED_METADATA";
 
         //when
-        final Message message = Message.newBuilder().text(text).metadata(metadata).build();
-        final MessagePayload messagePayload = MessagePayload.newBuilder()
-                .recipient(recipient)
-                .message(message)
-                .notificationType(notificationType)
-                .build();
-        messenger.send(messagePayload);
+        final TextMessage textMessage = TextMessage.create(text, empty(), of(metadata));
+        final MessagePayload payload = MessagePayload.create(recipient, textMessage, of(notificationType));
+        messenger.send(payload);
 
         //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
@@ -186,12 +181,10 @@ public class MessengerSendClientTest {
         final String imageUrl = "https://petersapparel.com/img/shirt.png";
 
         //when
-        final Message message = Message.create(RichMedia.createByUrl(IMAGE, imageUrl));
-        final MessagePayload messagePayload = MessagePayload.newBuilder()
-                .recipientId(recipientId)
-                .message(message)
-                .build();
-        messenger.send(messagePayload);
+        final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(IMAGE, new URL(imageUrl));
+        final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
+        final MessagePayload payload = MessagePayload.create(recipientId, richMediaMessage);
+        messenger.send(payload);
 
         //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
@@ -207,18 +200,15 @@ public class MessengerSendClientTest {
     @Test
     public void shouldSendReusableImageAttachmentMessageWithUrl() throws Exception {
         //given
-        final Recipient recipient = Recipient.createById("USER_ID");
+        final IdRecipient recipient = IdRecipient.create("USER_ID");
         final NotificationType notificationType = NotificationType.NO_PUSH;
         final String imageUrl = "https://petersapparel.com/img/shirt.png";
 
         //when
-        final RichMedia richMedia = RichMedia.createByUrl(IMAGE, imageUrl, true);
-        final MessagePayload messagePayload = MessagePayload.newBuilder()
-                .recipient(recipient)
-                .message(Message.create(richMedia))
-                .notificationType(notificationType)
-                .build();
-        messenger.send(messagePayload);
+        final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(IMAGE, new URL(imageUrl), of(true));
+        final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
+        final MessagePayload payload = MessagePayload.create(recipient, richMediaMessage, of(notificationType));
+        messenger.send(payload);
 
         //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
@@ -235,18 +225,15 @@ public class MessengerSendClientTest {
     @Test
     public void shouldSendImageAttachmentMessageWithAttachmentId() throws Exception {
         //given
-        final Recipient recipient = Recipient.createById("USER_ID");
+        final IdRecipient recipient = IdRecipient.create("USER_ID");
         final NotificationType notificationType = NotificationType.NO_PUSH;
         final String attachmentId = "1745504518999123";
 
         //when
-        final RichMedia richMedia = RichMedia.createByAttachmentId(IMAGE, attachmentId);
-        final MessagePayload messagePayload = MessagePayload.newBuilder()
-                .recipient(recipient)
-                .message(Message.create(richMedia))
-                .notificationType(notificationType)
-                .build();
-        messenger.send(messagePayload);
+        final ReusableRichMediaAsset richMediaAsset = ReusableRichMediaAsset.create(IMAGE, attachmentId);
+        final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
+        final MessagePayload payload = MessagePayload.create(recipient, richMediaMessage, of(notificationType));
+        messenger.send(payload);
 
         //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
@@ -265,24 +252,19 @@ public class MessengerSendClientTest {
         //given
         final String recipientId = "USER_ID";
 
-        final List<Button> buttons = Button.newListBuilder()
-                .addUrlButton("Show Website", new URL("https://petersapparel.parseapp.com")).toList()
-                .addPostbackButton("Start Chatting", "USER_DEFINED_PAYLOAD").toList()
-                .addUrlButton("Show Website", new URL("https://petersapparel.parseapp.com"))
-                .webviewHeightRatio(WebviewHeightRatio.FULL)
-                .messengerExtensions(true)
-                .fallbackUrl("https://petersfancyapparel.com/fallback")
-                .toList()
-                .build();
+        final UrlButton buttonA = UrlButton.create("Show Website", new URL("https://petersapparel.parseapp.com"));
+        final PostbackButton buttonB = PostbackButton.create("Start Chatting", "USER_DEFINED_PAYLOAD");
+        final UrlButton buttonC = UrlButton.create("Show Website", new URL("https://petersapparel.parseapp.com"),
+                of(WebviewHeightRatio.FULL), of(true), of(new URL("https://petersfancyapparel.com/fallback")));
+
+        final List<Button> buttons = Arrays.asList(buttonA, buttonB, buttonC);
 
         final ButtonTemplate buttonTemplate = ButtonTemplate.create("What do you want to do next?", buttons);
 
         //when
-        final MessagePayload messagePayload = MessagePayload.newBuilder()
-                .recipientId(recipientId)
-                .message(Message.create(buttonTemplate))
-                .build();
-        messenger.send(messagePayload);
+        final TemplateMessage templateMessage = TemplateMessage.create(buttonTemplate);
+        final MessagePayload payload = MessagePayload.create(recipientId, templateMessage);
+        messenger.send(payload);
 
         //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
@@ -302,32 +284,22 @@ public class MessengerSendClientTest {
         //given
         final String recipientId = "USER_ID";
 
-        final List<Button> buttons = Button.newListBuilder()
-                .addUrlButton("View Website", new URL("https://petersfancybrownhats.com")).toList()
-                .addPostbackButton("Start Chatting", "DEVELOPER_DEFINED_PAYLOAD").toList()
-                .build();
+        final List<Button> buttons = Arrays.asList(
+                UrlButton.create("View Website", new URL("https://petersfancybrownhats.com")),
+                PostbackButton.create("Start Chatting", "DEVELOPER_DEFINED_PAYLOAD")
+        );
 
-        final DefaultAction defaultAction = DefaultAction.newBuilder(new URL("https://peterssendreceiveapp.ngrok.io/view?item=103"))
-                .messengerExtensions(true)
-                .webviewHeightRatio(WebviewHeightRatio.TALL)
-                .fallbackUrl(new URL("https://peterssendreceiveapp.ngrok.io/"))
-                .build();
+        final DefaultAction defaultAction = DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/view?item=103"),
+                of(WebviewHeightRatio.TALL), of(true), of(new URL("https://peterssendreceiveapp.ngrok.io/")));
 
-        final Element element = Element.newBuilder("Welcome to Peters Hats")
-                .imageUrl(new URL("https://petersfancybrownhats.com/company_image.png"))
-                .subtitle("We have got the right hat for everyone.")
-                .defaultAction(defaultAction)
-                .buttons(buttons)
-                .build();
+        final Element element = Element.create("Welcome to Peters Hats", of("We have got the right hat for everyone."),
+                of(new URL("https://petersfancybrownhats.com/company_image.png")), of(defaultAction), of(buttons));
 
-        final GenericTemplate genericTemplate = GenericTemplate.newBuilder(Collections.singletonList(element)).build();
+        final GenericTemplate genericTemplate = GenericTemplate.create(singletonList(element));
 
         //when
-        final MessagePayload messagePayload = MessagePayload.newBuilder()
-                .recipientId(recipientId)
-                .message(Message.create(genericTemplate))
-                .build();
-        messenger.send(messagePayload);
+        final MessagePayload payload = MessagePayload.create(recipientId, TemplateMessage.create(genericTemplate));
+        messenger.send(payload);
 
         //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
@@ -378,24 +350,18 @@ public class MessengerSendClientTest {
         //given
         final String recipientId = "USER_ID";
 
-        final List<Button> buttons = Button.newListBuilder()
-                .addLogInButton(new URL("https://www.example.com/authorize")).toList()
-                .addLogOutButton().toList()
-                .build();
+        final List<Button> buttons = Arrays.asList(
+                LogInButton.create(new URL("https://www.example.com/authorize")),
+                LogOutButton.create()
+        );
 
-        final Element element = Element.newBuilder("Welcome to M-Bank")
-                .imageUrl(new URL("http://www.example.com/images/m-bank.png"))
-                .buttons(buttons)
-                .build();
+        final Element element = Element.create("Welcome to M-Bank", empty(),
+                of(new URL("http://www.example.com/images/m-bank.png")), empty(), of(buttons));
 
-        final GenericTemplate genericTemplate = GenericTemplate.newBuilder(Collections.singletonList(element)).build();
+        final GenericTemplate genericTemplate = GenericTemplate.create(singletonList(element));
 
         //when
-        final MessagePayload messagePayload = MessagePayload.newBuilder()
-                .recipientId(recipientId)
-                .message(Message.create(genericTemplate))
-                .build();
-        messenger.send(messagePayload);
+        messenger.send(MessagePayload.create(recipientId, TemplateMessage.create(genericTemplate)));
 
         //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
@@ -434,11 +400,8 @@ public class MessengerSendClientTest {
                 of(ZonedDateTime.of(2015, 4, 7, 22, 14, 12, 0, ZoneOffset.UTC).toInstant()));
 
         //when
-        final MessagePayload messagePayload = MessagePayload.newBuilder()
-                .recipientId(recipientId)
-                .message(Message.create(receiptTemplate))
-                .build();
-        messenger.send(messagePayload);
+        final MessagePayload payload = MessagePayload.create(recipientId, TemplateMessage.create(receiptTemplate));
+        messenger.send(payload);
 
         //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
@@ -464,66 +427,40 @@ public class MessengerSendClientTest {
         //given
         final String recipientId = "USER_ID";
 
-        final Element element1 = Element.newBuilder("Classic T-Shirt Collection")
-                .subtitle("See all our colors")
-                .imageUrl(new URL("https://peterssendreceiveapp.ngrok.io/img/collection.png"))
-                .buttons(Button.newListBuilder()
-                        .addUrlButton("View", new URL("https://peterssendreceiveapp.ngrok.io/collection"))
-                        .webviewHeightRatio(WebviewHeightRatio.TALL)
-                        .toList()
-                        .build())
-                .defaultAction(DefaultAction.newBuilder(new URL("https://peterssendreceiveapp.ngrok.io/shop_collection"))
-                        .webviewHeightRatio(WebviewHeightRatio.TALL).messengerExtensions(true)
-                        .fallbackUrl(new URL("https://peterssendreceiveapp.ngrok.io/fallback"))
-                        .build())
-                .build();
+        final Element element1 = Element.create("Classic T-Shirt Collection", of("See all our colors"),
+                of(new URL("https://peterssendreceiveapp.ngrok.io/img/collection.png")),
+                of(DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/shop_collection"),
+                        of(WebviewHeightRatio.TALL), of(true), of(new URL("https://peterssendreceiveapp.ngrok.io/fallback")))),
+                of(singletonList(UrlButton.create("View", new URL("https://peterssendreceiveapp.ngrok.io/collection"),
+                        of(WebviewHeightRatio.TALL), empty(), empty()))));
 
-        final Element element2 = Element.newBuilder("Classic White T-Shirt")
-                .subtitle("100% Cotton, 200% Comfortable")
-                .imageUrl(new URL("https://peterssendreceiveapp.ngrok.io/img/white-t-shirt.png"))
-                .buttons(Button.newListBuilder()
-                        .addUrlButton("Shop Now", new URL("https://peterssendreceiveapp.ngrok.io/shop?item=100"))
-                        .webviewHeightRatio(WebviewHeightRatio.TALL).toList().build())
-                .defaultAction(DefaultAction.newBuilder(new URL("https://peterssendreceiveapp.ngrok.io/view?item=100"))
-                        .webviewHeightRatio(WebviewHeightRatio.TALL)
-                        .build())
-                .build();
+        final Element element2 = Element.create("Classic White T-Shirt", of("100% Cotton, 200% Comfortable"),
+                of(new URL("https://peterssendreceiveapp.ngrok.io/img/white-t-shirt.png")),
+                of(DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/view?item=100"),
+                        of(WebviewHeightRatio.TALL), empty(), empty())),
+                of(singletonList(UrlButton.create("Shop Now", new URL("https://peterssendreceiveapp.ngrok.io/shop?item=100"),
+                        of(WebviewHeightRatio.TALL), empty(), empty()))));
 
-        final Element element3 = Element.newBuilder("Classic Blue T-Shirt")
-                .subtitle("100% Cotton, 200% Comfortable")
-                .imageUrl(new URL("https://peterssendreceiveapp.ngrok.io/img/blue-t-shirt.png"))
-                .buttons(Button.newListBuilder()
-                        .addUrlButton("Shop Now", new URL("https://peterssendreceiveapp.ngrok.io/shop?item=101"))
-                        .webviewHeightRatio(WebviewHeightRatio.TALL).toList().build())
-                .defaultAction(DefaultAction.newBuilder(new URL("https://peterssendreceiveapp.ngrok.io/view?item=101"))
-                        .webviewHeightRatio(WebviewHeightRatio.TALL)
-                        .build())
-                .build();
+        final Element element3 = Element.create("Classic Blue T-Shirt", of("100% Cotton, 200% Comfortable"),
+                of(new URL("https://peterssendreceiveapp.ngrok.io/img/blue-t-shirt.png")),
+                of(DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/view?item=101"),
+                        of(WebviewHeightRatio.TALL), empty(), empty())),
+                of(singletonList(UrlButton.create("Shop Now", new URL("https://peterssendreceiveapp.ngrok.io/shop?item=101"),
+                        of(WebviewHeightRatio.TALL), empty(), empty()))));
 
-        final Element element4 = Element.newBuilder("Classic Black T-Shirt")
-                .subtitle("100% Cotton, 200% Comfortable")
-                .imageUrl(new URL("https://peterssendreceiveapp.ngrok.io/img/black-t-shirt.png"))
-                .buttons(Button.newListBuilder()
-                        .addUrlButton("Shop Now", new URL("https://peterssendreceiveapp.ngrok.io/shop?item=102"))
-                        .webviewHeightRatio(WebviewHeightRatio.TALL).toList().build())
-                .defaultAction(DefaultAction.newBuilder(new URL("https://peterssendreceiveapp.ngrok.io/view?item=102"))
-                        .webviewHeightRatio(WebviewHeightRatio.TALL)
-                        .build())
-                .build();
+        final Element element4 = Element.create("Classic Black T-Shirt", of("100% Cotton, 200% Comfortable"),
+                of(new URL("https://peterssendreceiveapp.ngrok.io/img/black-t-shirt.png")),
+                of(DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/view?item=102"),
+                        of(WebviewHeightRatio.TALL), empty(), empty())),
+                of(singletonList(UrlButton.create("Shop Now", new URL("https://peterssendreceiveapp.ngrok.io/shop?item=102"),
+                        of(WebviewHeightRatio.TALL), empty(), empty()))));
 
-        final ListTemplate listTemplate = ListTemplate.newBuilder(Arrays.asList(element1, element2, element3, element4))
-                .topElementStyle(TopElementStyle.LARGE)
-                .buttons(Button.newListBuilder()
-                        .addPostbackButton("View More", "payload").toList()
-                        .build())
-                .build();
+
+        final ListTemplate listTemplate = ListTemplate.create(Arrays.asList(element1, element2, element3, element4),
+                of(TopElementStyle.LARGE), of(singletonList(PostbackButton.create("View More", "payload"))));
 
         //when
-        final MessagePayload messagePayload = MessagePayload.newBuilder()
-                .recipientId(recipientId)
-                .message(Message.create(listTemplate))
-                .build();
-        messenger.send(messagePayload);
+        messenger.send(MessagePayload.create(recipientId, TemplateMessage.create(listTemplate)));
 
         //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
@@ -566,17 +503,14 @@ public class MessengerSendClientTest {
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(successfulResponse);
 
         //when
-        final MessagePayload messagePayload = MessagePayload.newBuilder()
-                .recipientId("recipientId")
-                .message(Message.create("text"))
-                .build();
-        final MessageResponse messageResponse = messenger.send(messagePayload);
+        final MessagePayload payload = MessagePayload.create("test", TextMessage.create("test"));
+        final MessageResponse messageResponse = messenger.send(payload);
 
         //then
         assertThat(messageResponse, is(notNullValue()));
         assertThat(messageResponse.recipientId(), is(equalTo("USER_ID")));
         assertThat(messageResponse.messageId(), is(equalTo("mid.1473372944816:94f72b88c597657974")));
-        assertThat(messageResponse.attachmentId(), is(equalTo(Optional.of("1745504518999123"))));
+        assertThat(messageResponse.attachmentId(), is(equalTo(of("1745504518999123"))));
     }
 
     @Test
@@ -595,11 +529,8 @@ public class MessengerSendClientTest {
         //when
         MessengerApiException messengerApiException = null;
         try {
-            final MessagePayload messagePayload = MessagePayload.newBuilder()
-                    .recipientId("recipientId")
-                    .message(Message.create("text"))
-                    .build();
-            messenger.send(messagePayload);
+            final MessagePayload payload = MessagePayload.create("test", TextMessage.create("test"));
+            messenger.send(payload);
         } catch (MessengerApiException e) {
             messengerApiException = e;
         }
@@ -607,8 +538,8 @@ public class MessengerSendClientTest {
         //then
         assertThat(messengerApiException, is(notNullValue()));
         assertThat(messengerApiException.message(), is(equalTo("Invalid OAuth access token.")));
-        assertThat(messengerApiException.type(), is(equalTo(Optional.of("OAuthException"))));
-        assertThat(messengerApiException.code(), is(equalTo(Optional.of(190))));
-        assertThat(messengerApiException.fbTraceId(), is(equalTo(Optional.of("BLBz/WZt8dN"))));
+        assertThat(messengerApiException.type(), is(equalTo(of("OAuthException"))));
+        assertThat(messengerApiException.code(), is(equalTo(of(190))));
+        assertThat(messengerApiException.fbTraceId(), is(equalTo(of("BLBz/WZt8dN"))));
     }
 }

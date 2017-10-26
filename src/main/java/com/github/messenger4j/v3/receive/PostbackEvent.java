@@ -15,11 +15,11 @@ import lombok.ToString;
 public final class PostbackEvent extends BaseEvent {
 
     private final String title;
-    private final String payload;
-    private final Referral referral;
+    private final Optional<String> payload;
+    private final Optional<Referral> referral;
 
     public PostbackEvent(@NonNull String senderId, @NonNull String recipientId, @NonNull Instant timestamp,
-                         @NonNull String title, String payload, Referral referral) {
+                         @NonNull String title, @NonNull Optional<String> payload, @NonNull Optional<Referral> referral) {
         super(senderId, recipientId, timestamp);
         this.title = title;
         this.payload = payload;
@@ -31,10 +31,10 @@ public final class PostbackEvent extends BaseEvent {
     }
 
     public Optional<String> payload() {
-        return Optional.ofNullable(payload);
+        return payload;
     }
 
     public Optional<Referral> referral() {
-        return Optional.ofNullable(referral);
+        return referral;
     }
 }

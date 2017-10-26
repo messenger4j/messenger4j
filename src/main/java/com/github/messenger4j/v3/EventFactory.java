@@ -24,7 +24,6 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import lombok.NonNull;
 
 /**
  * @author Max Grabenhorst
@@ -47,14 +46,16 @@ public final class EventFactory {
     private EventFactory() {
     }
 
-    public static Event createEvent(@NonNull JsonObject messagingEvent) {
+    public static Event createEvent(JsonObject messagingEvent) {
         for (BaseEventFactory factory : FACTORIES) {
             if (factory.isResponsible(messagingEvent)) {
                 return new Event(factory.createEventFromJson(messagingEvent));
             }
         }
-        final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID);
-        final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID);
+        final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
+                .orElseThrow(IllegalArgumentException::new);
+        final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
+                .orElseThrow(IllegalArgumentException::new);
         final Instant timestamp = getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP).orElse(Instant.now());
         return new Event(new BaseEvent(senderId, recipientId, timestamp) {
         });

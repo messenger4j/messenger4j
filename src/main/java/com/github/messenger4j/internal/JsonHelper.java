@@ -5,11 +5,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.time.Instant;
-import java.util.Date;
 import java.util.Optional;
 
 /**
- * <b>Internal</b> helper class used to support processing of JSON structures.
+ * <b>Internal</b> helper class to support processing of JSON structures.
  *
  * @author Max Grabenhorst
  * @since 0.6.0
@@ -19,74 +18,66 @@ public final class JsonHelper {
     private JsonHelper() {
     }
 
-    public static JsonElement getProperty(JsonObject jsonObject, Constants... propertyPath) {
-        if (jsonObject == null) {
-            return null;
-        }
+    public static Optional<JsonElement> getProperty(JsonObject jsonObject, Constants... propertyPath) {
         JsonObject internalValue = jsonObject;
         for (int i = 0; i <= propertyPath.length - 2; i++) {
             final JsonElement property = internalValue.get(propertyPath[i].value());
             if (property == null || !property.isJsonObject()) {
-                return null;
+                return Optional.empty();
             }
             internalValue = property.getAsJsonObject();
         }
         final JsonElement property = internalValue.get(propertyPath[propertyPath.length - 1].value());
-        return property == null || property.isJsonNull() ? null : property;
+        return property == null || property.isJsonNull() ? Optional.empty() : Optional.of(property);
     }
 
     public static boolean hasProperty(JsonObject jsonObject, Constants... propertyPath) {
-        return getProperty(jsonObject, propertyPath) != null;
+        return getProperty(jsonObject, propertyPath).isPresent();
     }
 
-    public static String getPropertyAsString(JsonObject jsonObject, Constants... propertyPath) {
-        final JsonElement jsonElement = getProperty(jsonObject, propertyPath);
-        return jsonElement == null ? null : jsonElement.getAsString();
+    public static Optional<String> getPropertyAsString(JsonObject jsonObject, Constants... propertyPath) {
+        final Optional<JsonElement> jsonElement = getProperty(jsonObject, propertyPath);
+        return jsonElement.map(JsonElement::getAsString);
     }
 
     public static Optional<Boolean> getPropertyAsBoolean(JsonObject jsonObject, Constants... propertyPath) {
-        final JsonElement jsonElement = getProperty(jsonObject, propertyPath);
-        return Optional.ofNullable(jsonElement).map(JsonElement::getAsBoolean);
+        final Optional<JsonElement> jsonElement = getProperty(jsonObject, propertyPath);
+        return jsonElement.map(JsonElement::getAsBoolean);
     }
 
-    public static Integer getPropertyAsInt(JsonObject jsonObject, Constants... propertyPath) {
-        final JsonElement jsonElement = getProperty(jsonObject, propertyPath);
-        return jsonElement == null ? null : jsonElement.getAsInt();
+    public static Optional<Integer> getPropertyAsInt(JsonObject jsonObject, Constants... propertyPath) {
+        final Optional<JsonElement> jsonElement = getProperty(jsonObject, propertyPath);
+        return jsonElement.map(JsonElement::getAsInt);
     }
 
-    public static Long getPropertyAsLong(JsonObject jsonObject, Constants... propertyPath) {
-        final JsonElement jsonElement = getProperty(jsonObject, propertyPath);
-        return jsonElement == null ? null : jsonElement.getAsLong();
-    }
-
-    public static Date getPropertyAsDate(JsonObject jsonObject, Constants... propertyPath) {
-        final Long longValue = getPropertyAsLong(jsonObject, propertyPath);
-        return longValue == null ? null : new Date(longValue);
+    public static Optional<Long> getPropertyAsLong(JsonObject jsonObject, Constants... propertyPath) {
+        final Optional<JsonElement> jsonElement = getProperty(jsonObject, propertyPath);
+        return jsonElement.map(JsonElement::getAsLong);
     }
 
     public static Optional<Instant> getPropertyAsInstant(JsonObject jsonObject, Constants... propertyPath) {
-        final Long longValue = getPropertyAsLong(jsonObject, propertyPath);
-        return Optional.ofNullable(longValue).map(Instant::ofEpochMilli);
+        final Optional<Long> longValue = getPropertyAsLong(jsonObject, propertyPath);
+        return longValue.map(Instant::ofEpochMilli);
     }
 
-    public static Double getPropertyAsDouble(JsonObject jsonObject, Constants... propertyPath) {
-        final JsonElement jsonElement = getProperty(jsonObject, propertyPath);
-        return jsonElement == null ? null : jsonElement.getAsDouble();
+    public static Optional<Double> getPropertyAsDouble(JsonObject jsonObject, Constants... propertyPath) {
+        final Optional<JsonElement> jsonElement = getProperty(jsonObject, propertyPath);
+        return jsonElement.map(JsonElement::getAsDouble);
     }
 
-    public static Float getPropertyAsFloat(JsonObject jsonObject, Constants... propertyPath) {
-        final JsonElement jsonElement = getProperty(jsonObject, propertyPath);
-        return jsonElement == null ? null : jsonElement.getAsFloat();
+    public static Optional<Float> getPropertyAsFloat(JsonObject jsonObject, Constants... propertyPath) {
+        final Optional<JsonElement> jsonElement = getProperty(jsonObject, propertyPath);
+        return jsonElement.map(JsonElement::getAsFloat);
     }
 
-    public static JsonArray getPropertyAsJsonArray(JsonObject jsonObject, Constants... propertyPath) {
-        final JsonElement jsonElement = getProperty(jsonObject, propertyPath);
-        return jsonElement == null ? null : jsonElement.getAsJsonArray();
+    public static Optional<JsonArray> getPropertyAsJsonArray(JsonObject jsonObject, Constants... propertyPath) {
+        final Optional<JsonElement> jsonElement = getProperty(jsonObject, propertyPath);
+        return jsonElement.map(JsonElement::getAsJsonArray);
     }
 
-    public static JsonObject getPropertyAsJsonObject(JsonObject jsonObject, Constants... propertyPath) {
-        final JsonElement jsonElement = getProperty(jsonObject, propertyPath);
-        return jsonElement == null ? null : jsonElement.getAsJsonObject();
+    public static Optional<JsonObject> getPropertyAsJsonObject(JsonObject jsonObject, Constants... propertyPath) {
+        final Optional<JsonElement> jsonElement = getProperty(jsonObject, propertyPath);
+        return jsonElement.map(JsonElement::getAsJsonObject);
     }
 
     /**

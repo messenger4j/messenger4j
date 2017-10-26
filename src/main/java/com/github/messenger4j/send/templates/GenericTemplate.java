@@ -1,5 +1,7 @@
 package com.github.messenger4j.send.templates;
 
+import static java.util.Optional.empty;
+
 import com.github.messenger4j.v3.ImageAspectRatio;
 import java.util.List;
 import java.util.Optional;
@@ -16,58 +18,34 @@ import lombok.ToString;
 public final class GenericTemplate extends Template {
 
     private final List<Element> elements;
-    private final Boolean sharable;
-    private final ImageAspectRatio imageAspectRatio;
+    private final Optional<ImageAspectRatio> imageAspectRatio;
+    private final Optional<Boolean> sharable;
 
-    public static Builder newBuilder(@NonNull List<Element> elements) {
-        return new Builder(elements);
+    public static GenericTemplate create(@NonNull List<Element> elements) {
+        return create(elements, empty(), empty());
     }
 
-    public GenericTemplate(@NonNull List<Element> elements, Boolean sharable, ImageAspectRatio imageAspectRatio) {
-        super(TemplateType.GENERIC);
+    public static GenericTemplate create(@NonNull List<Element> elements, @NonNull Optional<ImageAspectRatio> imageAspectRatio,
+                                         @NonNull Optional<Boolean> sharable) {
+        return new GenericTemplate(elements, imageAspectRatio, sharable);
+    }
+
+    private GenericTemplate(List<Element> elements, Optional<ImageAspectRatio> imageAspectRatio, Optional<Boolean> sharable) {
+        super(Type.GENERIC);
         this.elements = elements;
-        this.sharable = sharable;
         this.imageAspectRatio = imageAspectRatio;
+        this.sharable = sharable;
     }
 
     public List<Element> elements() {
         return elements;
     }
 
-    public Optional<Boolean> sharable() {
-        return Optional.ofNullable(sharable);
-    }
-
     public Optional<ImageAspectRatio> imageAspectRatio() {
-        return Optional.ofNullable(imageAspectRatio);
+        return imageAspectRatio;
     }
 
-    /**
-     * @author Max Grabenhorst
-     * @since 1.0.0
-     */
-    public static final class Builder {
-
-        private final List<Element> elements;
-        private Boolean sharable;
-        private ImageAspectRatio imageAspectRatio;
-
-        private Builder(List<Element> elements) {
-            this.elements = elements;
-        }
-
-        public Builder sharable(boolean sharable) {
-            this.sharable = sharable;
-            return this;
-        }
-
-        public Builder imageAspectRatio(@NonNull ImageAspectRatio imageAspectRatio) {
-            this.imageAspectRatio = imageAspectRatio;
-            return this;
-        }
-
-        public GenericTemplate build() {
-            return new GenericTemplate(elements, sharable, imageAspectRatio);
-        }
+    public Optional<Boolean> sharable() {
+        return sharable;
     }
 }

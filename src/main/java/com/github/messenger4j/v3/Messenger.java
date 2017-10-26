@@ -8,6 +8,8 @@ import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_MESSAGIN
 import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_OBJECT;
 import static com.github.messenger4j.internal.JsonHelper.getPropertyAsJsonArray;
 import static com.github.messenger4j.internal.JsonHelper.getPropertyAsString;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 
 import com.github.messenger4j.common.DefaultMessengerHttpClient;
 import com.github.messenger4j.common.GsonFactory;
@@ -35,6 +37,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import lombok.NonNull;
@@ -90,39 +93,39 @@ public final class Messenger {
     private final JsonParser jsonParser;
 
     public static Messenger create(@NonNull String pageAccessToken, @NonNull String appSecret, @NonNull String verifyToken) {
-        return new Messenger(pageAccessToken, appSecret, verifyToken, null);
+        return create(pageAccessToken, appSecret, verifyToken, empty());
     }
 
     public static Messenger create(@NonNull String pageAccessToken, @NonNull String appSecret,
-                                   @NonNull String verifyToken, @NonNull MessengerHttpClient customHttpClient) {
+                                   @NonNull String verifyToken, @NonNull Optional<MessengerHttpClient> customHttpClient) {
 
         return new Messenger(pageAccessToken, appSecret, verifyToken, customHttpClient);
     }
 
-    private Messenger(String pageAccessToken, String appSecret, String verifyToken, MessengerHttpClient httpClient) {
+    private Messenger(String pageAccessToken, String appSecret, String verifyToken, Optional<MessengerHttpClient> httpClient) {
         this.pageAccessToken = pageAccessToken;
         this.appSecret = appSecret;
         this.verifyToken = verifyToken;
         this.messagesRequestUrl = String.format(FB_GRAPH_API_URL_MESSAGES, pageAccessToken);
         this.messengerProfileRequestUrl = String.format(FB_GRAPH_API_URL_MESSENGER_PROFILE, pageAccessToken);
-        this.httpClient = httpClient == null ? new DefaultMessengerHttpClient() : httpClient;
+        this.httpClient = httpClient.orElse(new DefaultMessengerHttpClient());
 
         this.gson = GsonFactory.createGson();
         this.jsonParser = new JsonParser();
     }
 
-    public MessageResponse send(@NonNull MessagePayload messagePayload)
+    public MessageResponse send(@NonNull Payload payload)
             throws MessengerApiException, MessengerIOException {
 
-        return doRequest(POST, messagesRequestUrl, messagePayload, MessageResponseFactory::create);
+        return doRequest(POST, messagesRequestUrl, of(payload), MessageResponseFactory::create);
     }
 
-    public void onReceiveEvents(@NonNull String requestPayload, String signature,
+    public void onReceiveEvents(@NonNull String requestPayload, @NonNull Optional<String> signature,
                                 @NonNull Consumer<Event> eventHandler)
             throws MessengerVerificationException {
 
-        if (signature != null) {
-            if (!SignatureVerifier.isSignatureValid(requestPayload, signature, this.appSecret)) {
+        if (signature.isPresent()) {
+            if (!SignatureVerifier.isSignatureValid(requestPayload, signature.get(), this.appSecret)) {
                 throw new MessengerVerificationException("Signature verification failed. " +
                         "Provided signature does not match calculated signature.");
             }
@@ -132,17 +135,20 @@ public final class Messenger {
 
         final JsonObject payloadJsonObject = this.jsonParser.parse(requestPayload).getAsJsonObject();
 
-        final String objectType = getPropertyAsString(payloadJsonObject, PROP_OBJECT);
-        if (objectType == null || !objectType.equalsIgnoreCase(OBJECT_TYPE_PAGE)) {
+        final Optional<String> objectType = getPropertyAsString(payloadJsonObject, PROP_OBJECT);
+        if (!objectType.isPresent() || !objectType.get().equalsIgnoreCase(OBJECT_TYPE_PAGE)) {
             throw new IllegalArgumentException("'object' property must be 'page'. " +
                     "Make sure this is a page subscription");
         }
 
-        final JsonArray entries = getPropertyAsJsonArray(payloadJsonObject, PROP_ENTRY);
+        final JsonArray entries = getPropertyAsJsonArray(payloadJsonObject, PROP_ENTRY)
+                .orElseThrow(IllegalArgumentException::new);
         for (JsonElement entry : entries) {
-            final JsonArray messagingEvents = getPropertyAsJsonArray(entry.getAsJsonObject(), PROP_MESSAGING);
+            final JsonArray messagingEvents = getPropertyAsJsonArray(entry.getAsJsonObject(), PROP_MESSAGING)
+                    .orElseThrow(IllegalArgumentException::new);
             for (JsonElement messagingEvent : messagingEvents) {
-                eventHandler.accept(EventFactory.createEvent(messagingEvent.getAsJsonObject()));
+                final Event event = EventFactory.createEvent(messagingEvent.getAsJsonObject());
+                eventHandler.accept(event);
             }
         }
     }
@@ -159,39 +165,41 @@ public final class Messenger {
 
     public UserProfile queryUserProfile(@NonNull String userId) throws MessengerApiException, MessengerIOException {
         final String requestUrl = String.format(FB_GRAPH_API_URL_USER, userId, pageAccessToken);
-        return doRequest(GET, requestUrl, null, UserProfileFactory::create);
+        return doRequest(GET, requestUrl, empty(), UserProfileFactory::create);
     }
 
 
     public SetupResponse updateSettings(@NonNull MessengerSettings messengerSettings)
             throws MessengerApiException, MessengerIOException {
 
-        return doRequest(POST, messengerProfileRequestUrl, messengerSettings, SetupResponseFactory::create);
+        return doRequest(POST, messengerProfileRequestUrl, of(messengerSettings), SetupResponseFactory::create);
     }
 
     public SetupResponse deleteSettings(@NonNull MessengerSettingProperty property, @NonNull MessengerSettingProperty... properties)
             throws MessengerApiException, MessengerIOException {
 
-        final List<MessengerSettingProperty> messengerSettingPropertyList = new ArrayList<>(Arrays.asList(properties));
+        final List<MessengerSettingProperty> messengerSettingPropertyList = new ArrayList<>(properties.length + 1);
         messengerSettingPropertyList.add(property);
-        final DeleteMessengerSettingsPayload payload = DeleteMessengerSettingsPayload.of(messengerSettingPropertyList);
-        return doRequest(DELETE, messengerProfileRequestUrl, payload, SetupResponseFactory::create);
+        messengerSettingPropertyList.addAll(Arrays.asList(properties));
+        final DeleteMessengerSettingsPayload payload = DeleteMessengerSettingsPayload.create(messengerSettingPropertyList);
+        return doRequest(DELETE, messengerProfileRequestUrl, of(payload), SetupResponseFactory::create);
     }
 
-    private <R> R doRequest(@NonNull HttpMethod httpMethod, @NonNull String requestUrl, Object payload,
-                            @NonNull Function<JsonObject, R> responseTransformer)
+    private <R> R doRequest(HttpMethod httpMethod, String requestUrl, Optional<Object> payload,
+                            Function<JsonObject, R> responseTransformer)
             throws MessengerApiException, MessengerIOException {
 
         try {
-            final String jsonBody = payload == null ? null : this.gson.toJson(payload);
-            final HttpResponse httpResponse = this.httpClient.execute(httpMethod, requestUrl, jsonBody);
-            final JsonObject responseJsonObject = this.jsonParser.parse(httpResponse.getBody()).getAsJsonObject();
+            final Optional<String> jsonBody = payload.map(this.gson::toJson);
+            final HttpResponse httpResponse = this.httpClient.execute(httpMethod, requestUrl, jsonBody.orElse(null));
+            final JsonObject responseJsonObject = this.jsonParser.parse(httpResponse.body()).getAsJsonObject();
 
             if (responseJsonObject.size() == 0) {
-                throw new MessengerApiException("The response JSON does not contain any key/value pair", null, null, null);
+                throw new MessengerApiException("The response JSON does not contain any key/value pair",
+                        empty(), empty(), empty());
             }
 
-            if (httpResponse.getStatusCode() >= 200 && httpResponse.getStatusCode() < 300) {
+            if (httpResponse.statusCode() >= 200 && httpResponse.statusCode() < 300) {
                 return responseTransformer.apply(responseJsonObject);
             } else {
                 throw MessengerApiExceptionFactory.create(responseJsonObject);

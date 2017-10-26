@@ -11,21 +11,21 @@ import lombok.ToString;
 @EqualsAndHashCode
 public abstract class Template {
 
-    private final TemplateType templateType;
+    private final Type templateType;
 
-    Template(TemplateType templateType) {
+    Template(Type templateType) {
         this.templateType = templateType;
     }
 
-    public TemplateType templateType() {
+    public Type templateType() {
         return templateType;
     }
 
     /**
      * @author Max Grabenhorst
-     * @since 0.6.0
+     * @since 1.0.0
      */
-    public enum TemplateType {
+    public enum Type {
 
         GENERIC,
         RECEIPT,

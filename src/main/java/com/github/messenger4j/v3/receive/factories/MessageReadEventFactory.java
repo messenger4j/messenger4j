@@ -28,10 +28,14 @@ public final class MessageReadEventFactory implements BaseEventFactory<MessageRe
 
     @Override
     public MessageReadEvent createEventFromJson(@NonNull JsonObject messagingEvent) {
-        final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID);
-        final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID);
-        final Instant timestamp = getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP).get();
-        final Instant watermark = getPropertyAsInstant(messagingEvent, PROP_READ, PROP_WATERMARK).get();
+        final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
+                .orElseThrow(IllegalArgumentException::new);
+        final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
+                .orElseThrow(IllegalArgumentException::new);
+        final Instant timestamp = getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP)
+                .orElseThrow(IllegalArgumentException::new);
+        final Instant watermark = getPropertyAsInstant(messagingEvent, PROP_READ, PROP_WATERMARK)
+                .orElseThrow(IllegalArgumentException::new);
 
         return new MessageReadEvent(senderId, recipientId, timestamp, watermark);
     }

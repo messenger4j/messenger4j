@@ -1,11 +1,6 @@
 package com.github.messenger4j.send.buttons;
 
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 import lombok.ToString;
 
 /**
@@ -16,13 +11,9 @@ import lombok.ToString;
 @EqualsAndHashCode
 public abstract class Button {
 
-    private final ButtonType type;
+    private final Type type;
 
-    public static ListBuilder newListBuilder() {
-        return new ListBuilder();
-    }
-
-    Button(ButtonType type) {
+    Button(Type type) {
         this.type = type;
     }
 
@@ -74,72 +65,20 @@ public abstract class Button {
         throw new UnsupportedOperationException("not a LogOutButton");
     }
 
-    public ButtonType type() {
+    public Type type() {
         return type;
     }
 
     /**
      * @author Max Grabenhorst
-     * @since 0.6.0
+     * @since 1.0.0
      */
-    public enum ButtonType {
+    public enum Type {
         WEB_URL,
         POSTBACK,
         PHONE_NUMBER,
         ELEMENT_SHARE,
         ACCOUNT_LINK,
         ACCOUNT_UNLINK
-    }
-
-    /**
-     * @author Max Grabenhorst
-     * @since 0.6.0
-     */
-    public static final class ListBuilder {
-
-        private final List<Button> buttons;
-
-        private ListBuilder() {
-            this.buttons = new ArrayList<>(5);
-        }
-
-        ListBuilder addButtonToList(Button button) {
-            this.buttons.add(button);
-            return this;
-        }
-
-        public UrlButton.Builder addUrlButton(@NonNull String title, @NonNull URL url) {
-            return new UrlButton.Builder(title, url, this);
-        }
-
-        public PostbackButton.Builder addPostbackButton(@NonNull String title, @NonNull String payload) {
-            return new PostbackButton.Builder(title, payload, this);
-        }
-
-        public CallButton.Builder addCallButton(@NonNull String title, @NonNull String payload) {
-            return new CallButton.Builder(title, payload, this);
-        }
-
-        public ShareButton.Builder addShareButton() {
-            return new ShareButton.Builder(this);
-        }
-
-        /**
-         * @since 0.7.0
-         */
-        public LogInButton.Builder addLogInButton(@NonNull URL url) {
-            return new LogInButton.Builder(url, this);
-        }
-
-        /**
-         * @since 0.7.0
-         */
-        public LogOutButton.Builder addLogOutButton() {
-            return new LogOutButton.Builder(this);
-        }
-
-        public List<Button> build() {
-            return Collections.unmodifiableList(new ArrayList<>(this.buttons));
-        }
     }
 }

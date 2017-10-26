@@ -1,6 +1,7 @@
 package com.github.messenger4j.send.buttons;
 
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
 
 /**
@@ -11,13 +12,17 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class CallButton extends Button {
 
-    private final String payload;
     private final String title;
+    private final String payload;
 
-    private CallButton(Builder builder) {
-        super(ButtonType.PHONE_NUMBER);
-        payload = builder.payload;
-        title = builder.title;
+    public static CallButton create(@NonNull String title, @NonNull String payload) {
+        return new CallButton(title, payload);
+    }
+
+    private CallButton(String title, String payload) {
+        super(Type.PHONE_NUMBER);
+        this.title = title;
+        this.payload = payload;
     }
 
     @Override
@@ -30,32 +35,11 @@ public final class CallButton extends Button {
         return this;
     }
 
-    public String payload() {
-        return payload;
-    }
-
     public String title() {
         return title;
     }
 
-    /**
-     * @author Max Grabenhorst
-     * @since 0.6.0
-     */
-    public static final class Builder {
-
-        private final String title;
-        private final String payload;
-        private final ListBuilder listBuilder;
-
-        Builder(String title, String payload, ListBuilder listBuilder) {
-            this.title = title;
-            this.payload = payload;
-            this.listBuilder = listBuilder;
-        }
-
-        public ListBuilder toList() {
-            return this.listBuilder.addButtonToList(new CallButton(this));
-        }
+    public String payload() {
+        return payload;
     }
 }

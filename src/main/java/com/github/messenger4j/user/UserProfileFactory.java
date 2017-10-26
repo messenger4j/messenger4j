@@ -13,12 +13,14 @@ import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_TIMEZONE
 import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_TYPE;
 import static com.github.messenger4j.internal.JsonHelper.getPropertyAsBoolean;
 import static com.github.messenger4j.internal.JsonHelper.getPropertyAsFloat;
+import static com.github.messenger4j.internal.JsonHelper.getPropertyAsJsonObject;
 import static com.github.messenger4j.internal.JsonHelper.getPropertyAsString;
-import static com.github.messenger4j.internal.JsonHelper.hasProperty;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 
 import com.github.messenger4j.v3.receive.Referral;
 import com.google.gson.JsonObject;
-import lombok.NonNull;
+import java.util.Optional;
 
 /**
  * @author Max Grabenhorst
@@ -29,26 +31,37 @@ public final class UserProfileFactory {
     private UserProfileFactory() {
     }
 
-    public static UserProfile create(@NonNull JsonObject jsonObject) {
-        final String firstName = getPropertyAsString(jsonObject, PROP_FIRST_NAME);
-        final String lastName = getPropertyAsString(jsonObject, PROP_LAST_NAME);
-        final String profilePic = getPropertyAsString(jsonObject, PROP_PROFILE_PIC);
-        final String locale = getPropertyAsString(jsonObject, PROP_LOCALE);
-        final Float timezoneOffset = getPropertyAsFloat(jsonObject, PROP_TIMEZONE);
-        final String genderString = getPropertyAsString(jsonObject, PROP_GENDER);
-        final UserProfile.Gender gender = genderString == null ? null : UserProfile.Gender.valueOf(genderString.toUpperCase());
+    public static UserProfile create(JsonObject jsonObject) {
+        final String firstName = getPropertyAsString(jsonObject, PROP_FIRST_NAME)
+                .orElseThrow(IllegalArgumentException::new);
+        final String lastName = getPropertyAsString(jsonObject, PROP_LAST_NAME)
+                .orElseThrow(IllegalArgumentException::new);
+        final String profilePic = getPropertyAsString(jsonObject, PROP_PROFILE_PIC)
+                .orElseThrow(IllegalArgumentException::new);
+        final String locale = getPropertyAsString(jsonObject, PROP_LOCALE)
+                .orElseThrow(IllegalArgumentException::new);
+        final Float timezoneOffset = getPropertyAsFloat(jsonObject, PROP_TIMEZONE)
+                .orElseThrow(IllegalArgumentException::new);
+        final UserProfile.Gender gender = getPropertyAsString(jsonObject, PROP_GENDER)
+                .map(String::toUpperCase)
+                .map(UserProfile.Gender::valueOf)
+                .orElseThrow(IllegalArgumentException::new);
         final boolean isPaymentEnabled = getPropertyAsBoolean(jsonObject, PROP_IS_PAYMENT_ENABLED)
                 .orElseThrow(IllegalArgumentException::new);
 
-        Referral lastAdReferral = null;
-        if (hasProperty(jsonObject, PROP_LAST_AD_REFERRAL)) {
-            final String source = getPropertyAsString(jsonObject, PROP_LAST_AD_REFERRAL, PROP_SOURCE);
-            final String type = getPropertyAsString(jsonObject, PROP_LAST_AD_REFERRAL, PROP_TYPE);
-            final String adId = getPropertyAsString(jsonObject, PROP_LAST_AD_REFERRAL, PROP_AD_ID);
+        final Optional<Referral> lastAdReferral = getPropertyAsJsonObject(jsonObject, PROP_LAST_AD_REFERRAL)
+                .map(referralJsonObject -> {
+                    final String source = getPropertyAsString(referralJsonObject, PROP_SOURCE)
+                            .orElseThrow(IllegalArgumentException::new);
+                    final String type = getPropertyAsString(referralJsonObject, PROP_TYPE)
+                            .orElseThrow(IllegalArgumentException::new);
+                    final String adId = getPropertyAsString(referralJsonObject, PROP_AD_ID)
+                            .orElseThrow(IllegalArgumentException::new);
+                    return of(new Referral(source, type, empty(), of(adId)));
+                })
+                .orElse(empty());
 
-            lastAdReferral = new Referral(source, type, null, adId);
-        }
-
-        return new UserProfile(firstName, lastName, profilePic, locale, timezoneOffset, gender, isPaymentEnabled, lastAdReferral);
+        return new UserProfile(firstName, lastName, profilePic, locale, timezoneOffset, gender,
+                isPaymentEnabled, lastAdReferral);
     }
 }

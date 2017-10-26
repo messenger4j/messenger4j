@@ -1,6 +1,7 @@
 package com.github.messenger4j.test.integration.user;
 
 import static com.github.messenger4j.common.MessengerHttpClient.HttpMethod.GET;
+import static java.util.Optional.of;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -31,7 +32,7 @@ public class UserProfileClientTest {
     private static final String PAGE_ACCESS_TOKEN = "PAGE_ACCESS_TOKEN";
 
     private final MessengerHttpClient mockHttpClient = mock(MessengerHttpClient.class);
-    private final Messenger messenger = Messenger.create(PAGE_ACCESS_TOKEN, "test", "test", mockHttpClient);
+    private final Messenger messenger = Messenger.create(PAGE_ACCESS_TOKEN, "test", "test", of(mockHttpClient));
 
     @Test
     public void shouldHandleSuccessfulResponse() throws Exception {
@@ -75,7 +76,7 @@ public class UserProfileClientTest {
         assertThat(userProfile.lastAdReferral().isPresent(), is(true));
         assertThat(userProfile.lastAdReferral().get().source(), is(equalTo("ADS")));
         assertThat(userProfile.lastAdReferral().get().type(), is(equalTo("OPEN_THREAD")));
-        assertThat(userProfile.lastAdReferral().get().adId(), is(equalTo(Optional.of("6045246247433"))));
+        assertThat(userProfile.lastAdReferral().get().adId(), is(equalTo(of("6045246247433"))));
     }
 
     @Test
@@ -124,8 +125,8 @@ public class UserProfileClientTest {
         //then
         assertThat(messengerApiException, is(notNullValue()));
         assertThat(messengerApiException.message(), is(equalTo("Invalid OAuth access token.")));
-        assertThat(messengerApiException.type(), is(equalTo(Optional.of("OAuthException"))));
-        assertThat(messengerApiException.code(), is(equalTo(Optional.of(190))));
-        assertThat(messengerApiException.fbTraceId(), is(equalTo(Optional.of("BLBz/WZt8dN"))));
+        assertThat(messengerApiException.type(), is(equalTo(of("OAuthException"))));
+        assertThat(messengerApiException.code(), is(equalTo(of(190))));
+        assertThat(messengerApiException.fbTraceId(), is(equalTo(of("BLBz/WZt8dN"))));
     }
 }

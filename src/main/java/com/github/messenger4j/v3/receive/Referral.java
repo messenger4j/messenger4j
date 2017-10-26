@@ -15,10 +15,11 @@ public final class Referral {
 
     private final String source;
     private final String type;
-    private final String refPayload;
-    private final String adId;
+    private final Optional<String> refPayload;
+    private final Optional<String> adId;
 
-    public Referral(@NonNull String source, @NonNull String type, String refPayload, String adId) {
+    public Referral(@NonNull String source, @NonNull String type, @NonNull Optional<String> refPayload,
+                    @NonNull Optional<String> adId) {
         this.source = source;
         this.type = type;
         this.refPayload = refPayload;
@@ -34,10 +35,10 @@ public final class Referral {
     }
 
     public Optional<String> refPayload() {
-        return Optional.ofNullable(refPayload);
+        return refPayload;
     }
 
     public Optional<String> adId() {
-        return Optional.ofNullable(adId);
+        return adId;
     }
 }

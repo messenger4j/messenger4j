@@ -21,7 +21,7 @@ public final class Summary {
     private final Optional<Float> shippingCost;
 
     public static Summary create(float totalCost) {
-        return new Summary(totalCost, empty(), empty(), empty());
+        return create(totalCost, empty(), empty(), empty());
     }
 
     public static Summary create(float totalCost, @NonNull Optional<Float> subtotal, @NonNull Optional<Float> totalTax,

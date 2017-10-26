@@ -17,20 +17,21 @@ public final class LocalizedPersistentMenu {
 
     private final String locale;
     private final boolean composerInputDisabled;
-    private final List<CallToAction> callToActions;
+    private final Optional<List<CallToAction>> callToActions;
 
     public static LocalizedPersistentMenu create(@NonNull SupportedLocale locale, boolean composerInputDisabled,
-                                                 List<CallToAction> callToActions) {
+                                                 @NonNull Optional<List<CallToAction>> callToActions) {
 
         return create(locale.name(), composerInputDisabled, callToActions);
     }
 
     public static LocalizedPersistentMenu create(@NonNull String locale, boolean composerInputDisabled,
-                                                 List<CallToAction> callToActions) {
+                                                 @NonNull Optional<List<CallToAction>> callToActions) {
         return new LocalizedPersistentMenu(locale, composerInputDisabled, callToActions);
     }
 
-    private LocalizedPersistentMenu(String locale, boolean composerInputDisabled, List<CallToAction> callToActions) {
+    private LocalizedPersistentMenu(String locale, boolean composerInputDisabled,
+                                    Optional<List<CallToAction>> callToActions) {
         this.locale = locale;
         this.composerInputDisabled = composerInputDisabled;
         this.callToActions = callToActions;
@@ -45,6 +46,6 @@ public final class LocalizedPersistentMenu {
     }
 
     public Optional<List<CallToAction>> callToActions() {
-        return Optional.ofNullable(callToActions);
+        return callToActions;
     }
 }

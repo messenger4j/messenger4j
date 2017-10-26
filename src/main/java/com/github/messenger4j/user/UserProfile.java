@@ -21,11 +21,11 @@ public final class UserProfile {
     private final float timezoneOffset;
     private final Gender gender;
     private final boolean isPaymentEnabled;
-    private final Referral lastAdReferral;
+    private final Optional<Referral> lastAdReferral;
 
     public UserProfile(@NonNull String firstName, @NonNull String lastName, @NonNull String profilePicture,
                        @NonNull String locale, float timezoneOffset, @NonNull Gender gender, boolean isPaymentEnabled,
-                       Referral lastAdReferral) {
+                       @NonNull Optional<Referral> lastAdReferral) {
 
         this.firstName = firstName;
         this.lastName = lastName;
@@ -66,7 +66,7 @@ public final class UserProfile {
     }
 
     public Optional<Referral> lastAdReferral() {
-        return Optional.ofNullable(lastAdReferral);
+        return lastAdReferral;
     }
 
     /**

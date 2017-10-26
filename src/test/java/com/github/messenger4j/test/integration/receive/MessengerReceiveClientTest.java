@@ -1,5 +1,7 @@
 package com.github.messenger4j.test.integration.receive;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -22,6 +24,7 @@ import com.github.messenger4j.v3.receive.QuickReplyMessageEvent;
 import com.github.messenger4j.v3.receive.Referral;
 import com.github.messenger4j.v3.receive.RichMediaAttachment;
 import com.github.messenger4j.v3.receive.TextMessageEvent;
+import java.net.URL;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -66,7 +69,7 @@ public class MessengerReceiveClientTest {
                 "}";
 
         //when
-        messenger.onReceiveEvents(payload, null, mockEventHandler);
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
 
         //then - throw exception
     }
@@ -92,7 +95,7 @@ public class MessengerReceiveClientTest {
                 "                \"attachments\": [{\n" +
                 "                    \"type\": \"image\",\n" +
                 "                    \"payload\": {\n" +
-                "                        \"url\": \"IMAGE_URL\"\n" +
+                "                        \"url\": \"http://image.url\"\n" +
                 "                    }\n" +
                 "                }, {\n" +
                 "                    \"type\": \"location\",\n" +
@@ -109,7 +112,7 @@ public class MessengerReceiveClientTest {
                 "}";
 
         //when
-        messenger.onReceiveEvents(payload, null, mockEventHandler);
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
 
         //then
         final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
@@ -126,7 +129,7 @@ public class MessengerReceiveClientTest {
         final Attachment firstAttachment = attachmentMessageEvent.attachments().get(0);
         assertThat(firstAttachment.isRichMediaAttachment(), is(true));
         assertThat(firstAttachment.asRichMediaAttachment().type(), equalTo(RichMediaAttachment.Type.IMAGE));
-        assertThat(firstAttachment.asRichMediaAttachment().url(), equalTo("IMAGE_URL"));
+        assertThat(firstAttachment.asRichMediaAttachment().url(), equalTo(new URL("http://image.url")));
 
         final Attachment secondAttachment = attachmentMessageEvent.attachments().get(1);
         assertThat(secondAttachment.isLocationAttachment(), is(true));
@@ -158,7 +161,7 @@ public class MessengerReceiveClientTest {
                 "}";
 
         //when
-        messenger.onReceiveEvents(payload, null, mockEventHandler);
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
 
         //then
         final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
@@ -201,7 +204,7 @@ public class MessengerReceiveClientTest {
                 "}";
 
         //when
-        messenger.onReceiveEvents(payload, null, mockEventHandler);
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
 
         //then
         final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
@@ -239,7 +242,7 @@ public class MessengerReceiveClientTest {
                 "\"amount\":-50},{\"name\":\"$100 Off Coupon\",\"amount\":-100}]}}]}}]}]}";
 
         //when
-        messenger.onReceiveEvents(payload, null, mockEventHandler);
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
 
         //then
         final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
@@ -252,7 +255,7 @@ public class MessengerReceiveClientTest {
         assertThat(messageEchoEvent.timestamp(), equalTo(Instant.ofEpochMilli(1480120402725L)));
         assertThat(messageEchoEvent.messageId(), equalTo("mid.1480199999925:83392d9f65"));
         assertThat(messageEchoEvent.appId(), equalTo("1559999994822905"));
-        assertThat(messageEchoEvent.metadata(), is(Optional.empty()));
+        assertThat(messageEchoEvent.metadata(), is(empty()));
     }
 
     @Test
@@ -283,7 +286,7 @@ public class MessengerReceiveClientTest {
                 "}";
 
         //when
-        messenger.onReceiveEvents(payload, null, mockEventHandler);
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
 
         //then
         final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
@@ -324,7 +327,7 @@ public class MessengerReceiveClientTest {
                 "}";
 
         //when
-        messenger.onReceiveEvents(payload, null, mockEventHandler);
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
 
         //then
         final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
@@ -369,7 +372,7 @@ public class MessengerReceiveClientTest {
                 "}";
 
         //when
-        messenger.onReceiveEvents(payload, null, mockEventHandler);
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
 
         //then
         final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
@@ -383,7 +386,7 @@ public class MessengerReceiveClientTest {
         assertThat(postbackEvent.title(), equalTo("<TITLE_FOR_THE_CTA>"));
         assertThat(postbackEvent.payload(), equalTo(Optional.of("<USER_DEFINED_PAYLOAD>")));
         assertThat(postbackEvent.referral(), equalTo(Optional.of(new Referral("<SHORTLINK>",
-                "OPEN_THREAD", "<USER_DEFINED_REFERRAL_PARAM>", null))));
+                "OPEN_THREAD", of("<USER_DEFINED_REFERRAL_PARAM>"), empty()))));
     }
 
     @Test
@@ -411,7 +414,7 @@ public class MessengerReceiveClientTest {
                 "}";
 
         //when
-        messenger.onReceiveEvents(payload, null, mockEventHandler);
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
 
         //then
         final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
@@ -450,7 +453,7 @@ public class MessengerReceiveClientTest {
                 "}";
 
         //when
-        messenger.onReceiveEvents(payload, null, mockEventHandler);
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
 
         //then
         final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
@@ -462,7 +465,7 @@ public class MessengerReceiveClientTest {
         assertThat(accountLinkingEvent.recipientId(), equalTo("PAGE_ID"));
         assertThat(accountLinkingEvent.timestamp(), equalTo(Instant.ofEpochMilli(1234567890L)));
         assertThat(accountLinkingEvent.status(), equalTo(AccountLinkingEvent.Status.UNLINKED));
-        assertThat(accountLinkingEvent.authorizationCode(), is(Optional.empty()));
+        assertThat(accountLinkingEvent.authorizationCode(), is(empty()));
     }
 
     @Test
@@ -489,7 +492,7 @@ public class MessengerReceiveClientTest {
                 "}";
 
         //when
-        messenger.onReceiveEvents(payload, null, mockEventHandler);
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
 
         //then
         final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
@@ -529,7 +532,7 @@ public class MessengerReceiveClientTest {
                 "}";
 
         //when
-        messenger.onReceiveEvents(payload, null, mockEventHandler);
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
 
         //then
         final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
@@ -568,7 +571,7 @@ public class MessengerReceiveClientTest {
                 "}";
 
         //when
-        messenger.onReceiveEvents(payload, null, mockEventHandler);
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
 
         //then
         final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
@@ -606,7 +609,7 @@ public class MessengerReceiveClientTest {
                 "}";
 
         //when
-        messenger.onReceiveEvents(payload, null, mockEventHandler);
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
 
         //then
         final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
@@ -635,7 +638,7 @@ public class MessengerReceiveClientTest {
         final String payload = null;
 
         //when
-        messenger.onReceiveEvents(payload, null, mockEventHandler);
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
 
         //then - throw exception
     }
@@ -650,7 +653,7 @@ public class MessengerReceiveClientTest {
         final String signature = "sha1=3daa41999293ff66c3eb313e04bcf77861bb0276";
 
         //when
-        messenger.onReceiveEvents(payload, signature, mockEventHandler);
+        messenger.onReceiveEvents(payload, of(signature), mockEventHandler);
 
         //then
         final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
@@ -670,7 +673,7 @@ public class MessengerReceiveClientTest {
         final String signature = "sha1=3daa41999293ff66c3eb313e04bcf77861bb0276";
 
         //when
-        messenger.onReceiveEvents(payload, signature, mockEventHandler);
+        messenger.onReceiveEvents(payload, of(signature), mockEventHandler);
 
         //then - throw exception
     }

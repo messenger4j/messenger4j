@@ -14,14 +14,15 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class OptInEvent extends BaseEvent {
 
-    private final String refPayload;
+    private final Optional<String> refPayload;
 
-    public OptInEvent(@NonNull String senderId, @NonNull String recipientId, @NonNull Instant timestamp, String refPayload) {
+    public OptInEvent(@NonNull String senderId, @NonNull String recipientId, @NonNull Instant timestamp,
+                      @NonNull Optional<String> refPayload) {
         super(senderId, recipientId, timestamp);
         this.refPayload = refPayload;
     }
 
     public Optional<String> refPayload() {
-        return Optional.ofNullable(refPayload);
+        return refPayload;
     }
 }

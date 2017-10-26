@@ -1,5 +1,6 @@
 package com.github.messenger4j.v3.receive;
 
+import java.net.URL;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
@@ -13,19 +14,11 @@ import lombok.ToString;
 public final class RichMediaAttachment extends Attachment {
 
     private final Type type;
-    private final String url;
+    private final URL url;
 
-    public RichMediaAttachment(@NonNull Type type, @NonNull String url) {
+    public RichMediaAttachment(@NonNull Type type, @NonNull URL url) {
         this.type = type;
         this.url = url;
-    }
-
-    public Type type() {
-        return type;
-    }
-
-    public String url() {
-        return url;
     }
 
     @Override
@@ -38,7 +31,18 @@ public final class RichMediaAttachment extends Attachment {
         return this;
     }
 
+    public Type type() {
+        return type;
+    }
+
+    public URL url() {
+        return url;
+    }
+
+    /**
+     * @since 1.0.0
+     */
     public enum Type {
-        IMAGE, AUDIO, VIDEO, FILE
+        IMAGE, AUDIO, VIDEO, FILE;
     }
 }
