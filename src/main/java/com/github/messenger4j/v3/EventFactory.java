@@ -18,6 +18,7 @@ import com.github.messenger4j.v3.receive.factories.MessageReadEventFactory;
 import com.github.messenger4j.v3.receive.factories.OptInEventFactory;
 import com.github.messenger4j.v3.receive.factories.PostbackEventFactory;
 import com.github.messenger4j.v3.receive.factories.QuickReplyMessageEventFactory;
+import com.github.messenger4j.v3.receive.factories.ReferralEventFactory;
 import com.github.messenger4j.v3.receive.factories.TextMessageEventFactory;
 import com.google.gson.JsonObject;
 import java.time.Instant;
@@ -36,11 +37,12 @@ public final class EventFactory {
             new AttachmentMessageEventFactory(),
             new QuickReplyMessageEventFactory(),
             new PostbackEventFactory(),
+            new ReferralEventFactory(),
+            new OptInEventFactory(),
             new MessageEchoEventFactory(),
             new MessageDeliveredEventFactory(),
             new MessageReadEventFactory(),
-            new AccountLinkingEventFactory(),
-            new OptInEventFactory()
+            new AccountLinkingEventFactory()
     ));
 
     private EventFactory() {

@@ -14,7 +14,6 @@ import com.github.messenger4j.v3.receive.OptInEvent;
 import com.google.gson.JsonObject;
 import java.time.Instant;
 import java.util.Optional;
-import lombok.NonNull;
 
 /**
  * @author Max Grabenhorst
@@ -23,12 +22,12 @@ import lombok.NonNull;
 public final class OptInEventFactory implements BaseEventFactory<OptInEvent> {
 
     @Override
-    public boolean isResponsible(@NonNull JsonObject messagingEvent) {
+    public boolean isResponsible(JsonObject messagingEvent) {
         return hasProperty(messagingEvent, PROP_OPTIN);
     }
 
     @Override
-    public OptInEvent createEventFromJson(@NonNull JsonObject messagingEvent) {
+    public OptInEvent createEventFromJson(JsonObject messagingEvent) {
         final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
                 .orElseThrow(IllegalArgumentException::new);
         final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)

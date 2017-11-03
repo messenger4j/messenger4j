@@ -19,7 +19,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import lombok.NonNull;
 
 /**
  * @author Max Grabenhorst
@@ -28,12 +27,12 @@ import lombok.NonNull;
 public final class MessageDeliveredEventFactory implements BaseEventFactory<MessageDeliveredEvent> {
 
     @Override
-    public boolean isResponsible(@NonNull JsonObject messagingEvent) {
+    public boolean isResponsible(JsonObject messagingEvent) {
         return hasProperty(messagingEvent, PROP_DELIVERY);
     }
 
     @Override
-    public MessageDeliveredEvent createEventFromJson(@NonNull JsonObject messagingEvent) {
+    public MessageDeliveredEvent createEventFromJson(JsonObject messagingEvent) {
         final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
                 .orElseThrow(IllegalArgumentException::new);
         final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)

@@ -17,7 +17,6 @@ import com.github.messenger4j.v3.receive.MessageEchoEvent;
 import com.google.gson.JsonObject;
 import java.time.Instant;
 import java.util.Optional;
-import lombok.NonNull;
 
 /**
  * @author Max Grabenhorst
@@ -26,12 +25,12 @@ import lombok.NonNull;
 public final class MessageEchoEventFactory implements BaseEventFactory<MessageEchoEvent> {
 
     @Override
-    public boolean isResponsible(@NonNull JsonObject messagingEvent) {
+    public boolean isResponsible(JsonObject messagingEvent) {
         return hasProperty(messagingEvent, PROP_MESSAGE, PROP_IS_ECHO);
     }
 
     @Override
-    public MessageEchoEvent createEventFromJson(@NonNull JsonObject messagingEvent) {
+    public MessageEchoEvent createEventFromJson(JsonObject messagingEvent) {
         final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
                 .orElseThrow(IllegalArgumentException::new);
         final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)

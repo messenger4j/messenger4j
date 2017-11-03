@@ -16,7 +16,6 @@ import static com.github.messenger4j.internal.JsonHelper.hasProperty;
 import com.github.messenger4j.v3.receive.QuickReplyMessageEvent;
 import com.google.gson.JsonObject;
 import java.time.Instant;
-import lombok.NonNull;
 
 /**
  * @author Max Grabenhorst
@@ -25,13 +24,13 @@ import lombok.NonNull;
 public final class QuickReplyMessageEventFactory implements BaseEventFactory<QuickReplyMessageEvent> {
 
     @Override
-    public boolean isResponsible(@NonNull JsonObject messagingEvent) {
+    public boolean isResponsible(JsonObject messagingEvent) {
         return hasProperty(messagingEvent, PROP_MESSAGE, PROP_TEXT)
                 && hasProperty(messagingEvent, PROP_MESSAGE, PROP_QUICK_REPLY);
     }
 
     @Override
-    public QuickReplyMessageEvent createEventFromJson(@NonNull JsonObject messagingEvent) {
+    public QuickReplyMessageEvent createEventFromJson(JsonObject messagingEvent) {
         final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
                 .orElseThrow(IllegalArgumentException::new);
         final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)

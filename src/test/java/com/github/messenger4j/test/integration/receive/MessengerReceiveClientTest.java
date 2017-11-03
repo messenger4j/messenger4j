@@ -21,15 +21,15 @@ import com.github.messenger4j.v3.receive.MessageReadEvent;
 import com.github.messenger4j.v3.receive.OptInEvent;
 import com.github.messenger4j.v3.receive.PostbackEvent;
 import com.github.messenger4j.v3.receive.QuickReplyMessageEvent;
-import com.github.messenger4j.v3.receive.Referral;
+import com.github.messenger4j.v3.receive.ReferralEvent;
 import com.github.messenger4j.v3.receive.RichMediaAttachment;
 import com.github.messenger4j.v3.receive.TextMessageEvent;
 import java.net.URL;
 import java.time.Instant;
-import java.util.Optional;
 import java.util.function.Consumer;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
  * @author Max Grabenhorst
@@ -98,6 +98,11 @@ public class MessengerReceiveClientTest {
                 "                        \"url\": \"http://image.url\"\n" +
                 "                    }\n" +
                 "                }, {\n" +
+                "                   \"type\":\"fallback\",\n" +
+                "                   \"payload\":null,\n" +
+                "                   \"title\":\"<TITLE_OF_THE_URL_ATTACHMENT>\",\n" +
+                "                   \"URL\":\"<URL_OF_THE_ATTACHMENT>\"\n" +
+                "                }, {\n" +
                 "                    \"type\": \"location\",\n" +
                 "                    \"payload\": {\n" +
                 "                        \"coordinates\": {\n" +
@@ -124,7 +129,7 @@ public class MessengerReceiveClientTest {
         assertThat(attachmentMessageEvent.recipientId(), equalTo("PAGE_ID"));
         assertThat(attachmentMessageEvent.timestamp(), equalTo(Instant.ofEpochMilli(1458692752478L)));
         assertThat(attachmentMessageEvent.messageId(), equalTo("mid.1458696618141:b4ef9d19ec21086067"));
-        assertThat(attachmentMessageEvent.attachments(), hasSize(2));
+        assertThat(attachmentMessageEvent.attachments(), hasSize(3));
 
         final Attachment firstAttachment = attachmentMessageEvent.attachments().get(0);
         assertThat(firstAttachment.isRichMediaAttachment(), is(true));
@@ -132,9 +137,19 @@ public class MessengerReceiveClientTest {
         assertThat(firstAttachment.asRichMediaAttachment().url(), equalTo(new URL("http://image.url")));
 
         final Attachment secondAttachment = attachmentMessageEvent.attachments().get(1);
-        assertThat(secondAttachment.isLocationAttachment(), is(true));
-        assertThat(secondAttachment.asLocationAttachment().latitude(), equalTo(52.3765533));
-        assertThat(secondAttachment.asLocationAttachment().longitude(), equalTo(9.7389123));
+        assertThat(secondAttachment.isFallbackAttachment(), is(true));
+        final String fallbackAttachmentJson = "{\n" +
+                "        \"type\":\"fallback\",\n" +
+                "        \"payload\":null,\n" +
+                "      \t\"title\":\"<TITLE_OF_THE_URL_ATTACHMENT>\",\n" +
+                "      \t\"URL\":\"<URL_OF_THE_ATTACHMENT>\"\n" +
+                "      }";
+        JSONAssert.assertEquals(fallbackAttachmentJson, secondAttachment.asFallbackAttachment().json(), true);
+
+        final Attachment thirdAttachment = attachmentMessageEvent.attachments().get(2);
+        assertThat(thirdAttachment.isLocationAttachment(), is(true));
+        assertThat(thirdAttachment.asLocationAttachment().latitude(), equalTo(52.3765533));
+        assertThat(thirdAttachment.asLocationAttachment().longitude(), equalTo(9.7389123));
     }
 
     @Test
@@ -172,7 +187,7 @@ public class MessengerReceiveClientTest {
         assertThat(optInEvent.senderId(), equalTo("USER_ID"));
         assertThat(optInEvent.recipientId(), equalTo("PAGE_ID"));
         assertThat(optInEvent.timestamp(), equalTo(Instant.ofEpochMilli(1234567890L)));
-        assertThat(optInEvent.refPayload(), equalTo(Optional.of("PASS_THROUGH_PARAM")));
+        assertThat(optInEvent.refPayload(), equalTo(of("PASS_THROUGH_PARAM")));
     }
 
     @Test
@@ -217,7 +232,7 @@ public class MessengerReceiveClientTest {
         assertThat(messageEchoEvent.timestamp(), equalTo(Instant.ofEpochMilli(1480114700296L)));
         assertThat(messageEchoEvent.messageId(), equalTo("mid.1457764197618:41d102a3e1ae206a38"));
         assertThat(messageEchoEvent.appId(), equalTo("1517776481860111"));
-        assertThat(messageEchoEvent.metadata(), equalTo(Optional.of("DEVELOPER_DEFINED_METADATA_STRING")));
+        assertThat(messageEchoEvent.metadata(), equalTo(of("DEVELOPER_DEFINED_METADATA_STRING")));
     }
 
     @Test
@@ -362,7 +377,8 @@ public class MessengerReceiveClientTest {
                 "    \"title\": \"<TITLE_FOR_THE_CTA>\",  \n" +
                 "    \"payload\": \"<USER_DEFINED_PAYLOAD>\",\n" +
                 "    \"referral\": {\n" +
-                "      \"ref\": \"<USER_DEFINED_REFERRAL_PARAM>\",\n" +
+                "      \"ref\": \"<REF DATA IF SPECIFIED IN THE AD>\",\n" +
+                "      \"ad_id\": \"<ID OF THE AD>\",\n" +
                 "      \"source\": \"<SHORTLINK>\",\n" +
                 "      \"type\": \"OPEN_THREAD\"\n" +
                 "    }\n" +
@@ -384,9 +400,196 @@ public class MessengerReceiveClientTest {
         assertThat(postbackEvent.recipientId(), equalTo("<PAGE_ID>"));
         assertThat(postbackEvent.timestamp(), equalTo(Instant.ofEpochMilli(1458692752478L)));
         assertThat(postbackEvent.title(), equalTo("<TITLE_FOR_THE_CTA>"));
-        assertThat(postbackEvent.payload(), equalTo(Optional.of("<USER_DEFINED_PAYLOAD>")));
-        assertThat(postbackEvent.referral(), equalTo(Optional.of(new Referral("<SHORTLINK>",
-                "OPEN_THREAD", of("<USER_DEFINED_REFERRAL_PARAM>"), empty()))));
+        assertThat(postbackEvent.payload(), equalTo(of("<USER_DEFINED_PAYLOAD>")));
+        assertThat(postbackEvent.referral().isPresent(), is(true));
+        assertThat(postbackEvent.referral().get().source(), equalTo("<SHORTLINK>"));
+        assertThat(postbackEvent.referral().get().type(), equalTo("OPEN_THREAD"));
+        assertThat(postbackEvent.referral().get().refPayload(), equalTo(of("<REF DATA IF SPECIFIED IN THE AD>")));
+        assertThat(postbackEvent.referral().get().adId(), equalTo(of("<ID OF THE AD>")));
+    }
+
+    @Test
+    public void shouldHandleMeLinkReferralEvent() throws Exception {
+        //given
+        final String payload = "{\n" +
+                "  \"object\":\"page\",\n" +
+                "  \"entry\":[\n" +
+                "    {\n" +
+                "      \"id\":\"<PAGE_ID>\",\n" +
+                "      \"time\":1458692752478,\n" +
+                "      \"messaging\":[\n" +
+                "      {\n" +
+                "          \"sender\":{\n" +
+                "            \"id\":\"<USER_ID>\"\n" +
+                "          },\n" +
+                "          \"recipient\":{\n" +
+                "            \"id\":\"<PAGE_ID>\"\n" +
+                "          },\n" +
+                "          \"timestamp\":1458692752478,\n" +
+                "          \"referral\": {\n" +
+                "            \"ref\": \"<REF DATA PASSED IN M.ME PARAM>\",\n" +
+                "            \"source\": \"SHORTLINK\",\n" +
+                "            \"type\": \"OPEN_THREAD\"\n" +
+                "          }\n" +
+                "      }\n" +
+                "      ]\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+
+        //when
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
+
+        //then
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
+
+        final ReferralEvent referralEvent = event.asReferralEvent();
+        assertThat(referralEvent.senderId(), equalTo("<USER_ID>"));
+        assertThat(referralEvent.recipientId(), equalTo("<PAGE_ID>"));
+        assertThat(referralEvent.timestamp(), equalTo(Instant.ofEpochMilli(1458692752478L)));
+        assertThat(referralEvent.referral().source(), equalTo("SHORTLINK"));
+        assertThat(referralEvent.referral().type(), equalTo("OPEN_THREAD"));
+        assertThat(referralEvent.referral().refPayload(), equalTo(of("<REF DATA PASSED IN M.ME PARAM>")));
+    }
+
+    @Test
+    public void shouldHandleAdReferralEvent() throws Exception {
+        //given
+        final String payload = "{\n" +
+                "  \"object\":\"page\",\n" +
+                "  \"entry\":[\n" +
+                "    {\n" +
+                "      \"id\":\"<PAGE_ID>\",\n" +
+                "      \"time\":1458692752478,\n" +
+                "      \"messaging\":[\n" +
+                "      {\n" +
+                "          \"sender\":{\n" +
+                "            \"id\":\"<USER_ID>\"\n" +
+                "          },\n" +
+                "          \"recipient\":{\n" +
+                "            \"id\":\"<PAGE_ID>\"\n" +
+                "          },\n" +
+                "          \"timestamp\":1458692752478,\n" +
+                "          \"referral\": {\n" +
+                "            \"ref\": \"<REF DATA IF SPECIFIED IN THE AD>\",\n" +
+                "            \"ad_id\": \"<ID OF THE AD>\",\n" +
+                "            \"source\": \"ADS\",\n" +
+                "            \"type\": \"OPEN_THREAD\"\n" +
+                "          }\n" +
+                "      }\n" +
+                "      ]\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+
+        //when
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
+
+        //then
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
+
+        final ReferralEvent referralEvent = event.asReferralEvent();
+        assertThat(referralEvent.senderId(), equalTo("<USER_ID>"));
+        assertThat(referralEvent.recipientId(), equalTo("<PAGE_ID>"));
+        assertThat(referralEvent.timestamp(), equalTo(Instant.ofEpochMilli(1458692752478L)));
+        assertThat(referralEvent.referral().source(), equalTo("ADS"));
+        assertThat(referralEvent.referral().type(), equalTo("OPEN_THREAD"));
+        assertThat(referralEvent.referral().refPayload(), equalTo(of("<REF DATA IF SPECIFIED IN THE AD>")));
+        assertThat(referralEvent.referral().adId(), equalTo(of("<ID OF THE AD>")));
+    }
+
+    @Test
+    public void shouldHandleParametricMessengerCodeReferralEvent() throws Exception {
+        //given
+        final String payload = "{\n" +
+                "  \"object\":\"page\",\n" +
+                "  \"entry\":[\n" +
+                "    {\n" +
+                "      \"id\":\"<PAGE_ID>\",\n" +
+                "      \"time\":1458692752478,\n" +
+                "      \"messaging\":[\n" +
+                "      {\n" +
+                "          \"sender\":{\n" +
+                "            \"id\":\"<USER_ID>\"\n" +
+                "          },\n" +
+                "          \"recipient\":{\n" +
+                "            \"id\":\"<PAGE_ID>\"\n" +
+                "          },\n" +
+                "          \"timestamp\":1458692752478,\n" +
+                "          \"referral\": {\n" +
+                "            \"ref\": \"<REF DATA PASSED IN CODE>\",\n" +
+                "            \"source\": \"MESSENGER_CODE\",\n" +
+                "            \"type\": \"OPEN_THREAD\"\n" +
+                "          }\n" +
+                "      }\n" +
+                "      ]\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+
+        //when
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
+
+        //then
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
+
+        final ReferralEvent referralEvent = event.asReferralEvent();
+        assertThat(referralEvent.senderId(), equalTo("<USER_ID>"));
+        assertThat(referralEvent.recipientId(), equalTo("<PAGE_ID>"));
+        assertThat(referralEvent.timestamp(), equalTo(Instant.ofEpochMilli(1458692752478L)));
+        assertThat(referralEvent.referral().source(), equalTo("MESSENGER_CODE"));
+        assertThat(referralEvent.referral().type(), equalTo("OPEN_THREAD"));
+        assertThat(referralEvent.referral().refPayload(), equalTo(of("<REF DATA PASSED IN CODE>")));
+    }
+
+    @Test
+    public void shouldHandleDiscoverTabReferralEvent() throws Exception {
+        //given
+        final String payload = "{\n" +
+                "  \"object\":\"page\",\n" +
+                "  \"entry\":[\n" +
+                "    {\n" +
+                "      \"id\":\"<PAGE_ID>\",\n" +
+                "      \"time\":1458692752478,\n" +
+                "      \"messaging\":[\n" +
+                "      {\n" +
+                "          \"sender\":{\n" +
+                "            \"id\":\"<USER_ID>\"\n" +
+                "          },\n" +
+                "          \"recipient\":{\n" +
+                "            \"id\":\"<PAGE_ID>\"\n" +
+                "          },\n" +
+                "          \"timestamp\":1458692752478,\n" +
+                "          \"referral\": {\n" +
+                "            \"source\": \"DISCOVER_TAB\",\n" +
+                "            \"type\": \"OPEN_THREAD\"\n" +
+                "          }\n" +
+                "      }\n" +
+                "      ]\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}";
+
+        //when
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
+
+        //then
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
+
+        final ReferralEvent referralEvent = event.asReferralEvent();
+        assertThat(referralEvent.senderId(), equalTo("<USER_ID>"));
+        assertThat(referralEvent.recipientId(), equalTo("<PAGE_ID>"));
+        assertThat(referralEvent.timestamp(), equalTo(Instant.ofEpochMilli(1458692752478L)));
+        assertThat(referralEvent.referral().source(), equalTo("DISCOVER_TAB"));
+        assertThat(referralEvent.referral().type(), equalTo("OPEN_THREAD"));
     }
 
     @Test
@@ -426,7 +629,7 @@ public class MessengerReceiveClientTest {
         assertThat(accountLinkingEvent.recipientId(), equalTo("PAGE_ID"));
         assertThat(accountLinkingEvent.timestamp(), equalTo(Instant.ofEpochMilli(1234567890L)));
         assertThat(accountLinkingEvent.status(), equalTo(AccountLinkingEvent.Status.LINKED));
-        assertThat(accountLinkingEvent.authorizationCode(), equalTo(Optional.of("PASS_THROUGH_AUTHORIZATION_CODE")));
+        assertThat(accountLinkingEvent.authorizationCode(), equalTo(of("PASS_THROUGH_AUTHORIZATION_CODE")));
     }
 
     @Test
@@ -688,6 +891,7 @@ public class MessengerReceiveClientTest {
         messenger.verifyWebhook(mode, verifyToken);
 
         //then - no exception is thrown
+        assertThat(true, is(true));
     }
 
     @Test(expected = MessengerVerificationException.class)
