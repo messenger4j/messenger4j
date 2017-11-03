@@ -409,6 +409,47 @@ public class MessengerReceiveClientTest {
     }
 
     @Test
+    public void shouldHandlePostbackEventWithoutReferral() throws Exception {
+        //given
+        final String payload = "{\n" +
+                "    \"object\": \"page\",\n" +
+                "    \"entry\": [{\n" +
+                "        \"id\": \"PAGE_ID\",\n" +
+                "        \"time\": 1458692752478,\n" +
+                "        \"messaging\": [{\n" +
+                "  \"sender\":{\n" +
+                "    \"id\":\"<PSID>\"\n" +
+                "  },\n" +
+                "  \"recipient\":{\n" +
+                "    \"id\":\"<PAGE_ID>\"\n" +
+                "  },\n" +
+                "  \"timestamp\":1458692752478,\n" +
+                "  \"postback\":{\n" +
+                "    \"title\": \"<TITLE_FOR_THE_CTA>\",  \n" +
+                "    \"payload\": \"<USER_DEFINED_PAYLOAD>\"\n" +
+                "  }\n" +
+                "}]\n" +
+                "    }]\n" +
+                "}";
+
+        //when
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
+
+        //then
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
+
+        final PostbackEvent postbackEvent = event.asPostbackEvent();
+        assertThat(postbackEvent.senderId(), equalTo("<PSID>"));
+        assertThat(postbackEvent.recipientId(), equalTo("<PAGE_ID>"));
+        assertThat(postbackEvent.timestamp(), equalTo(Instant.ofEpochMilli(1458692752478L)));
+        assertThat(postbackEvent.title(), equalTo("<TITLE_FOR_THE_CTA>"));
+        assertThat(postbackEvent.payload(), equalTo(of("<USER_DEFINED_PAYLOAD>")));
+        assertThat(postbackEvent.referral().isPresent(), is(false));
+    }
+
+    @Test
     public void shouldHandleMeLinkReferralEvent() throws Exception {
         //given
         final String payload = "{\n" +

@@ -2,6 +2,7 @@ package com.github.messenger4j.send;
 
 import static java.util.Optional.empty;
 
+import java.net.URL;
 import java.util.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -17,18 +18,18 @@ public final class TextQuickReply extends QuickReply {
 
     private final String title;
     private final String payload;
-    private final Optional<String> imageUrl;
+    private final Optional<URL> imageUrl;
 
     public static TextQuickReply create(@NonNull String title, @NonNull String payload) {
         return create(title, payload, empty());
     }
 
     public static TextQuickReply create(@NonNull String title, @NonNull String payload,
-                                        @NonNull Optional<String> imageUrl) {
+                                        @NonNull Optional<URL> imageUrl) {
         return new TextQuickReply(title, payload, imageUrl);
     }
 
-    private TextQuickReply(String title, String payload, Optional<String> imageUrl) {
+    private TextQuickReply(String title, String payload, Optional<URL> imageUrl) {
         super(ContentType.TEXT);
         this.title = title;
         this.payload = payload;
@@ -43,7 +44,7 @@ public final class TextQuickReply extends QuickReply {
         return payload;
     }
 
-    public Optional<String> imageUrl() {
+    public Optional<URL> imageUrl() {
         return imageUrl;
     }
 }

@@ -23,12 +23,14 @@ import com.github.messenger4j.common.MessengerHttpClient.HttpResponse;
 import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.exceptions.MessengerApiException;
 import com.github.messenger4j.send.IdRecipient;
+import com.github.messenger4j.send.LocationQuickReply;
 import com.github.messenger4j.send.MessageResponse;
 import com.github.messenger4j.send.NotificationType;
 import com.github.messenger4j.send.QuickReply;
 import com.github.messenger4j.send.SenderAction;
 import com.github.messenger4j.send.TextQuickReply;
 import com.github.messenger4j.send.buttons.Button;
+import com.github.messenger4j.send.buttons.CallButton;
 import com.github.messenger4j.send.buttons.LogInButton;
 import com.github.messenger4j.send.buttons.LogOutButton;
 import com.github.messenger4j.send.buttons.PostbackButton;
@@ -122,29 +124,47 @@ public class MessengerSendClientTest {
     @Test
     public void shouldSendTextMessageWithQuickReplies() throws Exception {
         //given
-        final IdRecipient recipient = IdRecipient.create("USER_ID");
-        final NotificationType notificationType = NotificationType.SILENT_PUSH;
+        final IdRecipient recipient = IdRecipient.create("<PSID>");
 
-        final String text = "Pick a color:";
+        final String text = "Here is a quick reply!";
 
-        final TextQuickReply textQuickReplyA = TextQuickReply.create("Red", "PAYLOAD_FOR_PICKING_RED");
-        final TextQuickReply textQuickReplyB = TextQuickReply.create("Green", "PAYLOAD_FOR_PICKING_GREEN");
-        final List<QuickReply> quickReplies = Arrays.asList(textQuickReplyA, textQuickReplyB);
+        final TextQuickReply quickReplyA = TextQuickReply.create("Search", "<POSTBACK_PAYLOAD>",
+                of(new URL("http://example.com/img/red.png")));
+        final LocationQuickReply quickReplyB = LocationQuickReply.create();
+        final TextQuickReply quickReplyC = TextQuickReply.create("Something Else", "<POSTBACK_PAYLOAD>");
+        final List<QuickReply> quickReplies = Arrays.asList(quickReplyA, quickReplyB, quickReplyC);
 
         //when
         final TextMessage message = TextMessage.create(text, of(quickReplies), empty());
-        final MessagePayload payload = MessagePayload.create(recipient, message, of(notificationType));
+        final MessagePayload payload = MessagePayload.create(recipient, message, empty());
         messenger.send(payload);
 
         //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
-        final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
-                + "\"notification_type\":\"SILENT_PUSH\","
-                + "\"message\":{\"text\":\"Pick a color:\","
-                + "\"quick_replies\":["
-                + "{\"content_type\":\"text\",\"title\":\"Red\",\"payload\":\"PAYLOAD_FOR_PICKING_RED\"},"
-                + "{\"content_type\":\"text\",\"title\":\"Green\",\"payload\":\"PAYLOAD_FOR_PICKING_GREEN\"}"
-                + "]}}";
+        final String expectedJsonBody = "{\n" +
+                "  \"recipient\":{\n" +
+                "    \"id\":\"<PSID>\"\n" +
+                "  },\n" +
+                "  \"message\":{\n" +
+                "    \"text\": \"Here is a quick reply!\",\n" +
+                "    \"quick_replies\":[\n" +
+                "      {\n" +
+                "        \"content_type\":\"text\",\n" +
+                "        \"title\":\"Search\",\n" +
+                "        \"payload\":\"<POSTBACK_PAYLOAD>\",\n" +
+                "        \"image_url\":\"http://example.com/img/red.png\"\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"content_type\":\"location\"\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"content_type\":\"text\",\n" +
+                "        \"title\":\"Something Else\",\n" +
+                "        \"payload\":\"<POSTBACK_PAYLOAD>\"\n" +
+                "      }\n" +
+                "    ]\n" +
+                "  }\n" +
+                "}";
         verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
         JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
@@ -280,12 +300,14 @@ public class MessengerSendClientTest {
     }
 
     @Test
-    public void shouldSendGenericTemplateWithUrlAndPostbackButtonsMessage() throws Exception {
+    public void shouldSendGenericTemplateWithButtonsMessage() throws Exception {
         //given
         final String recipientId = "USER_ID";
 
         final List<Button> buttons = Arrays.asList(
-                UrlButton.create("View Website", new URL("https://petersfancybrownhats.com")),
+                UrlButton.create("Select Criteria", new URL("https://petersfancyapparel.com/criteria_selector"),
+                        of(WebviewHeightRatio.FULL), of(true), of(new URL("https://petersfancyapparel.com/fallback"))),
+                CallButton.create("Call Representative", "+15105551234"),
                 PostbackButton.create("Start Chatting", "DEVELOPER_DEFINED_PAYLOAD")
         );
 
@@ -326,10 +348,19 @@ public class MessengerSendClientTest {
                 "            },\n" +
                 "            \"buttons\":[\n" +
                 "              {\n" +
-                "                \"type\":\"web_url\",\n" +
-                "                \"url\":\"https://petersfancybrownhats.com\",\n" +
-                "                \"title\":\"View Website\"\n" +
-                "              },{\n" +
+                "                   \"type\":\"web_url\",\n" +
+                "                   \"url\":\"https://petersfancyapparel.com/criteria_selector\",\n" +
+                "                   \"title\":\"Select Criteria\",\n" +
+                "                   \"webview_height_ratio\": \"full\",\n" +
+                "                   \"messenger_extensions\": true,  \n" +
+                "                   \"fallback_url\": \"https://petersfancyapparel.com/fallback\"\n" +
+                "              }," +
+                "               {\n" +
+                "                   \"type\":\"phone_number\",\n" +
+                "                   \"title\":\"Call Representative\",\n" +
+                "                   \"payload\":\"+15105551234\"\n" +
+                "               }," +
+                "               {\n" +
                 "                \"type\":\"postback\",\n" +
                 "                \"title\":\"Start Chatting\",\n" +
                 "                \"payload\":\"DEVELOPER_DEFINED_PAYLOAD\"\n" +
