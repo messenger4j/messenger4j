@@ -1,9 +1,9 @@
 package com.github.messenger4j.send;
 
-import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_ATTACHMENT_ID;
-import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_MESSAGE_ID;
-import static com.github.messenger4j.internal.JsonHelper.Constants.PROP_RECIPIENT_ID;
-import static com.github.messenger4j.internal.JsonHelper.getPropertyAsString;
+import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_ATTACHMENT_ID;
+import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_MESSAGE_ID;
+import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_RECIPIENT_ID;
+import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsString;
 
 import com.google.gson.JsonObject;
 import java.util.Optional;
