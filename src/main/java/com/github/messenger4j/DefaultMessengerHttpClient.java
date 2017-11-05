@@ -10,7 +10,7 @@ import okhttp3.Response;
 
 /**
  * @author Max Grabenhorst
- * @since 0.6.0
+ * @since 1.0.0
  */
 final class DefaultMessengerHttpClient implements MessengerHttpClient {
 

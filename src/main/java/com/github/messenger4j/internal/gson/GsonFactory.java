@@ -12,7 +12,7 @@ import java.util.Optional;
 /**
  * @author Andriy Koretskyy
  * @author Max Grabenhorst
- * @since 0.8.0
+ * @since 1.0.0
  */
 public final class GsonFactory {
 

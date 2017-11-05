@@ -2,7 +2,7 @@ package com.github.messenger4j.send.senderaction;
 
 /**
  * @author Max Grabenhorst
- * @since 0.6.0
+ * @since 1.0.0
  */
 public enum SenderAction {
 

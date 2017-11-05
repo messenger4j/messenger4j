@@ -14,7 +14,7 @@ import lombok.ToString;
 /**
  * @author Jan Zarnikov
  * @author Max Grabenhorst
- * @since 0.7.0
+ * @since 1.0.0
  */
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
@@ -53,7 +53,7 @@ public final class ListTemplate extends Template {
     }
 
     /**
-     * @since 0.7.0
+     * @since 1.0.0
      */
     public enum TopElementStyle {
         LARGE,

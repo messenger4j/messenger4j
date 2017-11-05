@@ -6,18 +6,8 @@ import lombok.NonNull;
 import lombok.ToString;
 
 /**
- * Thrown to indicate that a Messenger Platform Send API request failed.
- *
- * <p>
- * Messenger Platform errors are grouped by code, with a different message depending on the error condition.<br>
- * For a list of common errors that you should consider handling at run-time refer to: <br>
- * <a href="https://developers.facebook.com/docs/messenger-platform/send-api-reference#errors">
- * https://developers.facebook.com/docs/messenger-platform/send-api-reference#errors
- * </a>
- * </p>
- *
  * @author Max Grabenhorst
- * @since 0.6.0
+ * @since 1.0.0
  */
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)

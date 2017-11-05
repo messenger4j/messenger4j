@@ -29,11 +29,9 @@ public abstract class CallToAction {
     }
 
     /**
-     * @author Andriy Koretskyy
-     * @since 0.8.0
+     * @since 1.0.0
      */
     public enum Type {
-
         WEB_URL,
         POSTBACK,
         NESTED

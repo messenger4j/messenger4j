@@ -8,10 +8,8 @@ import java.time.Instant;
 import java.util.Optional;
 
 /**
- * <b>Internal</b> helper class to support processing of JSON structures.
- *
  * @author Max Grabenhorst
- * @since 0.6.0
+ * @since 1.0.0
  */
 public final class GsonUtil {
 
@@ -81,10 +79,8 @@ public final class GsonUtil {
     }
 
     /**
-     * Constants for property keys of the Messenger Platform JSON formats.
-     *
      * @author Max Grabenhorst
-     * @since 0.6.0
+     * @since 1.0.0
      */
     public enum Constants {
 

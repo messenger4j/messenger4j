@@ -8,7 +8,7 @@ import lombok.ToString;
 
 /**
  * @author Max Grabenhorst
- * @since 0.8.0
+ * @since 1.0.0
  */
 @ToString
 @EqualsAndHashCode
@@ -70,8 +70,7 @@ public final class UserProfile {
     }
 
     /**
-     * @author Max Grabenhorst
-     * @since 0.8.0
+     * @since 1.0.0
      */
     public enum Gender {
         MALE, FEMALE

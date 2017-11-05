@@ -5,7 +5,7 @@ import lombok.ToString;
 
 /**
  * @author Max Grabenhorst
- * @since 0.6.0
+ * @since 1.0.0
  */
 @ToString
 @EqualsAndHashCode
@@ -22,7 +22,6 @@ public abstract class Template {
     }
 
     /**
-     * @author Max Grabenhorst
      * @since 1.0.0
      */
     public enum Type {

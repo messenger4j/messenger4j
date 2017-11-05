@@ -4,13 +4,15 @@ import java.io.IOException;
 
 /**
  * @author Max Grabenhorst
- * @since 0.6.0
+ * @author Andriy Koretskyy
+ * @since 1.0.0
  */
 public interface MessengerHttpClient {
 
+    HttpResponse execute(HttpMethod httpMethod, String url, String jsonBody) throws IOException;
+
     /**
-     * @author Andriy Koretskyy
-     * @since 0.8.0
+     * @since 1.0.0
      */
     enum HttpMethod {
         GET,
@@ -19,13 +21,7 @@ public interface MessengerHttpClient {
     }
 
     /**
-     * @since 0.8.0
-     */
-    HttpResponse execute(HttpMethod httpMethod, String url, String jsonBody) throws IOException;
-
-    /**
-     * @author Max Grabenhorst
-     * @since 0.6.0
+     * @since 1.0.0
      */
     final class HttpResponse {
 

@@ -13,7 +13,7 @@ import lombok.ToString;
 
 /**
  * @author Max Grabenhorst
- * @since 0.6.0
+ * @since 1.0.0
  */
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)

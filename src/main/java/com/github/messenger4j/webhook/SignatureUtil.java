@@ -6,11 +6,8 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * The {@code SignatureUtil} is used to verify the provided signature of the payload in order to ensure
- * the integrity and origin of the payload.
- *
  * @author Max Grabenhorst
- * @since 0.6.0
+ * @since 1.0.0
  */
 public final class SignatureUtil {
 

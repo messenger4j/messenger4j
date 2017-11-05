@@ -33,7 +33,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 
 /**
  * @author Max Grabenhorst
- * @since 0.6.0
+ * @since 1.0.0
  */
 public class WebhookTest {
 
