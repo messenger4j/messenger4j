@@ -6,11 +6,11 @@
 
     <groupId>com.github.messenger4j</groupId>
     <artifactId>messenger4j</artifactId>
-    <version>0.9.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
-    <description>The ultimate Java library for building Chatbots on the Facebook Messenger Platform</description>
+    <description>A Java library for building Chatbots on the Facebook Messenger Platform - easy and fast</description>
     <url>https://github.com/messenger4j/messenger4j</url>
 
     <licenses>
@@ -187,5 +187,4 @@
             </build>
         </profile>
     </profiles>
-
 </project>

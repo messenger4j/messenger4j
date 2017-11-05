@@ -14,7 +14,7 @@ import lombok.ToString;
  */
 @ToString
 @EqualsAndHashCode
-public final class ReceiptElement {
+public final class Item {
 
     private final String title;
     private final Float price;
@@ -23,19 +23,19 @@ public final class ReceiptElement {
     private final Optional<String> currency;
     private final Optional<URL> imageUrl;
 
-    public static ReceiptElement create(@NonNull String title, float price) {
+    public static Item create(@NonNull String title, float price) {
         return create(title, price, empty(), empty(), empty(), empty());
     }
 
-    public static ReceiptElement create(@NonNull String title, float price, @NonNull Optional<String> subtitle,
-                                        @NonNull Optional<Integer> quantity, @NonNull Optional<String> currency,
-                                        @NonNull Optional<URL> imageUrl) {
+    public static Item create(@NonNull String title, float price, @NonNull Optional<String> subtitle,
+                              @NonNull Optional<Integer> quantity, @NonNull Optional<String> currency,
+                              @NonNull Optional<URL> imageUrl) {
 
-        return new ReceiptElement(title, price, subtitle, quantity, currency, imageUrl);
+        return new Item(title, price, subtitle, quantity, currency, imageUrl);
     }
 
-    private ReceiptElement(String title, Float price, Optional<String> subtitle, Optional<Integer> quantity,
-                           Optional<String> currency, Optional<URL> imageUrl) {
+    private Item(String title, Float price, Optional<String> subtitle, Optional<Integer> quantity,
+                 Optional<String> currency, Optional<URL> imageUrl) {
         this.title = title;
         this.price = price;
         this.subtitle = subtitle;

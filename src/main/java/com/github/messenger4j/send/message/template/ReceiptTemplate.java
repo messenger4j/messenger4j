@@ -6,7 +6,7 @@ import com.github.messenger4j.internal.Lists;
 import com.github.messenger4j.internal.gson.OptionalInstantToSecondsStringSerializer;
 import com.github.messenger4j.send.message.template.receipt.Address;
 import com.github.messenger4j.send.message.template.receipt.Adjustment;
-import com.github.messenger4j.send.message.template.receipt.ReceiptElement;
+import com.github.messenger4j.send.message.template.receipt.Item;
 import com.github.messenger4j.send.message.template.receipt.Summary;
 import com.google.gson.annotations.JsonAdapter;
 import java.net.URL;
@@ -31,7 +31,7 @@ public final class ReceiptTemplate extends Template {
     private final String currency;
     private final Summary summary;
     private final Optional<Address> address;
-    private final Optional<List<ReceiptElement>> elements;
+    private final Optional<List<Item>> elements;
     private final Optional<List<Adjustment>> adjustments;
     private final Optional<String> merchantName;
     private final Optional<URL> orderUrl;
@@ -54,7 +54,7 @@ public final class ReceiptTemplate extends Template {
                                          @NonNull String currency,
                                          @NonNull Summary summary,
                                          @NonNull Optional<Address> address,
-                                         @NonNull Optional<List<ReceiptElement>> elements,
+                                         @NonNull Optional<List<Item>> elements,
                                          @NonNull Optional<List<Adjustment>> adjustments,
                                          @NonNull Optional<String> merchantName,
                                          @NonNull Optional<URL> orderUrl,
@@ -65,7 +65,7 @@ public final class ReceiptTemplate extends Template {
     }
 
     private ReceiptTemplate(String recipientName, String orderNumber, String paymentMethod, String currency,
-                            Summary summary, Optional<Address> address, Optional<List<ReceiptElement>> elements,
+                            Summary summary, Optional<Address> address, Optional<List<Item>> elements,
                             Optional<List<Adjustment>> adjustments, Optional<String> merchantName,
                             Optional<URL> orderUrl, Optional<Boolean> sharable, Optional<Instant> timestamp) {
         super(Type.RECEIPT);
@@ -107,7 +107,7 @@ public final class ReceiptTemplate extends Template {
         return address;
     }
 
-    public Optional<List<ReceiptElement>> elements() {
+    public Optional<List<Item>> elements() {
         return elements;
     }
 

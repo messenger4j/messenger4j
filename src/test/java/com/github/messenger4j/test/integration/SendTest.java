@@ -47,7 +47,7 @@ import com.github.messenger4j.send.message.template.common.DefaultAction;
 import com.github.messenger4j.send.message.template.common.Element;
 import com.github.messenger4j.send.message.template.receipt.Address;
 import com.github.messenger4j.send.message.template.receipt.Adjustment;
-import com.github.messenger4j.send.message.template.receipt.ReceiptElement;
+import com.github.messenger4j.send.message.template.receipt.Item;
 import com.github.messenger4j.send.message.template.receipt.Summary;
 import com.github.messenger4j.send.recipient.IdRecipient;
 import com.github.messenger4j.send.senderaction.SenderAction;
@@ -413,11 +413,11 @@ public class SendTest {
         final Adjustment adjustment1 = Adjustment.create("New Customer Discount", 20.00F);
         final Adjustment adjustment2 = Adjustment.create("$10 Off Coupon", 10.00F);
 
-        final ReceiptElement receiptElement1 = ReceiptElement.create("Classic White T-Shirt", 50F,
+        final Item item1 = Item.create("Classic White T-Shirt", 50F,
                 of("100% Soft and Luxurious Cotton"), of(2), of("USD"),
                 of(new URL("http://petersapparel.parseapp.com/img/whiteshirt.png")));
 
-        final ReceiptElement receiptElement2 = ReceiptElement.create("Classic Gray T-Shirt", 25F,
+        final Item item2 = Item.create("Classic Gray T-Shirt", 25F,
                 of("100% Soft and Luxurious Cotton"), of(1), of("USD"),
                 of(new URL("http://petersapparel.parseapp.com/img/grayshirt.png")));
 
@@ -425,7 +425,7 @@ public class SendTest {
         final Summary summary = Summary.create(56.14F, of(75.00F), of(6.19F), of(4.95F));
 
         final ReceiptTemplate receiptTemplate = ReceiptTemplate.create("Stephane Crozatier", "12345678902",
-                "Visa 2345", "USD", summary, of(address), of(Arrays.asList(receiptElement1, receiptElement2)),
+                "Visa 2345", "USD", summary, of(address), of(Arrays.asList(item1, item2)),
                 of(Arrays.asList(adjustment1, adjustment2)), empty(),
                 of(new URL("http://petersapparel.parseapp.com/order?order_id=123456")), empty(),
                 of(ZonedDateTime.of(2015, 4, 7, 22, 14, 12, 0, ZoneOffset.UTC).toInstant()));

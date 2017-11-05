@@ -6,18 +6,18 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * The {@code SignatureVerifier} is used to verify the provided signature of the payload in order to ensure
+ * The {@code SignatureUtil} is used to verify the provided signature of the payload in order to ensure
  * the integrity and origin of the payload.
  *
  * @author Max Grabenhorst
  * @since 0.6.0
  */
-public final class SignatureVerifier {
+public final class SignatureUtil {
 
     private static final String HMAC_SHA1 = "HmacSHA1";
     private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
 
-    private SignatureVerifier() {
+    private SignatureUtil() {
     }
 
     /**

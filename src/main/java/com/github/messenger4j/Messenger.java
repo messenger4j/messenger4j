@@ -30,7 +30,7 @@ import com.github.messenger4j.spi.MessengerHttpClient.HttpResponse;
 import com.github.messenger4j.userprofile.UserProfile;
 import com.github.messenger4j.userprofile.UserProfileFactory;
 import com.github.messenger4j.webhook.Event;
-import com.github.messenger4j.webhook.SignatureVerifier;
+import com.github.messenger4j.webhook.SignatureUtil;
 import com.github.messenger4j.webhook.factory.EventFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -125,7 +125,7 @@ public final class Messenger {
             throws MessengerVerificationException {
 
         if (signature.isPresent()) {
-            if (!SignatureVerifier.isSignatureValid(requestPayload, signature.get(), this.appSecret)) {
+            if (!SignatureUtil.isSignatureValid(requestPayload, signature.get(), this.appSecret)) {
                 throw new MessengerVerificationException("Signature verification failed. " +
                         "Provided signature does not match calculated signature.");
             }
