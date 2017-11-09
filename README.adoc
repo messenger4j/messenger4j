@@ -45,42 +45,162 @@ dependencies {
 
 == Echo Example
 
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/DocumentationTest.java[tags=doc-EchoExample]
+        final String payload = "{\n" +
+                "  \"object\": \"page\",\n" +
+                "  \"entry\": [{\n" +
+                "    \"id\": \"1717527131834678\",\n" +
+                "    \"time\": 1475942721780,\n" +
+                "    \"messaging\": [{\n" +
+                "      \"sender\": {\n" +
+                "        \"id\": \"1256217357730577\"\n" +
+                "      },\n" +
+                "      \"recipient\": {\n" +
+                "        \"id\": \"1717527131834678\"\n" +
+                "      },\n" +
+                "      \"timestamp\": 1475942721741,\n" +
+                "      \"message\": {\n" +
+                "        \"mid\": \"mid.1475942721728:3b9e3646712f9bed52\",\n" +
+                "        \"seq\": 123,\n" +
+                "        \"text\": \"Hello Chatbot\"\n" +
+                "      }\n" +
+                "    }]\n" +
+                "  }]\n" +
+                "}";
+
+        final Messenger messenger = Messenger.create("PAGE_ACCESS_TOKEN", "APP_SECRET", "VERIFY_TOKEN");
+
+        messenger.onReceiveEvents(payload, Optional.empty(), event -> {
+            final String senderId = event.senderId();
+            if (event.isTextMessageEvent()) {
+                final String text = event.asTextMessageEvent().text();
+
+                final TextMessage textMessage = TextMessage.create(text);
+                final MessagePayload messagePayload = MessagePayload.create(senderId, textMessage);
+
+                try {
+                    messenger.send(messagePayload);
+                } catch (MessengerApiException | MessengerIOException e) {
+                    // Oops, something went wrong
+                }
+            }
+        });
 ----
 
 == Reference
 === Instantiation
 ==== with default HTTP-Client (okHttp)
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/DocumentationTest.java[tags=doc-Create]
+        final Messenger messenger = Messenger.create("PAGE_ACCESS_TOKEN", "APP_SECRET", "VERIFY_TOKEN");
 ----
 
 ==== with custom HTTP-Client
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/DocumentationTest.java[tags=doc-CreateCustomHttp]
+        final MyCustomMessengerHttpClient customHttpClient = new MyCustomMessengerHttpClient();
+        final Messenger messenger = Messenger.create("PAGE_ACCESS_TOKEN", "APP_SECRET",
+                "VERIFY_TOKEN", Optional.of(customHttpClient));
 ----
 
 === Webhook / Receive Events
 ==== helper for initial webhook verification request issued by Facebook
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/WebhookTest.java[tags=webhook-Verify]
+        messenger.verifyWebhook(mode, verifyToken);
 ----
 
 ==== handle incoming text message
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/DocumentationTest.java[tags=doc-ReceiveEventsText]
+        final String payload = "{\"object\":\"page\",\"entry\":[{\"id\":\"1717527131834678\",\"time\":1475942721780," +
+                "\"messaging\":[{\"sender\":{\"id\":\"1256217357730577\"},\"recipient\":{\"id\":\"1717527131834678\"}," +
+                "\"timestamp\":1475942721741,\"message\":{\"mid\":\"mid.1475942721728:3b9e3646712f9bed52\"," +
+                "\"seq\":123,\"text\":\"34wrr3wr\"}}]}]}";
+        final String signature = "sha1=3daa41999293ff66c3eb313e04bcf77861bb0276";
+
+        messenger.onReceiveEvents(payload, of(signature), event -> {
+            final String senderId = event.senderId();
+            final Instant timestamp = event.timestamp();
+
+            if (event.isTextMessageEvent()) {
+                final TextMessageEvent textMessageEvent = event.asTextMessageEvent();
+                final String messageId = textMessageEvent.messageId();
+                final String text = textMessageEvent.text();
+
+                log.debug("Received text message from '{}' at '{}' with content: {} (mid: {})",
+                        senderId, timestamp, text, messageId);
+            }
+        });
 ----
 
 ==== handle incoming attachment message
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/DocumentationTest.java[tags=doc-ReceiveEventsAttachment]
+        final String payload = "{\n" +
+                "    \"object\": \"page\",\n" +
+                "    \"entry\": [{\n" +
+                "        \"id\": \"PAGE_ID\",\n" +
+                "        \"time\": 1458692752478,\n" +
+                "        \"messaging\": [{\n" +
+                "            \"sender\": {\n" +
+                "                \"id\": \"USER_ID\"\n" +
+                "            },\n" +
+                "            \"recipient\": {\n" +
+                "                \"id\": \"PAGE_ID\"\n" +
+                "            },\n" +
+                "            \"timestamp\": 1458692752478,\n" +
+                "            \"message\": {\n" +
+                "                \"mid\": \"mid.1458696618141:b4ef9d19ec21086067\",\n" +
+                "                \"attachments\": [{\n" +
+                "                    \"type\": \"image\",\n" +
+                "                    \"payload\": {\n" +
+                "                        \"url\": \"http://image.url\"\n" +
+                "                    }\n" +
+                "                }, {\n" +
+                "                   \"type\":\"fallback\",\n" +
+                "                   \"payload\":null,\n" +
+                "                   \"title\":\"<TITLE_OF_THE_URL_ATTACHMENT>\",\n" +
+                "                   \"URL\":\"<URL_OF_THE_ATTACHMENT>\"\n" +
+                "                }, {\n" +
+                "                    \"type\": \"location\",\n" +
+                "                    \"payload\": {\n" +
+                "                        \"coordinates\": {\n" +
+                "                            \"lat\": 52.3765533,\n" +
+                "                            \"long\": 9.7389123\n" +
+                "                        }\n" +
+                "                    }\n" +
+                "                }]\n" +
+                "            }\n" +
+                "        }]\n" +
+                "    }]\n" +
+                "}";
+
+        messenger.onReceiveEvents(payload, Optional.empty(), event -> {
+            final String senderId = event.senderId();
+            final Instant timestamp = event.timestamp();
+
+            log.debug("Received event from '{}' at '{}'", senderId, timestamp);
+
+            if (event.isAttachmentMessageEvent()) {
+                final AttachmentMessageEvent attachmentMessageEvent = event.asAttachmentMessageEvent();
+                for (Attachment attachment : attachmentMessageEvent.attachments()) {
+                    if (attachment.isRichMediaAttachment()) {
+                        final RichMediaAttachment richMediaAttachment = attachment.asRichMediaAttachment();
+                        final RichMediaAttachment.Type type = richMediaAttachment.type();
+                        final URL url = richMediaAttachment.url();
+                        log.debug("Received rich media attachment of type '{}' with url: {}", type, url);
+                    }
+                    if (attachment.isLocationAttachment()) {
+                        final LocationAttachment locationAttachment = attachment.asLocationAttachment();
+                        final Double longitude = locationAttachment.longitude();
+                        final Double latitude = locationAttachment.latitude();
+                        log.debug("Received location information (long: {}, lat: {})", longitude, latitude);
+                    }
+                }
+            }
+        });
 ----
 
 ==== more event types
@@ -97,119 +217,283 @@ In addition to the event types described above the following events are also sup
 
 === Send API
 ==== send sender action
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/SendTest.java[tags=send-senderAction]
+        final String recipientId = "USER_ID";
+        final SenderAction senderAction = SenderAction.MARK_SEEN;
+
+        final SenderActionPayload payload = SenderActionPayload.create(recipientId, senderAction);
+        messenger.send(payload);
 ----
 
 ==== send text message
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/SendTest.java[tags=send-textMessage]
+        final String recipientId = "USER_ID";
+        final String text = "Hello Messenger Platform";
+
+        final MessagePayload payload = MessagePayload.create(recipientId, TextMessage.create(text));
+        messenger.send(payload);
 ----
 
 ==== send text message with quick replies
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/SendTest.java[tags=send-TextMessageQuickReplies]
+        final IdRecipient recipient = IdRecipient.create("<PSID>");
+
+        final String text = "Here is a quick reply!";
+
+        final TextQuickReply quickReplyA = TextQuickReply.create("Search",
+                "<POSTBACK_PAYLOAD>", of(new URL("http://example.com/img/red.png")));
+        final LocationQuickReply quickReplyB = LocationQuickReply.create();
+        final TextQuickReply quickReplyC = TextQuickReply.create("Something Else", "<POSTBACK_PAYLOAD>");
+
+        final List<QuickReply> quickReplies = Arrays.asList(quickReplyA, quickReplyB, quickReplyC);
+
+        final TextMessage message = TextMessage.create(text, of(quickReplies), empty());
+        final MessagePayload payload = MessagePayload.create(recipient, message, empty());
+        messenger.send(payload);
 ----
 
 ==== send text message with metadata
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/SendTest.java[tags=send-TextMessageMetadata]
+        final IdRecipient recipient = IdRecipient.create("USER_ID");
+        final NotificationType notificationType = NotificationType.SILENT_PUSH;
+        final String text = "Hello Messenger Platform";
+        final String metadata = "DEVELOPER_DEFINED_METADATA";
+
+        final TextMessage textMessage = TextMessage.create(text, empty(), of(metadata));
+        final MessagePayload payload = MessagePayload.create(recipient, textMessage, of(notificationType));
+        messenger.send(payload);
 ----
 
 ==== send image attachment message using a URL
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/SendTest.java[tags=send-ImageMessageUrl]
+        final String recipientId = "USER_ID";
+        final String imageUrl = "https://petersapparel.com/img/shirt.png";
+
+        final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(IMAGE, new URL(imageUrl));
+        final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
+        final MessagePayload payload = MessagePayload.create(recipientId, richMediaMessage);
+        messenger.send(payload);
 ----
 
 ==== send reusable image attachment message using a URL
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/SendTest.java[tags=send-ImageMessageUrlReusable]
+        final IdRecipient recipient = IdRecipient.create("USER_ID");
+        final NotificationType notificationType = NotificationType.NO_PUSH;
+        final String imageUrl = "https://petersapparel.com/img/shirt.png";
+
+        final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(IMAGE, new URL(imageUrl), of(true));
+        final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
+        final MessagePayload payload = MessagePayload.create(recipient, richMediaMessage, of(notificationType));
+        messenger.send(payload);
 ----
 
 ==== send image attachment message using an attachment ID
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/SendTest.java[tags=send-ImageMessageAttachmentId]
+        final IdRecipient recipient = IdRecipient.create("USER_ID");
+        final NotificationType notificationType = NotificationType.NO_PUSH;
+        final String attachmentId = "1745504518999123";
+
+        final ReusableRichMediaAsset richMediaAsset = ReusableRichMediaAsset.create(IMAGE, attachmentId);
+        final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
+        final MessagePayload payload = MessagePayload.create(recipient, richMediaMessage, of(notificationType));
+        messenger.send(payload);
 ----
 
 ==== send button template
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/SendTest.java[tags=send-ButtonTemplate]
+        final String recipientId = "USER_ID";
+
+        final UrlButton buttonA = UrlButton.create("Show Website", new URL("https://petersapparel.parseapp.com"));
+        final PostbackButton buttonB = PostbackButton.create("Start Chatting", "USER_DEFINED_PAYLOAD");
+        final UrlButton buttonC = UrlButton.create("Show Website", new URL("https://petersapparel.parseapp.com"),
+                of(WebviewHeightRatio.FULL), of(true), of(new URL("https://petersfancyapparel.com/fallback")));
+
+        final List<Button> buttons = Arrays.asList(buttonA, buttonB, buttonC);
+        final ButtonTemplate buttonTemplate = ButtonTemplate.create("What do you want to do next?", buttons);
+
+        final TemplateMessage templateMessage = TemplateMessage.create(buttonTemplate);
+        final MessagePayload payload = MessagePayload.create(recipientId, templateMessage);
+        messenger.send(payload);
 ----
 
 ==== send generic template with buttons
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/SendTest.java[tags=send-GenericTemplateButtons]
+        final String recipientId = "USER_ID";
+
+        final List<Button> buttons = Arrays.asList(
+                UrlButton.create("Select Criteria", new URL("https://petersfancyapparel.com/criteria_selector"),
+                        of(WebviewHeightRatio.FULL), of(true), of(new URL("https://petersfancyapparel.com/fallback"))),
+                CallButton.create("Call Representative", "+15105551234"),
+                PostbackButton.create("Start Chatting", "DEVELOPER_DEFINED_PAYLOAD")
+        );
+
+        final DefaultAction defaultAction = DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/view?item=103"),
+                of(WebviewHeightRatio.TALL), of(true), of(new URL("https://peterssendreceiveapp.ngrok.io/")));
+
+        final Element element = Element.create("Welcome to Peters Hats", of("We have got the right hat for everyone."),
+                of(new URL("https://petersfancybrownhats.com/company_image.png")), of(defaultAction), of(buttons));
+
+        final GenericTemplate genericTemplate = GenericTemplate.create(singletonList(element));
+
+        final MessagePayload payload = MessagePayload.create(recipientId, TemplateMessage.create(genericTemplate));
+        messenger.send(payload);
 ----
 
 ==== send receipt template
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/SendTest.java[tags=send-ReceiptTemplate]
+        final String recipientId = "USER_ID";
+
+        final Adjustment adjustment1 = Adjustment.create("New Customer Discount", 20.00F);
+        final Adjustment adjustment2 = Adjustment.create("$10 Off Coupon", 10.00F);
+
+        final Item item1 = Item.create("Classic White T-Shirt", 50F,
+                of("100% Soft and Luxurious Cotton"), of(2), of("USD"),
+                of(new URL("http://petersapparel.parseapp.com/img/whiteshirt.png")));
+
+        final Item item2 = Item.create("Classic Gray T-Shirt", 25F,
+                of("100% Soft and Luxurious Cotton"), of(1), of("USD"),
+                of(new URL("http://petersapparel.parseapp.com/img/grayshirt.png")));
+
+        final Address address = Address.create("1 Hacker Way", of(""), "Menlo Park", "94025", "CA", "US");
+        final Summary summary = Summary.create(56.14F, of(75.00F), of(6.19F), of(4.95F));
+
+        final ReceiptTemplate receiptTemplate = ReceiptTemplate.create("Stephane Crozatier", "12345678902",
+                "Visa 2345", "USD", summary, of(address), of(Arrays.asList(item1, item2)),
+                of(Arrays.asList(adjustment1, adjustment2)), empty(),
+                of(new URL("http://petersapparel.parseapp.com/order?order_id=123456")), empty(),
+                of(ZonedDateTime.of(2015, 4, 7, 22, 14, 12, 0, ZoneOffset.UTC).toInstant()));
+
+        final MessagePayload payload = MessagePayload.create(recipientId, TemplateMessage.create(receiptTemplate));
+        messenger.send(payload);
 ----
 
 ==== send list template
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/SendTest.java[tags=send-ListTemplate]
+        final String recipientId = "USER_ID";
+
+        final Element element1 = Element.create("Classic T-Shirt Collection", of("See all our colors"),
+                of(new URL("https://peterssendreceiveapp.ngrok.io/img/collection.png")),
+                of(DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/shop_collection"),
+                        of(WebviewHeightRatio.TALL), of(true), of(new URL("https://peterssendreceiveapp.ngrok.io/fallback")))),
+                of(singletonList(UrlButton.create("View", new URL("https://peterssendreceiveapp.ngrok.io/collection"),
+                        of(WebviewHeightRatio.TALL), empty(), empty()))));
+
+        final Element element2 = Element.create("Classic White T-Shirt", of("100% Cotton, 200% Comfortable"),
+                of(new URL("https://peterssendreceiveapp.ngrok.io/img/white-t-shirt.png")),
+                of(DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/view?item=100"),
+                        of(WebviewHeightRatio.TALL), empty(), empty())),
+                of(singletonList(UrlButton.create("Shop Now", new URL("https://peterssendreceiveapp.ngrok.io/shop?item=100"),
+                        of(WebviewHeightRatio.TALL), empty(), empty()))));
+
+        final Element element3 = Element.create("Classic Blue T-Shirt", of("100% Cotton, 200% Comfortable"),
+                of(new URL("https://peterssendreceiveapp.ngrok.io/img/blue-t-shirt.png")),
+                of(DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/view?item=101"),
+                        of(WebviewHeightRatio.TALL), empty(), empty())),
+                of(singletonList(UrlButton.create("Shop Now", new URL("https://peterssendreceiveapp.ngrok.io/shop?item=101"),
+                        of(WebviewHeightRatio.TALL), empty(), empty()))));
+
+        final Element element4 = Element.create("Classic Black T-Shirt", of("100% Cotton, 200% Comfortable"),
+                of(new URL("https://peterssendreceiveapp.ngrok.io/img/black-t-shirt.png")),
+                of(DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/view?item=102"),
+                        of(WebviewHeightRatio.TALL), empty(), empty())),
+                of(singletonList(UrlButton.create("Shop Now", new URL("https://peterssendreceiveapp.ngrok.io/shop?item=102"),
+                        of(WebviewHeightRatio.TALL), empty(), empty()))));
+
+
+        final ListTemplate listTemplate = ListTemplate.create(Arrays.asList(element1, element2, element3, element4),
+                of(TopElementStyle.LARGE), of(singletonList(PostbackButton.create("View More", "payload"))));
+
+        messenger.send(MessagePayload.create(recipientId, TemplateMessage.create(listTemplate)));
 ----
 
 ==== handle successful response
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/SendTest.java[tags=send-SuccessResponse]
+        final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(IMAGE, new URL("http://image.url"), of(true));
+        final MessagePayload payload = MessagePayload.create("USER_ID", RichMediaMessage.create(richMediaAsset));
+
+        final MessageResponse messageResponse = messenger.send(payload);
+
+        final String recipientId = messageResponse.recipientId();
+        final String messageId = messageResponse.messageId();
+        final Optional<String> attachmentId = messageResponse.attachmentId();
+        log.debug("RecipientId: {} | MessageId: {} | AttachmentId: {}",
+                recipientId, messageId, attachmentId);
 ----
 
 === User Profile API
 ==== query user information by user ID
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/UserProfileTest.java[tags=user-QueryProfile]
+        final UserProfile userProfile = messenger.queryUserProfile(userId);
 ----
 
 === Messenger Profile API
 ==== set / update Get Started button
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/MessengerProfileTest.java[tags=setup-StartButton]
+        final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("Button pressed")),
+                empty(), empty());
+
+        messenger.updateSettings(messengerSettings);
 ----
 
 ==== delete Get Started button
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/MessengerProfileTest.java[tags=setup-DeleteStartButton]
+        messenger.deleteSettings(MessengerSettingProperty.START_BUTTON);
 ----
 
 ==== set / update greeting text
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/MessengerProfileTest.java[tags=setup-GreetingText]
+        final Greeting greeting = Greeting.create("Hello!", LocalizedGreeting.create(SupportedLocale.en_US,
+                "Timeless apparel for the masses."));
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), of(greeting), empty());
 ----
 
 ==== delete greeting text
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/MessengerProfileTest.java[tags=setup-DeleteGreetingText]
+        messenger.deleteSettings(MessengerSettingProperty.GREETING);
 ----
 
 ==== set / update persistent menu
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/MessengerProfileTest.java[tags=setup-PersistentMenu]
+        final PostbackCallToAction callToActionAA = PostbackCallToAction.create("Pay Bill", "PAYBILL_PAYLOAD");
+        final PostbackCallToAction callToActionAB = PostbackCallToAction.create("History", "HISTORY_PAYLOAD");
+        final PostbackCallToAction callToActionAC = PostbackCallToAction.create("Contact Info", "CONTACT_INFO_PAYLOAD");
+
+        final NestedCallToAction callToActionA = NestedCallToAction.create("My Account",
+                Arrays.asList(callToActionAA, callToActionAB, callToActionAC));
+
+        final UrlCallToAction callToActionB = UrlCallToAction.create("Latest News",
+                new URL("http://petershats.parseapp.com/hat-news"), of(WebviewHeightRatio.FULL), empty(), empty());
+
+        final PersistentMenu persistentMenu = PersistentMenu.create(true, of(Arrays.asList(callToActionA, callToActionB)),
+                LocalizedPersistentMenu.create(SupportedLocale.zh_CN, false, empty()));
+
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(), of(persistentMenu));
+
+        messenger.updateSettings(messengerSettings);
 ----
 
 ==== delete persistent menu
-[source,java]
+[source,java,indent=0]
 ----
-include::{sourcedir}/MessengerProfileTest.java[tags=setup-DeletePersistentMenu]
+        messenger.deleteSettings(MessengerSettingProperty.PERSISTENT_MENU);
 ----
 
 == Requirements
