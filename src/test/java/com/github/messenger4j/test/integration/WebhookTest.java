@@ -924,14 +924,14 @@ public class WebhookTest {
 
     @Test
     public void shouldVerifyTheWebhook() throws Exception {
-        //given
         final String mode = "subscribe";
         final String verifyToken = "CUSTOM_VERIFY_TOKEN";
 
-        //when
+        // tag::webhook-Verify[]
         messenger.verifyWebhook(mode, verifyToken);
+        // end::webhook-Verify[]
 
-        //then - no exception is thrown
+        //no exception is thrown
         assertThat(true, is(true));
     }
 

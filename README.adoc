@@ -1,0 +1,228 @@
+:sourcedir: src/test/java/com/github/messenger4j/test/integration
+:m4j-version: 1.0.0
+:toc: macro
+
+= messenger4j
+
+image:https://travis-ci.org/messenger4j/messenger4j.svg?branch=master[Build Status,link=https://travis-ci.org/messenger4j/messenger4j]
+image:https://api.codacy.com/project/badge/Grade/b26d8f1fe4794b89b2ba439f35ac2af4[Codacy Badge,link=https://www.codacy.com/app/max_11/messenger4j?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=messenger4j/messenger4j&amp;utm_campaign=Badge_Grade]
+image:https://coveralls.io/repos/github/messenger4j/messenger4j/badge.svg[Coverage Status,link=https://coveralls.io/github/messenger4j/messenger4j]
+image:https://img.shields.io/badge/license-MIT-blue.svg[License Badge, link=LICENSE]
+
+*A Java library for building Chatbots on the Facebook Messenger Platform.*
+
+Using messenger4j is easy.
+Its modern object-oriented API is fully Java 8 compatible, expresses optionality, and is designed with immutability in mind.
+It is fast, powerful, and at roughly 150Kb, the library is very light.
+
+For more information on the Facebook Messenger Platform refer to the https://developers.facebook.com/docs/messenger-platform[official documentation].
+
+_Please note that messenger4j 1.0.0 is a complete rewrite and has a lot of breaking changes. +
+Thanks for all your valuable feedback and effort to make this library even better._
+
+toc::[]
+
+== Download
+=== Maven
+[source,xml]
+[subs="+attributes"]
+----
+<dependency>
+  <groupId>com.github.messenger4j</groupId>
+  <artifactId>messenger4j</artifactId>
+  <version>{m4j-version}</version>
+</dependency>
+----
+
+=== Gradle
+[source]
+[subs="+attributes"]
+----
+dependencies {
+  compile 'com.github.messenger4j:messenger4j:{m4j-version}'
+}
+----
+
+== Echo Example
+
+[source,java]
+----
+include::{sourcedir}/DocumentationTest.java[tags=doc-EchoExample]
+----
+
+== Reference
+=== Instantiation
+==== with default HTTP-Client (okHttp)
+[source,java]
+----
+include::{sourcedir}/DocumentationTest.java[tags=doc-Create]
+----
+
+==== with custom HTTP-Client
+[source,java]
+----
+include::{sourcedir}/DocumentationTest.java[tags=doc-CreateCustomHttp]
+----
+
+=== Webhook / Receive Events
+==== helper for initial webhook verification request issued by Facebook
+[source,java]
+----
+include::{sourcedir}/WebhookTest.java[tags=webhook-Verify]
+----
+
+==== handle incoming text message
+[source,java]
+----
+include::{sourcedir}/DocumentationTest.java[tags=doc-ReceiveEventsText]
+----
+
+==== handle incoming attachment message
+[source,java]
+----
+include::{sourcedir}/DocumentationTest.java[tags=doc-ReceiveEventsAttachment]
+----
+
+==== more event types
+In addition to the event types described above the following events are also supported:
+
+* `PostbackEvent`
+* `QuickReplyMessageEvent`
+* `ReferralEvent`
+* `OptInEvent`
+* `AccountLinkingEvent`
+* `MessageDeliveredEvent`
+* `MessageReadEvent`
+* `MessageEchoEvent`
+
+=== Send API
+==== send sender action
+[source,java]
+----
+include::{sourcedir}/SendTest.java[tags=send-senderAction]
+----
+
+==== send text message
+[source,java]
+----
+include::{sourcedir}/SendTest.java[tags=send-textMessage]
+----
+
+==== send text message with quick replies
+[source,java]
+----
+include::{sourcedir}/SendTest.java[tags=send-TextMessageQuickReplies]
+----
+
+==== send text message with metadata
+[source,java]
+----
+include::{sourcedir}/SendTest.java[tags=send-TextMessageMetadata]
+----
+
+==== send image attachment message using a URL
+[source,java]
+----
+include::{sourcedir}/SendTest.java[tags=send-ImageMessageUrl]
+----
+
+==== send reusable image attachment message using a URL
+[source,java]
+----
+include::{sourcedir}/SendTest.java[tags=send-ImageMessageUrlReusable]
+----
+
+==== send image attachment message using an attachment ID
+[source,java]
+----
+include::{sourcedir}/SendTest.java[tags=send-ImageMessageAttachmentId]
+----
+
+==== send button template
+[source,java]
+----
+include::{sourcedir}/SendTest.java[tags=send-ButtonTemplate]
+----
+
+==== send generic template with buttons
+[source,java]
+----
+include::{sourcedir}/SendTest.java[tags=send-GenericTemplateButtons]
+----
+
+==== send receipt template
+[source,java]
+----
+include::{sourcedir}/SendTest.java[tags=send-ReceiptTemplate]
+----
+
+==== send list template
+[source,java]
+----
+include::{sourcedir}/SendTest.java[tags=send-ListTemplate]
+----
+
+==== handle successful response
+[source,java]
+----
+include::{sourcedir}/SendTest.java[tags=send-SuccessResponse]
+----
+
+=== User Profile API
+==== query user information by user ID
+[source,java]
+----
+include::{sourcedir}/UserProfileTest.java[tags=user-QueryProfile]
+----
+
+=== Messenger Profile API
+==== set / update Get Started button
+[source,java]
+----
+include::{sourcedir}/MessengerProfileTest.java[tags=setup-StartButton]
+----
+
+==== delete Get Started button
+[source,java]
+----
+include::{sourcedir}/MessengerProfileTest.java[tags=setup-DeleteStartButton]
+----
+
+==== set / update greeting text
+[source,java]
+----
+include::{sourcedir}/MessengerProfileTest.java[tags=setup-GreetingText]
+----
+
+==== delete greeting text
+[source,java]
+----
+include::{sourcedir}/MessengerProfileTest.java[tags=setup-DeleteGreetingText]
+----
+
+==== set / update persistent menu
+[source,java]
+----
+include::{sourcedir}/MessengerProfileTest.java[tags=setup-PersistentMenu]
+----
+
+==== delete persistent menu
+[source,java]
+----
+include::{sourcedir}/MessengerProfileTest.java[tags=setup-DeletePersistentMenu]
+----
+
+== Requirements
+* Java 8+
+* slf4j
+* Gson
+* okHttp (optional => HTTP-Client is pluggable)
+
+== Contributing
+Contributions are very welcome!
+Please perform changes and submit pull requests from the `develop` branch instead of `master`.
+When submitting code, please make every effort to follow existing conventions and style in order to keep the code as readable as possible.
+Please also make sure your code compiles by running `mvn clean verify`.
+
+== License
+This project is licensed under the terms of the link:LICENSE[MIT license].

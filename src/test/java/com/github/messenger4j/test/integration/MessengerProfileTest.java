@@ -62,14 +62,13 @@ public class MessengerProfileTest {
 
     @Test
     public void shouldSetupStartButton() throws Exception {
-        //given
+        // tag::setup-StartButton[]
         final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("Button pressed")),
                 empty(), empty());
 
-        //when
         messenger.updateSettings(messengerSettings);
+        // end::setup-StartButton[]
 
-        //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{ \n" +
                 "  \"get_started\":{\n" +
@@ -82,10 +81,10 @@ public class MessengerProfileTest {
 
     @Test
     public void shouldDeleteStartButton() throws Exception {
-        //when
+        // tag::setup-DeleteStartButton[]
         messenger.deleteSettings(MessengerSettingProperty.START_BUTTON);
+        // end::setup-DeleteStartButton[]
 
-        //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\n" +
                 "  \"fields\": [\n" +
@@ -98,12 +97,12 @@ public class MessengerProfileTest {
 
     @Test
     public void shouldSetupGreetingText() throws Exception {
-        //given
+        // tag::setup-GreetingText[]
         final Greeting greeting = Greeting.create("Hello!", LocalizedGreeting.create(SupportedLocale.en_US,
                 "Timeless apparel for the masses."));
         final MessengerSettings messengerSettings = MessengerSettings.create(empty(), of(greeting), empty());
+        // end::setup-GreetingText[]
 
-        //when
         messenger.updateSettings(messengerSettings);
 
         //then
@@ -125,10 +124,10 @@ public class MessengerProfileTest {
 
     @Test
     public void shouldDeleteGreetingText() throws Exception {
-        //when
+        // tag::setup-DeleteGreetingText[]
         messenger.deleteSettings(MessengerSettingProperty.GREETING);
+        // end::setup-DeleteGreetingText[]
 
-        //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\n" +
                 "  \"fields\": [\n" +
@@ -141,7 +140,7 @@ public class MessengerProfileTest {
 
     @Test
     public void shouldSetupPersistentMenu() throws Exception {
-        //given
+        // tag::setup-PersistentMenu[]
         final PostbackCallToAction callToActionAA = PostbackCallToAction.create("Pay Bill", "PAYBILL_PAYLOAD");
         final PostbackCallToAction callToActionAB = PostbackCallToAction.create("History", "HISTORY_PAYLOAD");
         final PostbackCallToAction callToActionAC = PostbackCallToAction.create("Contact Info", "CONTACT_INFO_PAYLOAD");
@@ -157,10 +156,9 @@ public class MessengerProfileTest {
 
         final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(), of(persistentMenu));
 
-        //when
         messenger.updateSettings(messengerSettings);
+        // end::setup-PersistentMenu[]
 
-        //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\n" +
                 "  \"persistent_menu\":[\n" +
@@ -209,10 +207,10 @@ public class MessengerProfileTest {
 
     @Test
     public void shouldDeletePersistentMenu() throws Exception {
-        //when
+        // tag::setup-DeletePersistentMenu[]
         messenger.deleteSettings(MessengerSettingProperty.PERSISTENT_MENU);
+        // end::setup-DeletePersistentMenu[]
 
-        //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\n" +
                 "  \"fields\": [\n" +
@@ -225,23 +223,18 @@ public class MessengerProfileTest {
 
     @Test
     public void shouldHandleUpdateSuccessResponse() throws Exception {
-        //given
-        final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("test")), empty(), empty());
         final HttpResponse successfulResponse = new HttpResponse(200, "{\"result\": \"success\"}");
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(successfulResponse);
 
-        //when
+        final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("test")), empty(), empty());
         final SetupResponse setupResponse = messenger.updateSettings(messengerSettings);
 
-        //then
         assertThat(setupResponse, is(notNullValue()));
         assertThat(setupResponse.result(), is(equalTo("success")));
     }
 
     @Test
     public void shouldHandleUpdateErrorResponse() throws Exception {
-        //given
-        final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("test")), empty(), empty());
         final HttpResponse errorResponse = new HttpResponse(401, "{\n" +
                 "  \"error\": {\n" +
                 "    \"message\": \"Invalid OAuth access token.\",\n" +
@@ -252,15 +245,14 @@ public class MessengerProfileTest {
                 "}");
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(errorResponse);
 
-        //when
         MessengerApiException messengerApiException = null;
         try {
+            final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("test")), empty(), empty());
             messenger.updateSettings(messengerSettings);
         } catch (MessengerApiException e) {
             messengerApiException = e;
         }
 
-        //then
         assertThat(messengerApiException, is(notNullValue()));
         assertThat(messengerApiException.message(), is(equalTo("Invalid OAuth access token.")));
         assertThat(messengerApiException.type(), is(equalTo(of("OAuthException"))));
@@ -270,21 +262,17 @@ public class MessengerProfileTest {
 
     @Test
     public void shouldHandleDeleteSuccessResponse() throws Exception {
-        //given
         final HttpResponse successfulResponse = new HttpResponse(200, "{\"result\": \"success\"}");
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(successfulResponse);
 
-        //when
         final SetupResponse setupResponse = messenger.deleteSettings(MessengerSettingProperty.GREETING);
 
-        //then
         assertThat(setupResponse, is(notNullValue()));
         assertThat(setupResponse.result(), is(equalTo("success")));
     }
 
     @Test
     public void shouldHandleDeleteErrorResponse() throws Exception {
-        //given
         final HttpResponse errorResponse = new HttpResponse(401, "{\n" +
                 "  \"error\": {\n" +
                 "    \"message\": \"Invalid OAuth access token.\",\n" +
@@ -295,7 +283,6 @@ public class MessengerProfileTest {
                 "}");
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(errorResponse);
 
-        //when
         MessengerApiException messengerApiException = null;
         try {
             messenger.deleteSettings(MessengerSettingProperty.GREETING);
@@ -303,7 +290,6 @@ public class MessengerProfileTest {
             messengerApiException = e;
         }
 
-        //then
         assertThat(messengerApiException, is(notNullValue()));
         assertThat(messengerApiException.message(), is(equalTo("Invalid OAuth access token.")));
         assertThat(messengerApiException.type(), is(equalTo(of("OAuthException"))));

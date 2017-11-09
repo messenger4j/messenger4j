@@ -35,8 +35,7 @@ public class UserProfileTest {
     private final Messenger messenger = Messenger.create(PAGE_ACCESS_TOKEN, "test", "test", of(mockHttpClient));
 
     @Test
-    public void shouldHandleSuccessfulResponse() throws Exception {
-        //given
+    public void shouldQueryUserProfile() throws Exception {
         final String userId = "USER_ID";
         final HttpResponse successfulResponse = new HttpResponse(200, "{\n" +
                 "  \"first_name\": \"Peter\",\n" +
@@ -56,10 +55,10 @@ public class UserProfileTest {
                 "}");
         when(mockHttpClient.execute(eq(GET), anyString(), isNull())).thenReturn(successfulResponse);
 
-        //when
+        // tag::user-QueryProfile[]
         final UserProfile userProfile = messenger.queryUserProfile(userId);
+        // end::user-QueryProfile[]
 
-        //then
         final String expectedRequestUrl = String.format(FB_GRAPH_API_URL, userId, PAGE_ACCESS_TOKEN);
         verify(mockHttpClient).execute(eq(GET), eq(expectedRequestUrl), isNull());
 
@@ -81,11 +80,9 @@ public class UserProfileTest {
 
     @Test
     public void shouldHandleEmptyResponse() throws Exception {
-        //given
         final HttpResponse emptyResponse = new HttpResponse(200, "{}");
         when(mockHttpClient.execute(eq(GET), anyString(), isNull())).thenReturn(emptyResponse);
 
-        //when
         MessengerApiException messengerApiException = null;
         try {
             messenger.queryUserProfile("USER_ID");
@@ -93,7 +90,6 @@ public class UserProfileTest {
             messengerApiException = e;
         }
 
-        //then
         assertThat(messengerApiException, is(notNullValue()));
         assertThat(messengerApiException.message(), is(equalTo("The response JSON does not contain any key/value pair")));
         assertThat(messengerApiException.type(), is(Optional.empty()));
@@ -103,7 +99,6 @@ public class UserProfileTest {
 
     @Test
     public void shouldHandleErrorResponse() throws Exception {
-        //given
         final HttpResponse errorResponse = new HttpResponse(401, "{\n" +
                 "  \"error\": {\n" +
                 "    \"message\": \"Invalid OAuth access token.\",\n" +
@@ -114,7 +109,6 @@ public class UserProfileTest {
                 "}");
         when(mockHttpClient.execute(eq(GET), anyString(), isNull())).thenReturn(errorResponse);
 
-        //when
         MessengerApiException messengerApiException = null;
         try {
             messenger.queryUserProfile("USER_ID");
@@ -122,7 +116,6 @@ public class UserProfileTest {
             messengerApiException = e;
         }
 
-        //then
         assertThat(messengerApiException, is(notNullValue()));
         assertThat(messengerApiException.message(), is(equalTo("Invalid OAuth access token.")));
         assertThat(messengerApiException.type(), is(equalTo(of("OAuthException"))));

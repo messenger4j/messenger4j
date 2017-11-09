@@ -59,6 +59,8 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -68,6 +70,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
  * @author Max Grabenhorst
  * @since 1.0.0
  */
+@Slf4j
 public class SendTest {
 
     private static final String PAGE_ACCESS_TOKEN = "PAGE_ACCESS_TOKEN";
@@ -87,15 +90,14 @@ public class SendTest {
 
     @Test
     public void shouldSendSenderAction() throws Exception {
-        //given
+        // tag::send-senderAction[]
         final String recipientId = "USER_ID";
         final SenderAction senderAction = SenderAction.MARK_SEEN;
 
-        //when
         final SenderActionPayload payload = SenderActionPayload.create(recipientId, senderAction);
         messenger.send(payload);
+        // end::send-senderAction[]
 
-        //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
                 + "\"sender_action\":\"mark_seen\"}";
@@ -105,15 +107,14 @@ public class SendTest {
 
     @Test
     public void shouldSendTextMessage() throws Exception {
-        //given
+        // tag::send-textMessage[]
         final String recipientId = "USER_ID";
         final String text = "Hello Messenger Platform";
 
-        //when
         final MessagePayload payload = MessagePayload.create(recipientId, TextMessage.create(text));
         messenger.send(payload);
+        // end::send-textMessage[]
 
-        //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
                 + "\"message\":{\"text\":\"Hello Messenger Platform\"}}";
@@ -123,23 +124,23 @@ public class SendTest {
 
     @Test
     public void shouldSendTextMessageWithQuickReplies() throws Exception {
-        //given
+        // tag::send-TextMessageQuickReplies[]
         final IdRecipient recipient = IdRecipient.create("<PSID>");
 
         final String text = "Here is a quick reply!";
 
-        final TextQuickReply quickReplyA = TextQuickReply.create("Search", "<POSTBACK_PAYLOAD>",
-                of(new URL("http://example.com/img/red.png")));
+        final TextQuickReply quickReplyA = TextQuickReply.create("Search",
+                "<POSTBACK_PAYLOAD>", of(new URL("http://example.com/img/red.png")));
         final LocationQuickReply quickReplyB = LocationQuickReply.create();
         final TextQuickReply quickReplyC = TextQuickReply.create("Something Else", "<POSTBACK_PAYLOAD>");
+
         final List<QuickReply> quickReplies = Arrays.asList(quickReplyA, quickReplyB, quickReplyC);
 
-        //when
         final TextMessage message = TextMessage.create(text, of(quickReplies), empty());
         final MessagePayload payload = MessagePayload.create(recipient, message, empty());
         messenger.send(payload);
+        // end::send-TextMessageQuickReplies[]
 
-        //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\n" +
                 "  \"recipient\":{\n" +
@@ -171,18 +172,17 @@ public class SendTest {
 
     @Test
     public void shouldSendTextMessageWithMetadata() throws Exception {
-        //given
+        // tag::send-TextMessageMetadata[]
         final IdRecipient recipient = IdRecipient.create("USER_ID");
         final NotificationType notificationType = NotificationType.SILENT_PUSH;
         final String text = "Hello Messenger Platform";
         final String metadata = "DEVELOPER_DEFINED_METADATA";
 
-        //when
         final TextMessage textMessage = TextMessage.create(text, empty(), of(metadata));
         final MessagePayload payload = MessagePayload.create(recipient, textMessage, of(notificationType));
         messenger.send(payload);
+        // end::send-TextMessageMetadata[]
 
-        //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
                 + "\"notification_type\":\"SILENT_PUSH\","
@@ -196,17 +196,16 @@ public class SendTest {
 
     @Test
     public void shouldSendImageAttachmentMessageWithUrl() throws Exception {
-        //given
+        // tag::send-ImageMessageUrl[]
         final String recipientId = "USER_ID";
         final String imageUrl = "https://petersapparel.com/img/shirt.png";
 
-        //when
         final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(IMAGE, new URL(imageUrl));
         final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
         final MessagePayload payload = MessagePayload.create(recipientId, richMediaMessage);
         messenger.send(payload);
+        // end::send-ImageMessageUrl[]
 
-        //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
                 + "\"message\":{\"attachment\":{"
@@ -219,18 +218,17 @@ public class SendTest {
 
     @Test
     public void shouldSendReusableImageAttachmentMessageWithUrl() throws Exception {
-        //given
+        // tag::send-ImageMessageUrlReusable[]
         final IdRecipient recipient = IdRecipient.create("USER_ID");
         final NotificationType notificationType = NotificationType.NO_PUSH;
         final String imageUrl = "https://petersapparel.com/img/shirt.png";
 
-        //when
         final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(IMAGE, new URL(imageUrl), of(true));
         final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
         final MessagePayload payload = MessagePayload.create(recipient, richMediaMessage, of(notificationType));
         messenger.send(payload);
+        // end::send-ImageMessageUrlReusable[]
 
-        //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
                 + "\"notification_type\":\"NO_PUSH\","
@@ -244,18 +242,17 @@ public class SendTest {
 
     @Test
     public void shouldSendImageAttachmentMessageWithAttachmentId() throws Exception {
-        //given
+        // tag::send-ImageMessageAttachmentId[]
         final IdRecipient recipient = IdRecipient.create("USER_ID");
         final NotificationType notificationType = NotificationType.NO_PUSH;
         final String attachmentId = "1745504518999123";
 
-        //when
         final ReusableRichMediaAsset richMediaAsset = ReusableRichMediaAsset.create(IMAGE, attachmentId);
         final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
         final MessagePayload payload = MessagePayload.create(recipient, richMediaMessage, of(notificationType));
         messenger.send(payload);
+        // end::send-ImageMessageAttachmentId[]
 
-        //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
                 + "\"notification_type\":\"NO_PUSH\","
@@ -269,7 +266,7 @@ public class SendTest {
 
     @Test
     public void shouldSendButtonTemplateMessage() throws Exception {
-        //given
+        // tag::send-ButtonTemplate[]
         final String recipientId = "USER_ID";
 
         final UrlButton buttonA = UrlButton.create("Show Website", new URL("https://petersapparel.parseapp.com"));
@@ -278,15 +275,13 @@ public class SendTest {
                 of(WebviewHeightRatio.FULL), of(true), of(new URL("https://petersfancyapparel.com/fallback")));
 
         final List<Button> buttons = Arrays.asList(buttonA, buttonB, buttonC);
-
         final ButtonTemplate buttonTemplate = ButtonTemplate.create("What do you want to do next?", buttons);
 
-        //when
         final TemplateMessage templateMessage = TemplateMessage.create(buttonTemplate);
         final MessagePayload payload = MessagePayload.create(recipientId, templateMessage);
         messenger.send(payload);
+        // end::send-ButtonTemplate[]
 
-        //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"}," +
                 "\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"text\":\"What do you want to do next?\"" +
@@ -301,7 +296,7 @@ public class SendTest {
 
     @Test
     public void shouldSendGenericTemplateWithButtonsMessage() throws Exception {
-        //given
+        // tag::send-GenericTemplateButtons[]
         final String recipientId = "USER_ID";
 
         final List<Button> buttons = Arrays.asList(
@@ -319,11 +314,10 @@ public class SendTest {
 
         final GenericTemplate genericTemplate = GenericTemplate.create(singletonList(element));
 
-        //when
         final MessagePayload payload = MessagePayload.create(recipientId, TemplateMessage.create(genericTemplate));
         messenger.send(payload);
+        // end::send-GenericTemplateButtons[]
 
-        //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\n" +
                 "  \"recipient\":{\n" +
@@ -378,7 +372,7 @@ public class SendTest {
 
     @Test
     public void shouldSendGenericTemplateWithLogInAndLogOutButtonsMessage() throws Exception {
-        //given
+        // tag::send-GenericTemplateLoginLogoutButtons[]
         final String recipientId = "USER_ID";
 
         final List<Button> buttons = Arrays.asList(
@@ -391,10 +385,9 @@ public class SendTest {
 
         final GenericTemplate genericTemplate = GenericTemplate.create(singletonList(element));
 
-        //when
         messenger.send(MessagePayload.create(recipientId, TemplateMessage.create(genericTemplate)));
+        // end::send-GenericTemplateLoginLogoutButtons[]
 
-        //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},\"message\":" +
                 "{\"attachment\":{\"type\":\"template\",\"payload\":{\"elements\":" +
@@ -407,7 +400,7 @@ public class SendTest {
 
     @Test
     public void shouldSendReceiptTemplateMessage() throws Exception {
-        //given
+        // tag::send-ReceiptTemplate[]
         final String recipientId = "USER_ID";
 
         final Adjustment adjustment1 = Adjustment.create("New Customer Discount", 20.00F);
@@ -430,11 +423,10 @@ public class SendTest {
                 of(new URL("http://petersapparel.parseapp.com/order?order_id=123456")), empty(),
                 of(ZonedDateTime.of(2015, 4, 7, 22, 14, 12, 0, ZoneOffset.UTC).toInstant()));
 
-        //when
         final MessagePayload payload = MessagePayload.create(recipientId, TemplateMessage.create(receiptTemplate));
         messenger.send(payload);
+        // end::send-ReceiptTemplate[]
 
-        //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"}," +
                 "\"message\":{\"attachment\":{\"type\":\"template\",\"payload\":{\"recipient_name\":\"Stephane Crozatier\"," +
@@ -455,7 +447,7 @@ public class SendTest {
 
     @Test
     public void shouldSendListTemplateMessage() throws Exception {
-        //given
+        // tag::send-ListTemplate[]
         final String recipientId = "USER_ID";
 
         final Element element1 = Element.create("Classic T-Shirt Collection", of("See all our colors"),
@@ -490,10 +482,9 @@ public class SendTest {
         final ListTemplate listTemplate = ListTemplate.create(Arrays.asList(element1, element2, element3, element4),
                 of(TopElementStyle.LARGE), of(singletonList(PostbackButton.create("View More", "payload"))));
 
-        //when
         messenger.send(MessagePayload.create(recipientId, TemplateMessage.create(listTemplate)));
+        // end::send-ListTemplate[]
 
-        //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},\"message\":{\"attachment\":{\"type\":\"template\"," +
                 "\"payload\":{\"top_element_style\":\"large\",\"buttons\":[{\"payload\":\"payload\",\"title\":\"View More\"," +
@@ -525,7 +516,6 @@ public class SendTest {
 
     @Test
     public void shouldHandleSuccessResponse() throws Exception {
-        //given
         final HttpResponse successfulResponse = new HttpResponse(200, "{\n" +
                 "  \"recipient_id\": \"USER_ID\",\n" +
                 "  \"message_id\": \"mid.1473372944816:94f72b88c597657974\",\n" +
@@ -533,20 +523,26 @@ public class SendTest {
                 "}");
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(successfulResponse);
 
-        //when
-        final MessagePayload payload = MessagePayload.create("test", TextMessage.create("test"));
+        // tag::send-SuccessResponse[]
+        final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(IMAGE, new URL("http://image.url"), of(true));
+        final MessagePayload payload = MessagePayload.create("USER_ID", RichMediaMessage.create(richMediaAsset));
+
         final MessageResponse messageResponse = messenger.send(payload);
 
-        //then
-        assertThat(messageResponse, is(notNullValue()));
-        assertThat(messageResponse.recipientId(), is(equalTo("USER_ID")));
-        assertThat(messageResponse.messageId(), is(equalTo("mid.1473372944816:94f72b88c597657974")));
-        assertThat(messageResponse.attachmentId(), is(equalTo(of("1745504518999123"))));
+        final String recipientId = messageResponse.recipientId();
+        final String messageId = messageResponse.messageId();
+        final Optional<String> attachmentId = messageResponse.attachmentId();
+        log.debug("RecipientId: {} | MessageId: {} | AttachmentId: {}",
+                recipientId, messageId, attachmentId);
+        // end::send-SuccessResponse[]
+
+        assertThat(recipientId, is(equalTo("USER_ID")));
+        assertThat(messageId, is(equalTo("mid.1473372944816:94f72b88c597657974")));
+        assertThat(attachmentId, is(equalTo(of("1745504518999123"))));
     }
 
     @Test
     public void shouldHandleErrorResponse() throws Exception {
-        //given
         final HttpResponse errorResponse = new HttpResponse(401, "{\n" +
                 "  \"error\": {\n" +
                 "    \"message\": \"Invalid OAuth access token.\",\n" +
@@ -557,7 +553,6 @@ public class SendTest {
                 "}");
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(errorResponse);
 
-        //when
         MessengerApiException messengerApiException = null;
         try {
             final MessagePayload payload = MessagePayload.create("test", TextMessage.create("test"));
@@ -566,7 +561,6 @@ public class SendTest {
             messengerApiException = e;
         }
 
-        //then
         assertThat(messengerApiException, is(notNullValue()));
         assertThat(messengerApiException.message(), is(equalTo("Invalid OAuth access token.")));
         assertThat(messengerApiException.type(), is(equalTo(of("OAuthException"))));
