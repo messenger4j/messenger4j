@@ -4,13 +4,14 @@ language: java
 jdk:
   - oraclejdk8
 
-script: mvn verify -B
+script: mvn clean verify -B -Pcoverage
 before_install:
   - sudo apt-get install jq
   - wget -O ~/codacy-coverage-reporter-assembly-latest.jar $(curl https://api.github.com/repos/codacy/codacy-coverage-reporter/releases/latest | jq -r .assets[0].browser_download_url)
 after_success:
   - java -cp ~/codacy-coverage-reporter-assembly-latest.jar com.codacy.CodacyCoverageReporter -l Java -r target/site/jacoco/jacoco.xml
   - mvn org.eluder.coveralls:coveralls-maven-plugin:report
+  - mvn clean deploy -B
 
 cache:
   directories:
