@@ -1,5 +1,5 @@
 :sourcedir: src/test/java/com/github/messenger4j/test/integration
-:m4j-version: 1.0.0
+:m4j-version: 1.0.0-M1
 :toc: macro
 
 = messenger4j
@@ -13,7 +13,7 @@ image:https://img.shields.io/badge/license-MIT-blue.svg[License Badge, link=LICE
 
 Using messenger4j is easy.
 Its modern object-oriented API is fully Java 8 compatible, expresses optionality, and is designed with immutability in mind.
-It is fast, powerful, and at roughly 150Kb, the library is very light.
+It is fast, powerful, and at roughly 180KB, the library is very light.
 
 For more information on the Facebook Messenger Platform refer to the https://developers.facebook.com/docs/messenger-platform[official documentation].
 
