@@ -220,7 +220,7 @@ include::{sourcedir}/MessengerProfileTest.java[tags=setup-DeletePersistentMenu]
 
 == Contributing
 Contributions are very welcome!
-Please perform changes and submit pull requests from the `develop` branch instead of `master`.
+Please perform changes and submit pull requests from the `develop` branch instead of `master`, and open an issue before start working.
 When submitting code, please make every effort to follow existing conventions and style in order to keep the code as readable as possible.
 Please also make sure your code compiles by running `mvn clean verify`.
 
