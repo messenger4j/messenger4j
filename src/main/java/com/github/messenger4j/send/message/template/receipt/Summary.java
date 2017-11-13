@@ -15,7 +15,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 public final class Summary {
 
-    private final Float totalCost;
+    private final float totalCost;
     private final Optional<Float> subtotal;
     private final Optional<Float> totalTax;
     private final Optional<Float> shippingCost;
@@ -29,7 +29,7 @@ public final class Summary {
         return new Summary(totalCost, subtotal, totalTax, shippingCost);
     }
 
-    private Summary(Float totalCost, Optional<Float> subtotal, Optional<Float> totalTax, Optional<Float> shippingCost) {
+    private Summary(float totalCost, Optional<Float> subtotal, Optional<Float> totalTax, Optional<Float> shippingCost) {
         this.totalCost = totalCost;
         this.subtotal = subtotal;
         this.totalTax = totalTax;

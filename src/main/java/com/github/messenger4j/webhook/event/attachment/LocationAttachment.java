@@ -1,7 +1,6 @@
 package com.github.messenger4j.webhook.event.attachment;
 
 import lombok.EqualsAndHashCode;
-import lombok.NonNull;
 import lombok.ToString;
 
 /**
@@ -12,10 +11,10 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = false)
 public final class LocationAttachment extends Attachment {
 
-    private final Double latitude;
-    private final Double longitude;
+    private final double latitude;
+    private final double longitude;
 
-    public LocationAttachment(@NonNull Double latitude, @NonNull Double longitude) {
+    public LocationAttachment(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
     }
@@ -30,11 +29,11 @@ public final class LocationAttachment extends Attachment {
         return this;
     }
 
-    public Double latitude() {
+    public double latitude() {
         return latitude;
     }
 
-    public Double longitude() {
+    public double longitude() {
         return longitude;
     }
 }

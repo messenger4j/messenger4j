@@ -17,7 +17,7 @@ import lombok.ToString;
 public final class Item {
 
     private final String title;
-    private final Float price;
+    private final float price;
     private final Optional<String> subtitle;
     private final Optional<Integer> quantity;
     private final Optional<String> currency;
@@ -34,7 +34,7 @@ public final class Item {
         return new Item(title, price, subtitle, quantity, currency, imageUrl);
     }
 
-    private Item(String title, Float price, Optional<String> subtitle, Optional<Integer> quantity,
+    private Item(String title, float price, Optional<String> subtitle, Optional<Integer> quantity,
                  Optional<String> currency, Optional<URL> imageUrl) {
         this.title = title;
         this.price = price;

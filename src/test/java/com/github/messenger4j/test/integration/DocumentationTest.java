@@ -147,8 +147,8 @@ public class DocumentationTest {
                     }
                     if (attachment.isLocationAttachment()) {
                         final LocationAttachment locationAttachment = attachment.asLocationAttachment();
-                        final Double longitude = locationAttachment.longitude();
-                        final Double latitude = locationAttachment.latitude();
+                        final double longitude = locationAttachment.longitude();
+                        final double latitude = locationAttachment.latitude();
                         log.debug("Received location information (long: {}, lat: {})", longitude, latitude);
                     }
                 }
