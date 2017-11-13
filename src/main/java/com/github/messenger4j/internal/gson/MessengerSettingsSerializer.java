@@ -22,6 +22,8 @@ final class MessengerSettingsSerializer implements JsonSerializer<MessengerSetti
                 messengerSettingsObject.add("greeting", context.serialize(greeting.localizedGreetings())));
         src.persistentMenu().ifPresent(persistentMenu ->
                 messengerSettingsObject.add("persistent_menu", context.serialize(persistentMenu.localizedPersistentMenus())));
+        src.whitelistedDomains().ifPresent(whitelistedDomains ->
+                messengerSettingsObject.add("whitelisted_domains", context.serialize(whitelistedDomains)));
         return messengerSettingsObject;
     }
 }

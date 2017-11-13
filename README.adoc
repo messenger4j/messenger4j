@@ -444,7 +444,7 @@ In addition to the event types described above the following events are also sup
 [source,java,indent=0]
 ----
         final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("Button pressed")),
-                empty(), empty());
+                empty(), empty(), empty());
 
         messenger.updateSettings(messengerSettings);
 ----
@@ -460,7 +460,9 @@ In addition to the event types described above the following events are also sup
 ----
         final Greeting greeting = Greeting.create("Hello!", LocalizedGreeting.create(SupportedLocale.en_US,
                 "Timeless apparel for the masses."));
-        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), of(greeting), empty());
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), of(greeting), empty(), empty());
+
+        messenger.updateSettings(messengerSettings);
 ----
 
 ==== delete greeting text
@@ -485,7 +487,7 @@ In addition to the event types described above the following events are also sup
         final PersistentMenu persistentMenu = PersistentMenu.create(true, of(Arrays.asList(callToActionA, callToActionB)),
                 LocalizedPersistentMenu.create(SupportedLocale.zh_CN, false, empty()));
 
-        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(), of(persistentMenu));
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(), of(persistentMenu), empty());
 
         messenger.updateSettings(messengerSettings);
 ----
@@ -494,6 +496,26 @@ In addition to the event types described above the following events are also sup
 [source,java,indent=0]
 ----
         messenger.deleteSettings(MessengerSettingProperty.PERSISTENT_MENU);
+----
+
+==== set / update whitelisted domains
+[source,java,indent=0]
+----
+        final List<URL> whitelistedDomains = Arrays.asList(
+                new URL("http://example.url"),
+                new URL("http://second-example.url")
+        );
+
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
+                empty(), of(whitelistedDomains));
+
+        messenger.updateSettings(messengerSettings);
+----
+
+==== delete whitelisted domains
+[source,java,indent=0]
+----
+        messenger.deleteSettings(MessengerSettingProperty.WHITELISTED_DOMAINS);
 ----
 
 == Requirements

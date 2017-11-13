@@ -36,6 +36,7 @@ import com.github.messenger4j.spi.MessengerHttpClient.HttpMethod;
 import com.github.messenger4j.spi.MessengerHttpClient.HttpResponse;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -64,7 +65,7 @@ public class MessengerProfileTest {
     public void shouldSetupStartButton() throws Exception {
         // tag::setup-StartButton[]
         final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("Button pressed")),
-                empty(), empty());
+                empty(), empty(), empty());
 
         messenger.updateSettings(messengerSettings);
         // end::setup-StartButton[]
@@ -100,10 +101,10 @@ public class MessengerProfileTest {
         // tag::setup-GreetingText[]
         final Greeting greeting = Greeting.create("Hello!", LocalizedGreeting.create(SupportedLocale.en_US,
                 "Timeless apparel for the masses."));
-        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), of(greeting), empty());
-        // end::setup-GreetingText[]
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), of(greeting), empty(), empty());
 
         messenger.updateSettings(messengerSettings);
+        // end::setup-GreetingText[]
 
         //then
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
@@ -154,7 +155,7 @@ public class MessengerProfileTest {
         final PersistentMenu persistentMenu = PersistentMenu.create(true, of(Arrays.asList(callToActionA, callToActionB)),
                 LocalizedPersistentMenu.create(SupportedLocale.zh_CN, false, empty()));
 
-        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(), of(persistentMenu));
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(), of(persistentMenu), empty());
 
         messenger.updateSettings(messengerSettings);
         // end::setup-PersistentMenu[]
@@ -222,11 +223,54 @@ public class MessengerProfileTest {
     }
 
     @Test
+    public void shouldSetupWhitelistedDomains() throws Exception {
+        // tag::setup-WhitelistedDomains[]
+        final List<URL> whitelistedDomains = Arrays.asList(
+                new URL("http://example.url"),
+                new URL("http://second-example.url")
+        );
+
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
+                empty(), of(whitelistedDomains));
+
+        messenger.updateSettings(messengerSettings);
+        // end::setup-WhitelistedDomains[]
+
+        //then
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "  \"whitelisted_domains\":[\n" +
+                "    \"http://example.url\",\n" +
+                "    \"http://second-example.url\"\n" +
+                "  ]\n" +
+                "}";
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
+    public void shouldDeleteWhitelistedDomains() throws Exception {
+        // tag::setup-DeleteWhitelistedDomains[]
+        messenger.deleteSettings(MessengerSettingProperty.WHITELISTED_DOMAINS);
+        // end::setup-DeleteWhitelistedDomains[]
+
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "  \"fields\": [\n" +
+                "    \"whitelisted_domains\"\n" +
+                "  ]\n" +
+                "}";
+        verify(mockHttpClient).execute(eq(DELETE), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
     public void shouldHandleUpdateSuccessResponse() throws Exception {
         final HttpResponse successfulResponse = new HttpResponse(200, "{\"result\": \"success\"}");
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(successfulResponse);
 
-        final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("test")), empty(), empty());
+        final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("test")),
+                empty(), empty(), empty());
         final SetupResponse setupResponse = messenger.updateSettings(messengerSettings);
 
         assertThat(setupResponse, is(notNullValue()));
@@ -247,7 +291,8 @@ public class MessengerProfileTest {
 
         MessengerApiException messengerApiException = null;
         try {
-            final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("test")), empty(), empty());
+            final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("test")),
+                    empty(), empty(), empty());
             messenger.updateSettings(messengerSettings);
         } catch (MessengerApiException e) {
             messengerApiException = e;

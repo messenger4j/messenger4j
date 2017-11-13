@@ -212,6 +212,18 @@ include::{sourcedir}/MessengerProfileTest.java[tags=setup-PersistentMenu]
 include::{sourcedir}/MessengerProfileTest.java[tags=setup-DeletePersistentMenu]
 ----
 
+==== set / update whitelisted domains
+[source,java,indent=0]
+----
+include::{sourcedir}/MessengerProfileTest.java[tags=setup-WhitelistedDomains]
+----
+
+==== delete whitelisted domains
+[source,java,indent=0]
+----
+include::{sourcedir}/MessengerProfileTest.java[tags=setup-DeleteWhitelistedDomains]
+----
+
 == Requirements
 * Java 8+
 * slf4j

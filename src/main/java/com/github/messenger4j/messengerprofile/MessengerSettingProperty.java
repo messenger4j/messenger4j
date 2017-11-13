@@ -10,5 +10,6 @@ public enum MessengerSettingProperty {
     @SerializedName("get_started")
     START_BUTTON,
     PERSISTENT_MENU,
-    GREETING
+    GREETING,
+    WHITELISTED_DOMAINS
 }
