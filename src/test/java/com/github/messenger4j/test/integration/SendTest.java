@@ -36,6 +36,7 @@ import com.github.messenger4j.send.message.template.ButtonTemplate;
 import com.github.messenger4j.send.message.template.GenericTemplate;
 import com.github.messenger4j.send.message.template.ListTemplate;
 import com.github.messenger4j.send.message.template.ListTemplate.TopElementStyle;
+import com.github.messenger4j.send.message.template.OpenGraphTemplate;
 import com.github.messenger4j.send.message.template.ReceiptTemplate;
 import com.github.messenger4j.send.message.template.button.Button;
 import com.github.messenger4j.send.message.template.button.CallButton;
@@ -45,6 +46,7 @@ import com.github.messenger4j.send.message.template.button.PostbackButton;
 import com.github.messenger4j.send.message.template.button.UrlButton;
 import com.github.messenger4j.send.message.template.common.DefaultAction;
 import com.github.messenger4j.send.message.template.common.Element;
+import com.github.messenger4j.send.message.template.opengraph.OpenGraphObject;
 import com.github.messenger4j.send.message.template.receipt.Address;
 import com.github.messenger4j.send.message.template.receipt.Adjustment;
 import com.github.messenger4j.send.message.template.receipt.Item;
@@ -95,6 +97,7 @@ public class SendTest {
         final SenderAction senderAction = SenderAction.MARK_SEEN;
 
         final SenderActionPayload payload = SenderActionPayload.create(recipientId, senderAction);
+
         messenger.send(payload);
         // end::send-senderAction[]
 
@@ -112,6 +115,7 @@ public class SendTest {
         final String text = "Hello Messenger Platform";
 
         final MessagePayload payload = MessagePayload.create(recipientId, TextMessage.create(text));
+
         messenger.send(payload);
         // end::send-textMessage[]
 
@@ -138,6 +142,7 @@ public class SendTest {
 
         final TextMessage message = TextMessage.create(text, of(quickReplies), empty());
         final MessagePayload payload = MessagePayload.create(recipient, message, empty());
+
         messenger.send(payload);
         // end::send-TextMessageQuickReplies[]
 
@@ -180,6 +185,7 @@ public class SendTest {
 
         final TextMessage textMessage = TextMessage.create(text, empty(), of(metadata));
         final MessagePayload payload = MessagePayload.create(recipient, textMessage, of(notificationType));
+
         messenger.send(payload);
         // end::send-TextMessageMetadata[]
 
@@ -203,6 +209,7 @@ public class SendTest {
         final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(IMAGE, new URL(imageUrl));
         final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
         final MessagePayload payload = MessagePayload.create(recipientId, richMediaMessage);
+
         messenger.send(payload);
         // end::send-ImageMessageUrl[]
 
@@ -226,6 +233,7 @@ public class SendTest {
         final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(IMAGE, new URL(imageUrl), of(true));
         final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
         final MessagePayload payload = MessagePayload.create(recipient, richMediaMessage, of(notificationType));
+
         messenger.send(payload);
         // end::send-ImageMessageUrlReusable[]
 
@@ -250,6 +258,7 @@ public class SendTest {
         final ReusableRichMediaAsset richMediaAsset = ReusableRichMediaAsset.create(IMAGE, attachmentId);
         final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
         final MessagePayload payload = MessagePayload.create(recipient, richMediaMessage, of(notificationType));
+
         messenger.send(payload);
         // end::send-ImageMessageAttachmentId[]
 
@@ -279,6 +288,7 @@ public class SendTest {
 
         final TemplateMessage templateMessage = TemplateMessage.create(buttonTemplate);
         final MessagePayload payload = MessagePayload.create(recipientId, templateMessage);
+
         messenger.send(payload);
         // end::send-ButtonTemplate[]
 
@@ -315,6 +325,7 @@ public class SendTest {
         final GenericTemplate genericTemplate = GenericTemplate.create(singletonList(element));
 
         final MessagePayload payload = MessagePayload.create(recipientId, TemplateMessage.create(genericTemplate));
+
         messenger.send(payload);
         // end::send-GenericTemplateButtons[]
 
@@ -424,6 +435,7 @@ public class SendTest {
                 of(ZonedDateTime.of(2015, 4, 7, 22, 14, 12, 0, ZoneOffset.UTC).toInstant()));
 
         final MessagePayload payload = MessagePayload.create(recipientId, TemplateMessage.create(receiptTemplate));
+
         messenger.send(payload);
         // end::send-ReceiptTemplate[]
 
@@ -510,6 +522,49 @@ public class SendTest {
                 "\"title\":\"Shop Now\",\"type\":\"web_url\"}],\"default_action\":{\"type\":\"web_url\"," +
                 "\"url\":\"https://peterssendreceiveapp.ngrok.io/view?item\\u003d102\",\"webview_height_ratio\":\"tall\"}}]," +
                 "\"template_type\":\"list\"}}}}";
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
+    public void shouldSendOpenGraphTemplateMessage() throws Exception {
+        // tag::send-OpenGraphTemplate[]
+        final String recipientId = "USER_ID";
+
+        final UrlButton urlButton = UrlButton.create("View More", new URL("https://en.wikipedia.org/wiki/Rickrolling"));
+        final OpenGraphObject openGraphObject = OpenGraphObject.create(new URL("https://open.spotify.com/track/7GhIk7Il098yCjg4BQjzvb"),
+                of(singletonList(urlButton)));
+        final OpenGraphTemplate openGraphTemplate = OpenGraphTemplate.create(singletonList(openGraphObject));
+
+        messenger.send(MessagePayload.create(recipientId, TemplateMessage.create(openGraphTemplate)));
+        // end::send-OpenGraphTemplate[]
+
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "  \"recipient\":{\n" +
+                "    \"id\":\"USER_ID\"\n" +
+                "  },\n" +
+                "  \"message\":{\n" +
+                "    \"attachment\":{\n" +
+                "      \"type\":\"template\",\n" +
+                "      \"payload\":{\n" +
+                "        \"template_type\":\"open_graph\",\n" +
+                "        \"elements\":[\n" +
+                "           {\n" +
+                "            \"url\":\"https://open.spotify.com/track/7GhIk7Il098yCjg4BQjzvb\",\n" +
+                "            \"buttons\":[\n" +
+                "              {\n" +
+                "                \"type\":\"web_url\",\n" +
+                "                \"url\":\"https://en.wikipedia.org/wiki/Rickrolling\",\n" +
+                "                \"title\":\"View More\"\n" +
+                "              }              \n" +
+                "            ]      \n" +
+                "          }\n" +
+                "        ]\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
         verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
         JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }

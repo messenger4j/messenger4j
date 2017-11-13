@@ -28,6 +28,7 @@ public abstract class Template {
         GENERIC,
         RECEIPT,
         BUTTON,
-        LIST
+        LIST,
+        OPEN_GRAPH
     }
 }

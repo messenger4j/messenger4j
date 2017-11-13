@@ -223,6 +223,7 @@ In addition to the event types described above the following events are also sup
         final SenderAction senderAction = SenderAction.MARK_SEEN;
 
         final SenderActionPayload payload = SenderActionPayload.create(recipientId, senderAction);
+
         messenger.send(payload);
 ----
 
@@ -233,6 +234,7 @@ In addition to the event types described above the following events are also sup
         final String text = "Hello Messenger Platform";
 
         final MessagePayload payload = MessagePayload.create(recipientId, TextMessage.create(text));
+
         messenger.send(payload);
 ----
 
@@ -252,6 +254,7 @@ In addition to the event types described above the following events are also sup
 
         final TextMessage message = TextMessage.create(text, of(quickReplies), empty());
         final MessagePayload payload = MessagePayload.create(recipient, message, empty());
+
         messenger.send(payload);
 ----
 
@@ -265,6 +268,7 @@ In addition to the event types described above the following events are also sup
 
         final TextMessage textMessage = TextMessage.create(text, empty(), of(metadata));
         final MessagePayload payload = MessagePayload.create(recipient, textMessage, of(notificationType));
+
         messenger.send(payload);
 ----
 
@@ -277,6 +281,7 @@ In addition to the event types described above the following events are also sup
         final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(IMAGE, new URL(imageUrl));
         final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
         final MessagePayload payload = MessagePayload.create(recipientId, richMediaMessage);
+
         messenger.send(payload);
 ----
 
@@ -290,6 +295,7 @@ In addition to the event types described above the following events are also sup
         final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(IMAGE, new URL(imageUrl), of(true));
         final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
         final MessagePayload payload = MessagePayload.create(recipient, richMediaMessage, of(notificationType));
+
         messenger.send(payload);
 ----
 
@@ -303,6 +309,7 @@ In addition to the event types described above the following events are also sup
         final ReusableRichMediaAsset richMediaAsset = ReusableRichMediaAsset.create(IMAGE, attachmentId);
         final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
         final MessagePayload payload = MessagePayload.create(recipient, richMediaMessage, of(notificationType));
+
         messenger.send(payload);
 ----
 
@@ -321,6 +328,7 @@ In addition to the event types described above the following events are also sup
 
         final TemplateMessage templateMessage = TemplateMessage.create(buttonTemplate);
         final MessagePayload payload = MessagePayload.create(recipientId, templateMessage);
+
         messenger.send(payload);
 ----
 
@@ -345,6 +353,7 @@ In addition to the event types described above the following events are also sup
         final GenericTemplate genericTemplate = GenericTemplate.create(singletonList(element));
 
         final MessagePayload payload = MessagePayload.create(recipientId, TemplateMessage.create(genericTemplate));
+
         messenger.send(payload);
 ----
 
@@ -374,6 +383,7 @@ In addition to the event types described above the following events are also sup
                 of(ZonedDateTime.of(2015, 4, 7, 22, 14, 12, 0, ZoneOffset.UTC).toInstant()));
 
         final MessagePayload payload = MessagePayload.create(recipientId, TemplateMessage.create(receiptTemplate));
+
         messenger.send(payload);
 ----
 
@@ -415,6 +425,19 @@ In addition to the event types described above the following events are also sup
                 of(TopElementStyle.LARGE), of(singletonList(PostbackButton.create("View More", "payload"))));
 
         messenger.send(MessagePayload.create(recipientId, TemplateMessage.create(listTemplate)));
+----
+
+==== send open graph template
+[source,java,indent=0]
+----
+        final String recipientId = "USER_ID";
+
+        final UrlButton urlButton = UrlButton.create("View More", new URL("https://en.wikipedia.org/wiki/Rickrolling"));
+        final OpenGraphObject openGraphObject = OpenGraphObject.create(new URL("https://open.spotify.com/track/7GhIk7Il098yCjg4BQjzvb"),
+                of(singletonList(urlButton)));
+        final OpenGraphTemplate openGraphTemplate = OpenGraphTemplate.create(singletonList(openGraphObject));
+
+        messenger.send(MessagePayload.create(recipientId, TemplateMessage.create(openGraphTemplate)));
 ----
 
 ==== handle successful response

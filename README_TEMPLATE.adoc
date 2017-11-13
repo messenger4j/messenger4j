@@ -162,6 +162,12 @@ include::{sourcedir}/SendTest.java[tags=send-ReceiptTemplate]
 include::{sourcedir}/SendTest.java[tags=send-ListTemplate]
 ----
 
+==== send open graph template
+[source,java,indent=0]
+----
+include::{sourcedir}/SendTest.java[tags=send-OpenGraphTemplate]
+----
+
 ==== handle successful response
 [source,java,indent=0]
 ----
