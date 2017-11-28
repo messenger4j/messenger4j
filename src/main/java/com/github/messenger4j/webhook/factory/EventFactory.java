@@ -11,7 +11,6 @@ import com.github.messenger4j.internal.Lists;
 import com.github.messenger4j.webhook.Event;
 import com.github.messenger4j.webhook.event.FallbackEvent;
 import com.google.gson.JsonObject;
-
 import java.time.Instant;
 import java.util.List;
 
