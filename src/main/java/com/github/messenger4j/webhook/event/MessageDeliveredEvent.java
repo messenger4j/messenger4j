@@ -14,7 +14,7 @@ import lombok.ToString;
  */
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public final class MessageDeliveredEvent extends BaseEvent {
+public final class MessageDeliveredEvent extends BaseEventWithSenderId {
 
     private final Instant watermark;
     private final Optional<List<String>> messageIds;

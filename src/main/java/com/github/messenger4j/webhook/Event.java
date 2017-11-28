@@ -1,8 +1,12 @@
 package com.github.messenger4j.webhook;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
+
 import com.github.messenger4j.webhook.event.AccountLinkingEvent;
 import com.github.messenger4j.webhook.event.AttachmentMessageEvent;
 import com.github.messenger4j.webhook.event.BaseEvent;
+import com.github.messenger4j.webhook.event.BaseEventWithSenderId;
 import com.github.messenger4j.webhook.event.MessageDeliveredEvent;
 import com.github.messenger4j.webhook.event.MessageEchoEvent;
 import com.github.messenger4j.webhook.event.MessageReadEvent;
@@ -12,6 +16,7 @@ import com.github.messenger4j.webhook.event.QuickReplyMessageEvent;
 import com.github.messenger4j.webhook.event.ReferralEvent;
 import com.github.messenger4j.webhook.event.TextMessageEvent;
 import java.time.Instant;
+import java.util.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
@@ -30,8 +35,14 @@ public final class Event {
         this.baseEvent = baseEvent;
     }
 
-    public String senderId() {
-        return baseEvent.senderId();
+    public Optional<String> senderId() {
+        if (isBaseEventWithSenderId()) {
+            return of(asBaseEventWithSenderId().senderId());
+        }
+        if (isOptInEvent()) {
+            return asOptInEvent().senderId();
+        }
+        return empty();
     }
 
     public String recipientId() {
@@ -150,5 +161,16 @@ public final class Event {
             throw new UnsupportedOperationException("not a ReferralEvent");
         }
         return (ReferralEvent) baseEvent;
+    }
+
+    public boolean isBaseEventWithSenderId() {
+        return baseEvent instanceof BaseEventWithSenderId;
+    }
+
+    public BaseEventWithSenderId asBaseEventWithSenderId() {
+        if (!isBaseEventWithSenderId()) {
+            throw new UnsupportedOperationException("not a BaseEventWithSenderId");
+        }
+        return (BaseEventWithSenderId) baseEvent;
     }
 }

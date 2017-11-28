@@ -13,7 +13,7 @@ import lombok.ToString;
  */
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public final class PostbackEvent extends BaseEvent {
+public final class PostbackEvent extends BaseEventWithSenderId {
 
     private final String title;
     private final Optional<String> payload;

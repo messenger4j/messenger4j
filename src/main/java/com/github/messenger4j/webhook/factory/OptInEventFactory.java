@@ -6,6 +6,7 @@ import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_RECIP
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_REF;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_SENDER;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_TIMESTAMP;
+import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_USER_REF;
 import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsInstant;
 import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsString;
 import static com.github.messenger4j.internal.gson.GsonUtil.hasProperty;
@@ -28,14 +29,14 @@ final class OptInEventFactory implements BaseEventFactory<OptInEvent> {
 
     @Override
     public OptInEvent createEventFromJson(JsonObject messagingEvent) {
-        final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
-                .orElseThrow(IllegalArgumentException::new);
+        final Optional<String> senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID);
         final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
                 .orElseThrow(IllegalArgumentException::new);
         final Instant timestamp = getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP)
                 .orElseThrow(IllegalArgumentException::new);
         final Optional<String> refPayload = getPropertyAsString(messagingEvent, PROP_OPTIN, PROP_REF);
+        final Optional<String> userRefPayload = getPropertyAsString(messagingEvent, PROP_OPTIN, PROP_USER_REF);
 
-        return new OptInEvent(senderId, recipientId, timestamp, refPayload);
+        return new OptInEvent(senderId, recipientId, timestamp, refPayload, userRefPayload);
     }
 }
