@@ -901,7 +901,8 @@ public class WebhookTest {
         verify(mockEventHandler).accept(eventCaptor.capture());
         final Event event = eventCaptor.getValue();
 
-        assertThat(event.senderId(), equalTo("USER_ID"));
+        assertThat(event.senderId().isPresent(), is(true));
+        assertThat(event.senderId().get(), equalTo("USER_ID"));
         assertThat(event.recipientId(), equalTo("PAGE_ID"));
         assertThat(event.timestamp(), equalTo(Instant.ofEpochMilli(1458692752478L)));
 
