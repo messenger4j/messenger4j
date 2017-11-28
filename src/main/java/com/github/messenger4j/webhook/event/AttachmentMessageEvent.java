@@ -2,12 +2,11 @@ package com.github.messenger4j.webhook.event;
 
 import com.github.messenger4j.internal.Lists;
 import com.github.messenger4j.webhook.event.attachment.Attachment;
+import java.time.Instant;
+import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
-
-import java.time.Instant;
-import java.util.List;
 
 /**
  * @author Max Grabenhorst

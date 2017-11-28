@@ -1,5 +1,10 @@
 package com.github.messenger4j.test.integration;
 
+import static java.util.Optional.of;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
+
 import com.github.messenger4j.Messenger;
 import com.github.messenger4j.exception.MessengerApiException;
 import com.github.messenger4j.exception.MessengerIOException;
@@ -13,19 +18,14 @@ import com.github.messenger4j.webhook.event.TextMessageEvent;
 import com.github.messenger4j.webhook.event.attachment.Attachment;
 import com.github.messenger4j.webhook.event.attachment.LocationAttachment;
 import com.github.messenger4j.webhook.event.attachment.RichMediaAttachment;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
 
 import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.stream.Stream;
-
-import static java.util.Optional.of;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
 
 /**
  * README.adoc examples.

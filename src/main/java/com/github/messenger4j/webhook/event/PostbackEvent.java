@@ -1,12 +1,11 @@
 package com.github.messenger4j.webhook.event;
 
 import com.github.messenger4j.webhook.event.common.Referral;
+import java.time.Instant;
+import java.util.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
-
-import java.time.Instant;
-import java.util.Optional;
 
 /**
  * @author Max Grabenhorst

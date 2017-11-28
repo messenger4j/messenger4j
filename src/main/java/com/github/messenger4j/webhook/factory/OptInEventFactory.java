@@ -1,11 +1,5 @@
 package com.github.messenger4j.webhook.factory;
 
-import com.github.messenger4j.webhook.event.OptInEvent;
-import com.google.gson.JsonObject;
-
-import java.time.Instant;
-import java.util.Optional;
-
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_ID;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_OPTIN;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_RECIPIENT;
@@ -16,6 +10,11 @@ import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_USER_
 import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsInstant;
 import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsString;
 import static com.github.messenger4j.internal.gson.GsonUtil.hasProperty;
+
+import com.github.messenger4j.webhook.event.OptInEvent;
+import com.google.gson.JsonObject;
+import java.time.Instant;
+import java.util.Optional;
 
 /**
  * @author Max Grabenhorst

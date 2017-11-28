@@ -1,7 +1,6 @@
 package com.github.messenger4j.webhook.event;
 
 import java.time.Instant;
-
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;

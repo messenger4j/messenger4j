@@ -1,5 +1,12 @@
 package com.github.messenger4j.webhook.factory;
 
+import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_ID;
+import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_RECIPIENT;
+import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_SENDER;
+import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_TIMESTAMP;
+import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsInstant;
+import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsString;
+
 import com.github.messenger4j.internal.Lists;
 import com.github.messenger4j.webhook.Event;
 import com.github.messenger4j.webhook.event.FallbackEvent;
@@ -7,13 +14,6 @@ import com.google.gson.JsonObject;
 
 import java.time.Instant;
 import java.util.List;
-
-import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_ID;
-import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_RECIPIENT;
-import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_SENDER;
-import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_TIMESTAMP;
-import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsInstant;
-import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsString;
 
 /**
  * @author Max Grabenhorst
