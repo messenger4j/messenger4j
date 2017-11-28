@@ -1,8 +1,9 @@
 package com.github.messenger4j.webhook.event;
 
-import java.time.Instant;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+
+import java.time.Instant;
 
 /**
  * @author Max Grabenhorst
@@ -12,18 +13,12 @@ import lombok.ToString;
 @EqualsAndHashCode
 public abstract class BaseEvent {
 
-    private final String senderId;
     private final String recipientId;
     private final Instant timestamp;
 
-    BaseEvent(String senderId, String recipientId, Instant timestamp) {
-        this.senderId = senderId;
+    BaseEvent(String recipientId, Instant timestamp) {
         this.recipientId = recipientId;
         this.timestamp = timestamp;
-    }
-
-    public String senderId() {
-        return senderId;
     }
 
     public String recipientId() {

@@ -1,27 +1,31 @@
 package com.github.messenger4j.test.integration;
 
-import static java.util.Optional.of;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
 import com.github.messenger4j.Messenger;
 import com.github.messenger4j.exception.MessengerApiException;
 import com.github.messenger4j.exception.MessengerIOException;
 import com.github.messenger4j.send.MessagePayload;
 import com.github.messenger4j.send.message.TextMessage;
 import com.github.messenger4j.spi.MessengerHttpClient;
+import com.github.messenger4j.webhook.Event;
 import com.github.messenger4j.webhook.event.AttachmentMessageEvent;
+import com.github.messenger4j.webhook.event.OptInEvent;
 import com.github.messenger4j.webhook.event.TextMessageEvent;
 import com.github.messenger4j.webhook.event.attachment.Attachment;
 import com.github.messenger4j.webhook.event.attachment.LocationAttachment;
 import com.github.messenger4j.webhook.event.attachment.RichMediaAttachment;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Test;
+
 import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.Optional;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import java.util.stream.Stream;
+
+import static java.util.Optional.of;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 
 /**
  * README.adoc examples.
@@ -71,7 +75,7 @@ public class DocumentationTest {
         final String signature = "sha1=3daa41999293ff66c3eb313e04bcf77861bb0276";
 
         messenger.onReceiveEvents(payload, of(signature), event -> {
-            final String senderId = event.senderId();
+            final String senderIdentifier = getSenderIdentifier(event);
             final Instant timestamp = event.timestamp();
 
             if (event.isTextMessageEvent()) {
@@ -80,7 +84,7 @@ public class DocumentationTest {
                 final String text = textMessageEvent.text();
 
                 log.debug("Received text message from '{}' at '{}' with content: {} (mid: {})",
-                        senderId, timestamp, text, messageId);
+                        senderIdentifier, timestamp, text, messageId);
             }
         });
         // end::doc-ReceiveEventsText[]
@@ -131,10 +135,10 @@ public class DocumentationTest {
                 "}";
 
         messenger.onReceiveEvents(payload, Optional.empty(), event -> {
-            final String senderId = event.senderId();
+            final String senderIdentifier = getSenderIdentifier(event);
             final Instant timestamp = event.timestamp();
 
-            log.debug("Received event from '{}' at '{}'", senderId, timestamp);
+            log.debug("Received event from '{}' at '{}'", senderIdentifier, timestamp);
 
             if (event.isAttachmentMessageEvent()) {
                 final AttachmentMessageEvent attachmentMessageEvent = event.asAttachmentMessageEvent();
@@ -185,8 +189,8 @@ public class DocumentationTest {
         final Messenger messenger = Messenger.create("PAGE_ACCESS_TOKEN", "APP_SECRET", "VERIFY_TOKEN");
 
         messenger.onReceiveEvents(payload, Optional.empty(), event -> {
-            final String senderId = event.senderId();
             if (event.isTextMessageEvent()) {
+                final String senderId = event.asTextMessageEvent().senderId();
                 final String text = event.asTextMessageEvent().text();
 
                 final TextMessage textMessage = TextMessage.create(text);
@@ -200,5 +204,20 @@ public class DocumentationTest {
             }
         });
         // end::doc-EchoExample[]
+    }
+
+    private String getSenderIdentifier(Event event) {
+        if (event.isBaseEventWithSenderId()) {
+            return event.asBaseEventWithSenderId().senderId();
+        }
+        if (event.isOptInEvent()) {
+            final OptInEvent optInEvent = event.asOptInEvent();
+            return Stream.of(optInEvent.senderId(), optInEvent.userRefPayload())
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .findFirst()
+                    .orElse("unknown user");
+        }
+        return "unknown user";
     }
 }

@@ -1,12 +1,13 @@
 package com.github.messenger4j.webhook.event;
 
 import com.github.messenger4j.internal.Lists;
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Max Grabenhorst
@@ -14,7 +15,7 @@ import lombok.ToString;
  */
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public final class MessageDeliveredEvent extends BaseEvent {
+public final class MessageDeliveredEvent extends BaseEventWithSenderId {
 
     private final Instant watermark;
     private final Optional<List<String>> messageIds;

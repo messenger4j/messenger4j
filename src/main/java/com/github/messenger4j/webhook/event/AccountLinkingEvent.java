@@ -1,10 +1,11 @@
 package com.github.messenger4j.webhook.event;
 
-import java.time.Instant;
-import java.util.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
+
+import java.time.Instant;
+import java.util.Optional;
 
 /**
  * @author Max Grabenhorst
@@ -12,7 +13,7 @@ import lombok.ToString;
  */
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public final class AccountLinkingEvent extends BaseEvent {
+public final class AccountLinkingEvent extends BaseEventWithSenderId {
 
     private final Status status;
     private final Optional<String> authorizationCode;

@@ -1,6 +1,7 @@
 package com.github.messenger4j.webhook.event;
 
 import java.time.Instant;
+
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
@@ -11,7 +12,7 @@ import lombok.ToString;
  */
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public final class MessageReadEvent extends BaseEvent {
+public final class MessageReadEvent extends BaseEventWithSenderId {
 
     private final Instant watermark;
 

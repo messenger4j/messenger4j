@@ -2,11 +2,12 @@ package com.github.messenger4j.webhook.event;
 
 import com.github.messenger4j.internal.Lists;
 import com.github.messenger4j.webhook.event.attachment.Attachment;
-import java.time.Instant;
-import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
+
+import java.time.Instant;
+import java.util.List;
 
 /**
  * @author Max Grabenhorst
@@ -14,7 +15,7 @@ import lombok.ToString;
  */
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public final class AttachmentMessageEvent extends BaseEvent {
+public final class AttachmentMessageEvent extends BaseEventWithSenderId {
 
     private final String messageId;
     private final List<Attachment> attachments;
