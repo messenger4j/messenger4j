@@ -27,7 +27,9 @@ public final class OptInEvent extends BaseEvent {
     @Override
     public String senderId() {
         return Optional.ofNullable(super.senderId())
-                .orElseThrow(() -> new UnsupportedOperationException("senderId not present. Checkbox Plugin OptInEvents do not support senderId. Use userRefPayload instead."));
+                .orElseThrow(() -> new UnsupportedOperationException(
+                        "senderId not present. Checkbox Plugin OptInEvents do not support senderId. Use userRefPayload instead."
+                ));
     }
 
     public Optional<String> refPayload() {
