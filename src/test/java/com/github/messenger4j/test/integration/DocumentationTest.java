@@ -185,8 +185,8 @@ public class DocumentationTest {
         final Messenger messenger = Messenger.create("PAGE_ACCESS_TOKEN", "APP_SECRET", "VERIFY_TOKEN");
 
         messenger.onReceiveEvents(payload, Optional.empty(), event -> {
+            final String senderId = event.senderId();
             if (event.isTextMessageEvent()) {
-                final String senderId = event.asTextMessageEvent().senderId();
                 final String text = event.asTextMessageEvent().text();
 
                 final TextMessage textMessage = TextMessage.create(text);
