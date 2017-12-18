@@ -11,7 +11,7 @@ import lombok.ToString;
  */
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public final class FallbackEvent extends BaseEventWithSenderId {
+public final class FallbackEvent extends BaseEvent {
 
     public FallbackEvent(@NonNull String senderId, @NonNull String recipientId, @NonNull Instant timestamp) {
         super(senderId, recipientId, timestamp);

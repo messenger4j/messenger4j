@@ -11,7 +11,7 @@ import lombok.ToString;
  */
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public final class TextMessageEvent extends BaseEventWithSenderId {
+public final class TextMessageEvent extends BaseEvent {
 
     private final String messageId;
     private final String text;

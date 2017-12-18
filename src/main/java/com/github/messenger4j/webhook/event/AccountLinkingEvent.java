@@ -12,7 +12,7 @@ import lombok.ToString;
  */
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public final class AccountLinkingEvent extends BaseEventWithSenderId {
+public final class AccountLinkingEvent extends BaseEvent {
 
     private final Status status;
     private final Optional<String> authorizationCode;

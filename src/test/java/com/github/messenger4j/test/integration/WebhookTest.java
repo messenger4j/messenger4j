@@ -27,6 +27,8 @@ import com.github.messenger4j.webhook.event.attachment.RichMediaAttachment;
 import java.net.URL;
 import java.time.Instant;
 import java.util.function.Consumer;
+
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -184,8 +186,7 @@ public class WebhookTest {
         final Event event = eventCaptor.getValue();
 
         final OptInEvent optInEvent = event.asOptInEvent();
-        assertThat(optInEvent.senderId().isPresent(), is(true));
-        assertThat(optInEvent.senderId().get(), equalTo("USER_ID"));
+        assertThat(optInEvent.senderId(), equalTo("USER_ID"));
         assertThat(optInEvent.recipientId(), equalTo("PAGE_ID"));
         assertThat(optInEvent.timestamp(), equalTo(Instant.ofEpochMilli(1234567890L)));
         assertThat(optInEvent.refPayload(), equalTo(of("PASS_THROUGH_PARAM")));
@@ -222,12 +223,18 @@ public class WebhookTest {
         final Event event = eventCaptor.getValue();
 
         final OptInEvent optInEvent = event.asOptInEvent();
-        assertThat(optInEvent.senderId().isPresent(), is(false));
         assertThat(optInEvent.recipientId(), equalTo("PAGE_ID"));
         assertThat(optInEvent.timestamp(), equalTo(Instant.ofEpochMilli(1234567890L)));
         assertThat(optInEvent.refPayload(), equalTo(of("PASS_THROUGH_PARAM")));
         assertThat(optInEvent.userRefPayload().isPresent(), is(true));
         assertThat(optInEvent.userRefPayload().get(), equalTo("REF_FROM_CHECKBOX_PLUGIN"));
+
+        try {
+            optInEvent.senderId();
+            Assert.fail("UnsupportedOperationException expected.");
+        } catch (UnsupportedOperationException e) {
+            // Expected exception if senderId is not present.
+        }
     }
 
     @Test
@@ -900,8 +907,7 @@ public class WebhookTest {
         verify(mockEventHandler).accept(eventCaptor.capture());
         final Event event = eventCaptor.getValue();
 
-        assertThat(event.senderId().isPresent(), is(true));
-        assertThat(event.senderId().get(), equalTo("USER_ID"));
+        assertThat(event.senderId(), equalTo("USER_ID"));
         assertThat(event.recipientId(), equalTo("PAGE_ID"));
         assertThat(event.timestamp(), equalTo(Instant.ofEpochMilli(1458692752478L)));
 

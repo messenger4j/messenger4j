@@ -14,7 +14,7 @@ import lombok.ToString;
  */
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public final class AttachmentMessageEvent extends BaseEventWithSenderId {
+public final class AttachmentMessageEvent extends BaseEvent {
 
     private final String messageId;
     private final List<Attachment> attachments;

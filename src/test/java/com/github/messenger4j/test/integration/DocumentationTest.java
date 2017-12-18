@@ -11,9 +11,7 @@ import com.github.messenger4j.exception.MessengerIOException;
 import com.github.messenger4j.send.MessagePayload;
 import com.github.messenger4j.send.message.TextMessage;
 import com.github.messenger4j.spi.MessengerHttpClient;
-import com.github.messenger4j.webhook.Event;
 import com.github.messenger4j.webhook.event.AttachmentMessageEvent;
-import com.github.messenger4j.webhook.event.OptInEvent;
 import com.github.messenger4j.webhook.event.TextMessageEvent;
 import com.github.messenger4j.webhook.event.attachment.Attachment;
 import com.github.messenger4j.webhook.event.attachment.LocationAttachment;
@@ -22,7 +20,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.Optional;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 
@@ -74,7 +71,7 @@ public class DocumentationTest {
         final String signature = "sha1=3daa41999293ff66c3eb313e04bcf77861bb0276";
 
         messenger.onReceiveEvents(payload, of(signature), event -> {
-            final String senderIdentifier = getSenderIdentifier(event);
+            final String senderId = event.senderId();
             final Instant timestamp = event.timestamp();
 
             if (event.isTextMessageEvent()) {
@@ -83,7 +80,7 @@ public class DocumentationTest {
                 final String text = textMessageEvent.text();
 
                 log.debug("Received text message from '{}' at '{}' with content: {} (mid: {})",
-                        senderIdentifier, timestamp, text, messageId);
+                        senderId, timestamp, text, messageId);
             }
         });
         // end::doc-ReceiveEventsText[]
@@ -134,10 +131,10 @@ public class DocumentationTest {
                 "}";
 
         messenger.onReceiveEvents(payload, Optional.empty(), event -> {
-            final String senderIdentifier = getSenderIdentifier(event);
+            final String senderId = event.senderId();
             final Instant timestamp = event.timestamp();
 
-            log.debug("Received event from '{}' at '{}'", senderIdentifier, timestamp);
+            log.debug("Received event from '{}' at '{}'", senderId, timestamp);
 
             if (event.isAttachmentMessageEvent()) {
                 final AttachmentMessageEvent attachmentMessageEvent = event.asAttachmentMessageEvent();
@@ -203,20 +200,5 @@ public class DocumentationTest {
             }
         });
         // end::doc-EchoExample[]
-    }
-
-    private String getSenderIdentifier(Event event) {
-        if (event.isBaseEventWithSenderId()) {
-            return event.asBaseEventWithSenderId().senderId();
-        }
-        if (event.isOptInEvent()) {
-            final OptInEvent optInEvent = event.asOptInEvent();
-            return Stream.of(optInEvent.senderId(), optInEvent.userRefPayload())
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .findFirst()
-                    .orElse("unknown user");
-        }
-        return "unknown user";
     }
 }

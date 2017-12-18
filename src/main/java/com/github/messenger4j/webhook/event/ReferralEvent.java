@@ -12,7 +12,7 @@ import lombok.ToString;
  */
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public final class ReferralEvent extends BaseEventWithSenderId {
+public final class ReferralEvent extends BaseEvent {
 
     private final Referral referral;
 

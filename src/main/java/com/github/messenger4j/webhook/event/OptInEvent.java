@@ -20,14 +20,15 @@ public final class OptInEvent extends BaseEvent {
 
     public OptInEvent(@NonNull Optional<String> senderId, @NonNull String recipientId, @NonNull Instant timestamp,
                       @NonNull Optional<String> refPayload, @NonNull Optional<String> userRefPayload) {
-        super(recipientId, timestamp);
+        super(senderId.orElse(null), recipientId, timestamp);
         this.senderId = senderId;
         this.refPayload = refPayload;
         this.userRefPayload = userRefPayload;
     }
 
-    public Optional<String> senderId() {
-        return senderId;
+    @Override
+    public String senderId() {
+        return senderId.orElseThrow(() -> new UnsupportedOperationException("senderId not present. Checkbox Plugin OptInEvents do not support senderId. Use userRefPayload instead."));
     }
 
     public Optional<String> refPayload() {
