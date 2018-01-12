@@ -27,6 +27,8 @@ import com.github.messenger4j.webhook.event.attachment.RichMediaAttachment;
 import java.net.URL;
 import java.time.Instant;
 import java.util.function.Consumer;
+
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -153,7 +155,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleOptInEvent() throws Exception {
+    public void shouldHandleOptInEventWithSenderId() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -188,6 +190,51 @@ public class WebhookTest {
         assertThat(optInEvent.recipientId(), equalTo("PAGE_ID"));
         assertThat(optInEvent.timestamp(), equalTo(Instant.ofEpochMilli(1234567890L)));
         assertThat(optInEvent.refPayload(), equalTo(of("PASS_THROUGH_PARAM")));
+        assertThat(optInEvent.userRefPayload().isPresent(), is(false));
+    }
+
+    @Test
+    public void shouldHandleOptInEventWithSenderRef() throws Exception {
+        //given
+        final String payload = "{\n" +
+                "    \"object\": \"page\",\n" +
+                "    \"entry\": [{\n" +
+                "        \"id\": \"PAGE_ID\",\n" +
+                "        \"time\": 1458692752478,\n" +
+                "        \"messaging\": [{\n" +
+                "            \"recipient\": {\n" +
+                "                \"id\": \"PAGE_ID\"\n" +
+                "            },\n" +
+                "            \"timestamp\": 1234567890,\n" +
+                "            \"optin\": {\n" +
+                "                \"ref\": \"PASS_THROUGH_PARAM\",\n" +
+                "                \"user_ref\": \"REF_FROM_CHECKBOX_PLUGIN\"\n" +
+                "            }\n" +
+                "        }]\n" +
+                "    }]\n" +
+                "}";
+
+        //when
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
+
+        //then
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
+
+        final OptInEvent optInEvent = event.asOptInEvent();
+        assertThat(optInEvent.recipientId(), equalTo("PAGE_ID"));
+        assertThat(optInEvent.timestamp(), equalTo(Instant.ofEpochMilli(1234567890L)));
+        assertThat(optInEvent.refPayload(), equalTo(of("PASS_THROUGH_PARAM")));
+        assertThat(optInEvent.userRefPayload().isPresent(), is(true));
+        assertThat(optInEvent.userRefPayload().get(), equalTo("REF_FROM_CHECKBOX_PLUGIN"));
+
+        try {
+            optInEvent.senderId();
+            Assert.fail("UnsupportedOperationException expected.");
+        } catch (UnsupportedOperationException e) {
+            // Expected exception if senderId is not present.
+        }
     }
 
     @Test

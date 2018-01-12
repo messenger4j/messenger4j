@@ -105,6 +105,7 @@ public final class GsonUtil {
         PROP_LAT("lat"),
         PROP_LONG("long"),
         PROP_REF("ref"),
+        PROP_USER_REF("user_ref"),
         PROP_APP_ID("app_id"),
         PROP_METADATA("metadata"),
         PROP_POSTBACK("postback"),
