@@ -9,6 +9,7 @@ import com.github.messenger4j.Messenger;
 import com.github.messenger4j.exception.MessengerApiException;
 import com.github.messenger4j.exception.MessengerIOException;
 import com.github.messenger4j.send.MessagePayload;
+import com.github.messenger4j.send.MessagingType;
 import com.github.messenger4j.send.message.TextMessage;
 import com.github.messenger4j.spi.MessengerHttpClient;
 import com.github.messenger4j.webhook.event.AttachmentMessageEvent;
@@ -190,7 +191,8 @@ public class DocumentationTest {
                 final String text = event.asTextMessageEvent().text();
 
                 final TextMessage textMessage = TextMessage.create(text);
-                final MessagePayload messagePayload = MessagePayload.create(senderId, textMessage);
+                final MessagePayload messagePayload = MessagePayload.create(senderId,
+                        MessagingType.RESPONSE, textMessage);
 
                 try {
                     messenger.send(messagePayload);

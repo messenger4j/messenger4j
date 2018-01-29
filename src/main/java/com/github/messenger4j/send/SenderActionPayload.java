@@ -1,11 +1,8 @@
 package com.github.messenger4j.send;
 
-import static java.util.Optional.empty;
-
 import com.github.messenger4j.send.recipient.IdRecipient;
 import com.github.messenger4j.send.recipient.Recipient;
 import com.github.messenger4j.send.senderaction.SenderAction;
-import java.util.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
@@ -21,20 +18,15 @@ public final class SenderActionPayload extends Payload {
     private final SenderAction senderAction;
 
     public static SenderActionPayload create(@NonNull String recipientId, @NonNull SenderAction senderAction) {
-        return create(IdRecipient.create(recipientId), senderAction, empty());
+        return create(IdRecipient.create(recipientId), senderAction);
     }
 
     public static SenderActionPayload create(@NonNull Recipient recipient, @NonNull SenderAction senderAction) {
-        return create(recipient, senderAction, empty());
+        return new SenderActionPayload(recipient, senderAction);
     }
 
-    public static SenderActionPayload create(@NonNull Recipient recipient, @NonNull SenderAction senderAction,
-                                             @NonNull Optional<NotificationType> notificationType) {
-        return new SenderActionPayload(recipient, senderAction, notificationType);
-    }
-
-    private SenderActionPayload(Recipient recipient, SenderAction senderAction, Optional<NotificationType> notificationType) {
-        super(recipient, notificationType);
+    private SenderActionPayload(Recipient recipient, SenderAction senderAction) {
+        super(recipient);
         this.senderAction = senderAction;
     }
 

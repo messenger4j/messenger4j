@@ -18,27 +18,44 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class MessagePayload extends Payload {
 
+    private final MessagingType messagingType;
     private final Message message;
+    private final Optional<NotificationType> notificationType;
 
-    public static MessagePayload create(@NonNull String recipientId, @NonNull Message message) {
-        return create(IdRecipient.create(recipientId), message, empty());
+    public static MessagePayload create(@NonNull String recipientId, @NonNull MessagingType messagingType,
+                                        @NonNull Message message) {
+        return create(IdRecipient.create(recipientId), messagingType, message, empty());
     }
 
-    public static MessagePayload create(@NonNull Recipient recipient, @NonNull Message message) {
-        return create(recipient, message, empty());
+    public static MessagePayload create(@NonNull Recipient recipient, @NonNull MessagingType messagingType,
+                                        @NonNull Message message) {
+        return create(recipient, messagingType, message, empty());
     }
 
-    public static MessagePayload create(@NonNull Recipient recipient, @NonNull Message message,
+    public static MessagePayload create(@NonNull Recipient recipient,
+                                        @NonNull MessagingType messagingType,
+                                        @NonNull Message message,
                                         @NonNull Optional<NotificationType> notificationType) {
-        return new MessagePayload(recipient, message, notificationType);
+        return new MessagePayload(recipient, messagingType, message, notificationType);
     }
 
-    private MessagePayload(Recipient recipient, Message message, Optional<NotificationType> notificationType) {
-        super(recipient, notificationType);
+    private MessagePayload(Recipient recipient, MessagingType messagingType, Message message,
+                           Optional<NotificationType> notificationType) {
+        super(recipient);
+        this.messagingType = messagingType;
         this.message = message;
+        this.notificationType = notificationType;
+    }
+
+    public MessagingType messagingType() {
+        return messagingType;
     }
 
     public Message message() {
         return message;
+    }
+
+    public Optional<NotificationType> notificationType() {
+        return notificationType;
     }
 }
