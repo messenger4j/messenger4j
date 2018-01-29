@@ -22,6 +22,7 @@ import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.exception.MessengerApiException;
 import com.github.messenger4j.send.MessagePayload;
 import com.github.messenger4j.send.MessageResponse;
+import com.github.messenger4j.send.MessageTag;
 import com.github.messenger4j.send.MessagingType;
 import com.github.messenger4j.send.NotificationType;
 import com.github.messenger4j.send.SenderActionPayload;
@@ -53,6 +54,7 @@ import com.github.messenger4j.send.message.template.receipt.Adjustment;
 import com.github.messenger4j.send.message.template.receipt.Item;
 import com.github.messenger4j.send.message.template.receipt.Summary;
 import com.github.messenger4j.send.recipient.IdRecipient;
+import com.github.messenger4j.send.recipient.Recipient;
 import com.github.messenger4j.send.senderaction.SenderAction;
 import com.github.messenger4j.spi.MessengerHttpClient;
 import com.github.messenger4j.spi.MessengerHttpClient.HttpMethod;
@@ -93,14 +95,14 @@ public class SendTest {
 
     @Test
     public void shouldSendSenderAction() throws Exception {
-        // tag::send-senderAction[]
+        // tag::send-SenderAction[]
         final String recipientId = "USER_ID";
         final SenderAction senderAction = SenderAction.MARK_SEEN;
 
         final SenderActionPayload payload = SenderActionPayload.create(recipientId, senderAction);
 
         messenger.send(payload);
-        // end::send-senderAction[]
+        // end::send-SenderAction[]
 
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
@@ -111,7 +113,7 @@ public class SendTest {
 
     @Test
     public void shouldSendTextMessage() throws Exception {
-        // tag::send-textMessage[]
+        // tag::send-TextMessage[]
         final String recipientId = "USER_ID";
         final String text = "Hello Messenger Platform";
 
@@ -119,11 +121,35 @@ public class SendTest {
                 MessagingType.RESPONSE, TextMessage.create(text));
 
         messenger.send(payload);
-        // end::send-textMessage[]
+        // end::send-TextMessage[]
 
         final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
                 + "\"messaging_type\":\"RESPONSE\","
+                + "\"message\":{\"text\":\"Hello Messenger Platform\"}}";
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
+    public void shouldSendTextMessageWithNotificationTypeAndMessageTag() throws Exception {
+        // tag::send-TextMessageNotificationTypeMessageTag[]
+        final Recipient recipient = IdRecipient.create("USER_ID");
+        final TextMessage message = TextMessage.create("Hello Messenger Platform");
+        final NotificationType notificationType = NotificationType.SILENT_PUSH;
+        final MessageTag messageTag = MessageTag.APPLICATION_UPDATE;
+
+        final MessagePayload payload = MessagePayload.create(recipient, MessagingType.RESPONSE,
+                message, of(notificationType), of(messageTag));
+
+        messenger.send(payload);
+        // end::send-TextMessageNotificationTypeMessageTag[]
+
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
+                + "\"messaging_type\":\"RESPONSE\","
+                + "\"notification_type\":\"SILENT_PUSH\","
+                + "\"tag\":\"APPLICATION_UPDATE\","
                 + "\"message\":{\"text\":\"Hello Messenger Platform\"}}";
         verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
         JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
@@ -144,8 +170,7 @@ public class SendTest {
         final List<QuickReply> quickReplies = Arrays.asList(quickReplyA, quickReplyB, quickReplyC);
 
         final TextMessage message = TextMessage.create(text, of(quickReplies), empty());
-        final MessagePayload payload = MessagePayload.create(recipient, MessagingType.RESPONSE,
-                message, empty());
+        final MessagePayload payload = MessagePayload.create(recipient, MessagingType.RESPONSE, message);
 
         messenger.send(payload);
         // end::send-TextMessageQuickReplies[]
@@ -190,7 +215,7 @@ public class SendTest {
 
         final TextMessage textMessage = TextMessage.create(text, empty(), of(metadata));
         final MessagePayload payload = MessagePayload.create(recipient, MessagingType.RESPONSE,
-                textMessage, of(notificationType));
+                textMessage, of(notificationType), empty());
 
         messenger.send(payload);
         // end::send-TextMessageMetadata[]
@@ -242,7 +267,7 @@ public class SendTest {
         final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(IMAGE, new URL(imageUrl), of(true));
         final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
         final MessagePayload payload = MessagePayload.create(recipient, MessagingType.RESPONSE,
-                richMediaMessage, of(notificationType));
+                richMediaMessage, of(notificationType), empty());
 
         messenger.send(payload);
         // end::send-ImageMessageUrlReusable[]
@@ -269,7 +294,7 @@ public class SendTest {
         final ReusableRichMediaAsset richMediaAsset = ReusableRichMediaAsset.create(IMAGE, attachmentId);
         final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
         final MessagePayload payload = MessagePayload.create(recipient, MessagingType.RESPONSE,
-                richMediaMessage, of(notificationType));
+                richMediaMessage, of(notificationType), empty());
 
         messenger.send(payload);
         // end::send-ImageMessageAttachmentId[]

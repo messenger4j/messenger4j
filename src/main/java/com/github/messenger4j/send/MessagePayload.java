@@ -21,30 +21,33 @@ public final class MessagePayload extends Payload {
     private final MessagingType messagingType;
     private final Message message;
     private final Optional<NotificationType> notificationType;
+    private final Optional<MessageTag> tag;
 
     public static MessagePayload create(@NonNull String recipientId, @NonNull MessagingType messagingType,
                                         @NonNull Message message) {
-        return create(IdRecipient.create(recipientId), messagingType, message, empty());
+        return create(IdRecipient.create(recipientId), messagingType, message, empty(), empty());
     }
 
     public static MessagePayload create(@NonNull Recipient recipient, @NonNull MessagingType messagingType,
                                         @NonNull Message message) {
-        return create(recipient, messagingType, message, empty());
+        return create(recipient, messagingType, message, empty(), empty());
     }
 
     public static MessagePayload create(@NonNull Recipient recipient,
                                         @NonNull MessagingType messagingType,
                                         @NonNull Message message,
-                                        @NonNull Optional<NotificationType> notificationType) {
-        return new MessagePayload(recipient, messagingType, message, notificationType);
+                                        @NonNull Optional<NotificationType> notificationType,
+                                        @NonNull Optional<MessageTag> tag) {
+        return new MessagePayload(recipient, messagingType, message, notificationType, tag);
     }
 
     private MessagePayload(Recipient recipient, MessagingType messagingType, Message message,
-                           Optional<NotificationType> notificationType) {
+                           Optional<NotificationType> notificationType, Optional<MessageTag> tag) {
         super(recipient);
         this.messagingType = messagingType;
         this.message = message;
         this.notificationType = notificationType;
+        this.tag = tag;
     }
 
     public MessagingType messagingType() {
@@ -57,5 +60,9 @@ public final class MessagePayload extends Payload {
 
     public Optional<NotificationType> notificationType() {
         return notificationType;
+    }
+
+    public Optional<MessageTag> tag() {
+        return tag;
     }
 }

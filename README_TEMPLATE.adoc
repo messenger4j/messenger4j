@@ -99,13 +99,19 @@ In addition to the event types described above the following events are also sup
 ==== send sender action
 [source,java,indent=0]
 ----
-include::{sourcedir}/SendTest.java[tags=send-senderAction]
+include::{sourcedir}/SendTest.java[tags=send-SenderAction]
 ----
 
 ==== send text message
 [source,java,indent=0]
 ----
-include::{sourcedir}/SendTest.java[tags=send-textMessage]
+include::{sourcedir}/SendTest.java[tags=send-TextMessage]
+----
+
+==== send text message with notification type and message tag
+[source,java,indent=0]
+----
+include::{sourcedir}/SendTest.java[tags=send-TextMessageNotificationTypeMessageTag]
 ----
 
 ==== send text message with quick replies
