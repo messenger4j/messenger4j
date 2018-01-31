@@ -13,18 +13,18 @@ import lombok.ToString;
 @EqualsAndHashCode
 public final class MessageResponse {
 
-    private final String recipientId;
+    private final Optional<String> recipientId;
     private final Optional<String> messageId;
     private final Optional<String> attachmentId;
 
-    public MessageResponse(@NonNull String recipientId, @NonNull Optional<String> messageId,
+    public MessageResponse(@NonNull Optional<String> recipientId, @NonNull Optional<String> messageId,
                            @NonNull Optional<String> attachmentId) {
         this.recipientId = recipientId;
         this.messageId = messageId;
         this.attachmentId = attachmentId;
     }
 
-    public String recipientId() {
+    public Optional<String> recipientId() {
         return recipientId;
     }
 

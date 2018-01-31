@@ -637,14 +637,14 @@ public class SendTest {
 
         final MessageResponse messageResponse = messenger.send(payload);
 
-        final String recipientId = messageResponse.recipientId();
+        final Optional<String> recipientId = messageResponse.recipientId();
         final Optional<String> messageId = messageResponse.messageId();
         final Optional<String> attachmentId = messageResponse.attachmentId();
         log.debug("RecipientId: {} | MessageId: {} | AttachmentId: {}",
                 recipientId, messageId, attachmentId);
         // end::send-SuccessResponse[]
 
-        assertThat(recipientId, is(equalTo("USER_ID")));
+        assertThat(recipientId, is(equalTo(of("USER_ID"))));
         assertThat(messageId, is(equalTo(of("mid.1473372944816:94f72b88c597657974"))));
         assertThat(attachmentId, is(equalTo(of("1745504518999123"))));
     }
