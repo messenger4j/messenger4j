@@ -9,13 +9,24 @@ import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_RECIP
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_SENDER;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_TEXT;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_TIMESTAMP;
+import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_NLP;
+import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_ENTITIES;
 import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsInstant;
 import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsString;
 import static com.github.messenger4j.internal.gson.GsonUtil.hasProperty;
+import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsJsonObject;
 
 import com.github.messenger4j.webhook.event.TextMessageEvent;
+import com.github.messenger4j.webhook.event.nlp.NlpEntity;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Max Grabenhorst
@@ -42,7 +53,21 @@ final class TextMessageEventFactory implements BaseEventFactory<TextMessageEvent
                 .orElseThrow(IllegalArgumentException::new);
         final String text = getPropertyAsString(messagingEvent, PROP_MESSAGE, PROP_TEXT)
                 .orElseThrow(IllegalArgumentException::new);
+        final Optional<Map<String, Set<NlpEntity>>> nlpEntities = getPropertyAsJsonObject(messagingEvent, PROP_MESSAGE, PROP_NLP, PROP_ENTITIES)
+                .map(this::getNlpEntitiesFromJsonObject);
 
-        return new TextMessageEvent(senderId, recipientId, timestamp, messageId, text);
+        return new TextMessageEvent(senderId, recipientId, timestamp, messageId, text, nlpEntities);
+    }
+
+    private Map<String, Set<NlpEntity>> getNlpEntitiesFromJsonObject(JsonObject jsonObject) {
+        final Map<String, Set<NlpEntity>> nlpEntities = new HashMap<>();
+        for (String key : jsonObject.keySet()) {
+            Set<NlpEntity> values = new HashSet<>();
+            for (JsonElement jsonElement : jsonObject.getAsJsonArray(key)) {
+                values.add(new NlpEntity(jsonElement.toString()));
+            }
+            nlpEntities.put(key, values);
+        }
+        return nlpEntities;
     }
 }
