@@ -5,6 +5,7 @@ import static java.util.Optional.of;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -24,14 +25,19 @@ import com.github.messenger4j.webhook.event.ReferralEvent;
 import com.github.messenger4j.webhook.event.TextMessageEvent;
 import com.github.messenger4j.webhook.event.attachment.Attachment;
 import com.github.messenger4j.webhook.event.attachment.RichMediaAttachment;
+import com.github.messenger4j.webhook.event.nlp.NlpEntity;
 import java.net.URL;
 import java.time.Instant;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.skyscreamer.jsonassert.JSONAssert;
+
+import lombok.Data;
 
 /**
  * @author Max Grabenhorst
@@ -402,6 +408,64 @@ public class WebhookTest {
         assertThat(textMessageEvent.timestamp(), equalTo(Instant.ofEpochMilli(1458692752478L)));
         assertThat(textMessageEvent.messageId(), equalTo("mid.1457764197618:41d102a3e1ae206a38"));
         assertThat(textMessageEvent.text(), equalTo("hello, text message world!"));
+    }
+
+    @Test
+    public void shouldHandleTextMessageEventWithNlp() throws Exception {
+        //given
+        final String payload = "{\n" +
+                "    \"object\": \"page\",\n" +
+                "    \"entry\": [{\n" +
+                "        \"id\": \"PAGE_ID\",\n" +
+                "        \"time\": 1458692752478,\n" +
+                "        \"messaging\": [{\n" +
+                "            \"sender\": {\n" +
+                "                \"id\": \"USER_ID\"\n" +
+                "            },\n" +
+                "            \"recipient\": {\n" +
+                "                \"id\": \"PAGE_ID\"\n" +
+                "            },\n" +
+                "            \"timestamp\": 1458692752478,\n" +
+                "            \"message\": {\n" +
+                "                \"mid\": \"mid.1457764197618:41d102a3e1ae206a38\",\n" +
+                "                \"text\": \"hello, text message world!\",\n" +
+                "                \"nlp\": {\n" +
+                "                    \"entities\": {\n" +
+                "                        \"greetings\": [{\n" +
+                "                            \"confidence\": 0.98786211036043,\n" +
+                "                            \"value\": \"true\"\n" +
+                "                        }]\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            }\n" +
+                "        }]\n" +
+                "    }]\n" +
+                "}";
+
+        //when
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
+
+        //then
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
+
+        final TextMessageEvent textMessageEvent = event.asTextMessageEvent();
+        assertThat(textMessageEvent.senderId(), equalTo("USER_ID"));
+        assertThat(textMessageEvent.recipientId(), equalTo("PAGE_ID"));
+        assertThat(textMessageEvent.timestamp(), equalTo(Instant.ofEpochMilli(1458692752478L)));
+        assertThat(textMessageEvent.messageId(), equalTo("mid.1457764197618:41d102a3e1ae206a38"));
+        assertThat(textMessageEvent.text(), equalTo("hello, text message world!"));
+        assertThat(textMessageEvent.nlpEntities().isPresent(), equalTo(true));
+        final Map<String, Set<NlpEntity>> nlpEntities = textMessageEvent.nlpEntities().get();
+        final Set<NlpEntity> greetingEntities = nlpEntities.get("greetings");
+        assertThat(greetingEntities, notNullValue());
+        assertThat(greetingEntities.size(), equalTo(1));
+        final NlpEntity greetingNlpEntity = greetingEntities.iterator().next();
+        final GreetingNlpEntity greeting = greetingNlpEntity.as(GreetingNlpEntity.class);
+
+        assertThat(greeting.getConfidence(), equalTo(0.98786211036043));
+        assertThat(greeting.getValue(), equalTo("true"));
     }
 
     @Test
@@ -1004,5 +1068,11 @@ public class WebhookTest {
         messenger.verifyWebhook(mode, verifyToken);
 
         //then - throw exception
+    }
+
+    @Data
+    private class GreetingNlpEntity {
+        private double confidence;
+        private String value;
     }
 }
