@@ -1,27 +1,28 @@
 package com.github.messenger4j.webhook.factory;
 
+import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_ENTITIES;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_ID;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_IS_ECHO;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_MESSAGE;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_MID;
+import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_NLP;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_QUICK_REPLY;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_RECIPIENT;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_SENDER;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_TEXT;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_TIMESTAMP;
-import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_NLP;
-import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_ENTITIES;
 import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsInstant;
+import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsJsonObject;
 import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsString;
 import static com.github.messenger4j.internal.gson.GsonUtil.hasProperty;
-import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsJsonObject;
 
 import com.github.messenger4j.webhook.event.TextMessageEvent;
-import com.github.messenger4j.webhook.event.nlp.NlpEntity;
+import com.github.messenger4j.webhook.event.nlp.NLPEntity;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import java.time.Instant;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -53,20 +54,21 @@ final class TextMessageEventFactory implements BaseEventFactory<TextMessageEvent
                 .orElseThrow(IllegalArgumentException::new);
         final String text = getPropertyAsString(messagingEvent, PROP_MESSAGE, PROP_TEXT)
                 .orElseThrow(IllegalArgumentException::new);
-        final Optional<Map<String, Set<NlpEntity>>> nlpEntities = getPropertyAsJsonObject(messagingEvent, PROP_MESSAGE, PROP_NLP, PROP_ENTITIES)
-                .map(this::getNlpEntitiesFromJsonObject);
+        final Optional<Map<String, Set<NLPEntity>>> nlpEntities = getPropertyAsJsonObject(messagingEvent,
+                PROP_MESSAGE, PROP_NLP, PROP_ENTITIES).map(this::getNlpEntitiesFromJsonObject);
 
         return new TextMessageEvent(senderId, recipientId, timestamp, messageId, text, nlpEntities);
     }
 
-    private Map<String, Set<NlpEntity>> getNlpEntitiesFromJsonObject(JsonObject jsonObject) {
-        final Map<String, Set<NlpEntity>> nlpEntities = new HashMap<>();
+    private Map<String, Set<NLPEntity>> getNlpEntitiesFromJsonObject(JsonObject jsonObject) {
+        final Map<String, Set<NLPEntity>> nlpEntities = new HashMap<>();
         for (String key : jsonObject.keySet()) {
-            Set<NlpEntity> values = new HashSet<>();
-            for (JsonElement jsonElement : jsonObject.getAsJsonArray(key)) {
-                values.add(new NlpEntity(jsonElement.toString()));
+            final JsonArray valuesJsonArray = jsonObject.getAsJsonArray(key);
+            final Set<NLPEntity> values = new HashSet<>(valuesJsonArray.size());
+            for (JsonElement jsonElement : valuesJsonArray) {
+                values.add(new NLPEntity(jsonElement.toString()));
             }
-            nlpEntities.put(key, values);
+            nlpEntities.put(key, Collections.unmodifiableSet(values));
         }
         return nlpEntities;
     }

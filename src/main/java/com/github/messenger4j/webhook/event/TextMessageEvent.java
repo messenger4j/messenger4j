@@ -1,11 +1,12 @@
 package com.github.messenger4j.webhook.event;
 
+import com.github.messenger4j.webhook.event.nlp.NLPEntity;
 import java.time.Instant;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-
-import com.github.messenger4j.webhook.event.nlp.NlpEntity;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
@@ -20,14 +21,15 @@ public final class TextMessageEvent extends BaseEvent {
 
     private final String messageId;
     private final String text;
-    private final Optional<Map<String, Set<NlpEntity>>> nlpEntities;
+    private final Optional<Map<String, Set<NLPEntity>>> nlpEntities;
 
     public TextMessageEvent(@NonNull String senderId, @NonNull String recipientId, @NonNull Instant timestamp,
-                            @NonNull String messageId, @NonNull String text, Optional<Map<String, Set<NlpEntity>>> nlpEntities) {
+                            @NonNull String messageId, @NonNull String text,
+                            @NonNull Optional<Map<String, Set<NLPEntity>>> nlpEntities) {
         super(senderId, recipientId, timestamp);
         this.messageId = messageId;
         this.text = text;
-        this.nlpEntities = nlpEntities;
+        this.nlpEntities = nlpEntities.map(entities -> Collections.unmodifiableMap(new HashMap<>(entities)));
     }
 
     public String messageId() {
@@ -38,7 +40,7 @@ public final class TextMessageEvent extends BaseEvent {
         return text;
     }
 
-    public Optional<Map<String, Set<NlpEntity>>> nlpEntities() {
+    public Optional<Map<String, Set<NLPEntity>>> nlpEntities() {
         return nlpEntities;
     }
 }

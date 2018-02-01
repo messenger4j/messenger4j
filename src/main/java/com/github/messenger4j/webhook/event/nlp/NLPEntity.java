@@ -2,6 +2,7 @@ package com.github.messenger4j.webhook.event.nlp;
 
 import com.google.gson.Gson;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
 
 /**
@@ -10,11 +11,13 @@ import lombok.ToString;
  */
 @ToString
 @EqualsAndHashCode
-public class NlpEntity {
-    private final Gson gson = new Gson();
+public final class NLPEntity {
+
+    private static final Gson gson = new Gson();
+
     private final String json;
 
-    public NlpEntity(String json) {
+    public NLPEntity(@NonNull String json) {
         this.json = json;
     }
 
