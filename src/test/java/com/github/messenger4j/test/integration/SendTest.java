@@ -54,7 +54,9 @@ import com.github.messenger4j.send.message.template.receipt.Adjustment;
 import com.github.messenger4j.send.message.template.receipt.Item;
 import com.github.messenger4j.send.message.template.receipt.Summary;
 import com.github.messenger4j.send.recipient.IdRecipient;
+import com.github.messenger4j.send.recipient.PhoneNumberRecipient;
 import com.github.messenger4j.send.recipient.Recipient;
+import com.github.messenger4j.send.recipient.UserRefRecipient;
 import com.github.messenger4j.send.senderaction.SenderAction;
 import com.github.messenger4j.spi.MessengerHttpClient;
 import com.github.messenger4j.spi.MessengerHttpClient.HttpMethod;
@@ -127,6 +129,67 @@ public class SendTest {
         final String expectedJsonBody = "{\"recipient\":{\"id\":\"USER_ID\"},"
                 + "\"messaging_type\":\"RESPONSE\","
                 + "\"message\":{\"text\":\"Hello Messenger Platform\"}}";
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
+    public void shouldSendTextMessageWithPhoneNumberRecipientWithName() throws Exception {
+        final Recipient recipient = PhoneNumberRecipient.create("+1 (555) 857-6309", "Jenny", "Doe");
+        final String text = "Your package has arrived in Lobby 2.";
+
+        final MessagePayload payload = MessagePayload.create(recipient,
+                MessagingType.RESPONSE, TextMessage.create(text));
+
+        messenger.send(payload);
+
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\"recipient\":{\"phone_number\":\"+1 (555) 857-6309\", " +
+                "\"name\":{\"first_name\":\"Jenny\", \"last_name\":\"Doe\"}}, \n" +
+                "\"messaging_type\":\"RESPONSE\"," +
+                "\"message\":{\"text\":\"Your package has arrived in Lobby 2.\"}}";
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
+    public void shouldSendTextMessageWithPhoneNumberRecipientWithoutName() throws Exception {
+        final Recipient recipient = PhoneNumberRecipient.create("+1 (555) 857-6309");
+        final String text = "Your package has arrived in Lobby 2.";
+
+        final MessagePayload payload = MessagePayload.create(recipient,
+                MessagingType.RESPONSE, TextMessage.create(text));
+
+        messenger.send(payload);
+
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\"recipient\":{\"phone_number\":\"+1 (555) 857-6309\"}, \n" +
+                "\"messaging_type\":\"RESPONSE\"," +
+                "\"message\":{\"text\":\"Your package has arrived in Lobby 2.\"}}";
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
+    public void shouldSendTextMessageWithUserRefRecipient() throws Exception {
+        final Recipient recipient = UserRefRecipient.create("<UNIQUE_REF_PARAM>");
+        final String text = "hello, world!";
+
+        final MessagePayload payload = MessagePayload.create(recipient,
+                MessagingType.RESPONSE, TextMessage.create(text));
+
+        messenger.send(payload);
+
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "  \"recipient\": {\n" +
+                "    \"user_ref\":\"<UNIQUE_REF_PARAM>\"\n" +
+                "  }, \n" +
+                "  \"messaging_type\":\"RESPONSE\"," +
+                "  \"message\": {\n" +
+                "    \"text\":\"hello, world!\"\n" +
+                "  }\n" +
+                "}";
         verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
         JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }
