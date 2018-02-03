@@ -5,6 +5,7 @@ import static com.google.gson.FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES;
 import com.github.messenger4j.messengerprofile.MessengerSettings;
 import com.github.messenger4j.send.message.Message;
 import com.github.messenger4j.send.message.richmedia.RichMediaAsset;
+import com.github.messenger4j.send.message.template.button.ShareButton;
 import com.github.messenger4j.send.recipient.PhoneNumberRecipient;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -30,6 +31,7 @@ public final class GsonFactory {
                 .registerTypeAdapter(RichMediaAsset.class, new RichMediaAssetSerializer())
                 .registerTypeAdapter(MessengerSettings.class, new MessengerSettingsSerializer())
                 .registerTypeAdapter(PhoneNumberRecipient.class, new PhoneNumberRecipientSerializer())
+                .registerTypeAdapter(ShareButton.class, new ShareButtonSerializer())
                 .create();
     }
 

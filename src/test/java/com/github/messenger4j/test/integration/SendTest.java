@@ -45,6 +45,7 @@ import com.github.messenger4j.send.message.template.button.CallButton;
 import com.github.messenger4j.send.message.template.button.LogInButton;
 import com.github.messenger4j.send.message.template.button.LogOutButton;
 import com.github.messenger4j.send.message.template.button.PostbackButton;
+import com.github.messenger4j.send.message.template.button.ShareButton;
 import com.github.messenger4j.send.message.template.button.UrlButton;
 import com.github.messenger4j.send.message.template.common.DefaultAction;
 import com.github.messenger4j.send.message.template.common.Element;
@@ -408,7 +409,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendGenericTemplateWithButtonsMessage() throws Exception {
+    public void shouldSendGenericTemplateMessageWithButtons() throws Exception {
         // tag::send-GenericTemplateButtons[]
         final String recipientId = "USER_ID";
 
@@ -487,7 +488,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendGenericTemplateWithLogInAndLogOutButtonsMessage() throws Exception {
+    public void shouldSendGenericTemplateMessageWithLogInAndLogOutButtons() throws Exception {
         // tag::send-GenericTemplateLoginLogoutButtons[]
         final String recipientId = "USER_ID";
 
@@ -513,6 +514,131 @@ public class SendTest {
                 "[{\"title\":\"Welcome to M-Bank\",\"image_url\":\"http://www.example.com/images/m-bank.png\"," +
                 "\"buttons\":[{\"url\":\"https://www.example.com/authorize\",\"type\":\"account_link\"}," +
                 "{\"type\":\"account_unlink\"}]}],\"template_type\":\"generic\"}}}}";
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
+    public void shouldSendGenericTemplateMessageWithShareButton() throws Exception {
+        final String recipientId = "<PSID>";
+        final Element element = Element.create("Breaking News: Record Thunderstorms",
+                of("The local area is due for record thunderstorms over the weekend."),
+                of(new URL("https://thechangreport.com/img/lightning.png")), empty(),
+                of(singletonList(ShareButton.create())));
+
+        final GenericTemplate genericTemplate = GenericTemplate.create(singletonList(element));
+
+        final MessagePayload payload = MessagePayload.create(recipientId, MessagingType.RESPONSE,
+                TemplateMessage.create(genericTemplate));
+
+        messenger.send(payload);
+
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "  \"recipient\":{\n" +
+                "    \"id\":\"<PSID>\"\n" +
+                "  },\n" +
+                "  \"messaging_type\":\"RESPONSE\"," +
+                "  \"message\":{\n" +
+                "    \"attachment\":{\n" +
+                "      \"type\":\"template\",\n" +
+                "      \"payload\":{\n" +
+                "        \"template_type\":\"generic\",\n" +
+                "        \"elements\":[\n" +
+                "          {\n" +
+                "            \"title\":\"Breaking News: Record Thunderstorms\",\n" +
+                "            \"subtitle\":\"The local area is due for record thunderstorms over the weekend.\",\n" +
+                "            \"image_url\":\"https://thechangreport.com/img/lightning.png\",\n" +
+                "            \"buttons\": [\n" +
+                "              {\n" +
+                "                \"type\": \"element_share\"\n" +
+                "              }\n" +
+                "            ]\n" +
+                "          }\n" +
+                "        ]\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
+    public void shouldSendGenericTemplateMessageWithShareButtonWithShareContents() throws Exception {
+        final String recipientId = "<PSID>";
+
+        final GenericTemplate shareGenericTemplate = GenericTemplate.create(
+                singletonList(Element.create("I took the hat quiz", of("My result: Fez"),
+                        of(new URL("https://bot.peters-hats.com/img/hats/fez.jpg")),
+                        of(DefaultAction.create(new URL("http://m.me/petershats?ref=invited_by_24601"))),
+                        of(singletonList(UrlButton.create("Take Quiz", new URL("http://m.me/petershats?ref=invited_by_24601")))))));
+
+        final Element element = Element.create("Breaking News: Record Thunderstorms",
+                of("The local area is due for record thunderstorms over the weekend."),
+                of(new URL("https://thechangreport.com/img/lightning.png")), empty(),
+                of(singletonList(ShareButton.create(of(shareGenericTemplate)))));
+
+        final GenericTemplate genericTemplate = GenericTemplate.create(singletonList(element));
+
+        final MessagePayload payload = MessagePayload.create(recipientId, MessagingType.RESPONSE,
+                TemplateMessage.create(genericTemplate));
+
+        messenger.send(payload);
+
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "  \"recipient\":{\n" +
+                "    \"id\":\"<PSID>\"\n" +
+                "  },\n" +
+                "  \"messaging_type\":\"RESPONSE\"," +
+                "  \"message\":{\n" +
+                "    \"attachment\":{\n" +
+                "      \"type\":\"template\",\n" +
+                "      \"payload\":{\n" +
+                "        \"template_type\":\"generic\",\n" +
+                "        \"elements\":[\n" +
+                "          {\n" +
+                "            \"title\":\"Breaking News: Record Thunderstorms\",\n" +
+                "            \"subtitle\":\"The local area is due for record thunderstorms over the weekend.\",\n" +
+                "            \"image_url\":\"https://thechangreport.com/img/lightning.png\",\n" +
+                "            \"buttons\": [\n" +
+                "              {\n" +
+                "                \"type\": \"element_share\",\n" +
+                "                \"share_contents\": { \n" +
+                "                  \"attachment\": {\n" +
+                "                    \"type\": \"template\",\n" +
+                "                    \"payload\": {\n" +
+                "                      \"template_type\": \"generic\",\n" +
+                "                      \"elements\": [\n" +
+                "                        {\n" +
+                "                          \"title\": \"I took the hat quiz\",\n" +
+                "                          \"subtitle\": \"My result: Fez\",\n" +
+                "                          \"image_url\": \"https://bot.peters-hats.com/img/hats/fez.jpg\",\n" +
+                "                          \"default_action\": {\n" +
+                "                            \"type\": \"web_url\",\n" +
+                "                            \"url\": \"http://m.me/petershats?ref=invited_by_24601\"\n" +
+                "                          },\n" +
+                "                          \"buttons\": [\n" +
+                "                            {\n" +
+                "                              \"type\": \"web_url\",\n" +
+                "                              \"url\": \"http://m.me/petershats?ref=invited_by_24601\", \n" +
+                "                              \"title\": \"Take Quiz\"\n" +
+                "                            }\n" +
+                "                          ]\n" +
+                "                        }\n" +
+                "                      ]\n" +
+                "                    }\n" +
+                "                  }\n" +
+                "                }\n" +
+                "              }\n" +
+                "            ]\n" +
+                "          }\n" +
+                "        ]\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
         verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
         JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
     }

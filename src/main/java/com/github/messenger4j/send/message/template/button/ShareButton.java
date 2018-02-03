@@ -1,6 +1,11 @@
 package com.github.messenger4j.send.message.template.button;
 
+import static java.util.Optional.empty;
+
+import com.github.messenger4j.send.message.template.GenericTemplate;
+import java.util.Optional;
 import lombok.EqualsAndHashCode;
+import lombok.NonNull;
 import lombok.ToString;
 
 /**
@@ -11,12 +16,19 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class ShareButton extends Button {
 
+    private final Optional<GenericTemplate> shareContents;
+
     public static ShareButton create() {
-        return new ShareButton();
+        return create(empty());
     }
 
-    private ShareButton() {
+    public static ShareButton create(@NonNull Optional<GenericTemplate> shareContents) {
+        return new ShareButton(shareContents);
+    }
+
+    private ShareButton(Optional<GenericTemplate> shareContents) {
         super(Type.ELEMENT_SHARE);
+        this.shareContents = shareContents;
     }
 
     @Override
@@ -27,5 +39,9 @@ public final class ShareButton extends Button {
     @Override
     public ShareButton asShareButton() {
         return this;
+    }
+
+    public Optional<GenericTemplate> shareContents() {
+        return shareContents;
     }
 }
