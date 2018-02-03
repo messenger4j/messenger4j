@@ -13,6 +13,7 @@ import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsString;
 import static com.github.messenger4j.internal.gson.GsonUtil.hasProperty;
 
 import com.github.messenger4j.webhook.event.MessageDeliveredEvent;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import java.time.Instant;
@@ -41,14 +42,16 @@ final class MessageDeliveredEventFactory implements BaseEventFactory<MessageDeli
         final Instant watermark = getPropertyAsInstant(messagingEvent, PROP_DELIVERY, PROP_WATERMARK)
                 .orElseThrow(IllegalArgumentException::new);
         final Optional<List<String>> messageIds = getPropertyAsJsonArray(messagingEvent, PROP_DELIVERY, PROP_MIDS)
-                .map(jsonArray -> {
-                    final List<String> messageIdList = new ArrayList<>(jsonArray.size());
-                    for (JsonElement messageIdJsonElement : jsonArray) {
-                        messageIdList.add(messageIdJsonElement.getAsString());
-                    }
-                    return messageIdList;
-                });
+                .map(this::getMessageIdsFromJsonArray);
 
         return new MessageDeliveredEvent(senderId, recipientId, timestamp, watermark, messageIds);
+    }
+
+    private List<String> getMessageIdsFromJsonArray(JsonArray jsonArray) {
+        final List<String> messageIdList = new ArrayList<>(jsonArray.size());
+        for (JsonElement messageIdJsonElement : jsonArray) {
+            messageIdList.add(messageIdJsonElement.getAsString());
+        }
+        return messageIdList;
     }
 }

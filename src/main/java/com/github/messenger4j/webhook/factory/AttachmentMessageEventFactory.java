@@ -9,6 +9,7 @@ import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_LONG;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_MESSAGE;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_MID;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_PAYLOAD;
+import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_PRIOR_MESSAGE;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_RECIPIENT;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_SENDER;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_TIMESTAMP;
@@ -17,6 +18,7 @@ import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_URL;
 import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsDouble;
 import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsInstant;
 import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsJsonArray;
+import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsJsonObject;
 import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsString;
 import static com.github.messenger4j.internal.gson.GsonUtil.hasProperty;
 
@@ -26,6 +28,7 @@ import com.github.messenger4j.webhook.event.attachment.FallbackAttachment;
 import com.github.messenger4j.webhook.event.attachment.LocationAttachment;
 import com.github.messenger4j.webhook.event.attachment.RichMediaAttachment;
 import com.github.messenger4j.webhook.event.attachment.RichMediaAttachment.Type;
+import com.github.messenger4j.webhook.event.common.PriorMessage;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -34,6 +37,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Max Grabenhorst
@@ -59,7 +63,14 @@ final class AttachmentMessageEventFactory implements BaseEventFactory<Attachment
                 .orElseThrow(IllegalArgumentException::new);
         final JsonArray attachmentsJsonArray = getPropertyAsJsonArray(messagingEvent, PROP_MESSAGE, PROP_ATTACHMENTS)
                 .orElseThrow(IllegalArgumentException::new);
+        final List<Attachment> attachments = getAttachmentsFromJsonArray(attachmentsJsonArray);
+        final Optional<PriorMessage> priorMessage = getPropertyAsJsonObject(messagingEvent, PROP_PRIOR_MESSAGE)
+                .map(this::getPriorMessageFromJsonObject);
 
+        return new AttachmentMessageEvent(senderId, recipientId, timestamp, messageId, attachments, priorMessage);
+    }
+
+    private List<Attachment> getAttachmentsFromJsonArray(JsonArray attachmentsJsonArray) {
         final List<Attachment> attachments = new ArrayList<>(attachmentsJsonArray.size());
         for (JsonElement attachmentJsonElement : attachmentsJsonArray) {
             final JsonObject attachmentJsonObject = attachmentJsonElement.getAsJsonObject();
@@ -72,13 +83,7 @@ final class AttachmentMessageEventFactory implements BaseEventFactory<Attachment
                 case "VIDEO":
                 case "FILE":
                     final URL url = getPropertyAsString(attachmentJsonObject, PROP_PAYLOAD, PROP_URL)
-                            .map(s -> {
-                                try {
-                                    return new URL(s);
-                                } catch (MalformedURLException e) {
-                                    throw new IllegalArgumentException(e);
-                                }
-                            })
+                            .map(this::getUrlFromString)
                             .orElseThrow(IllegalArgumentException::new);
                     attachments.add(new RichMediaAttachment(Type.valueOf(type), url));
                     break;
@@ -97,7 +102,14 @@ final class AttachmentMessageEventFactory implements BaseEventFactory<Attachment
                     throw new IllegalArgumentException("attachment type '" + type + "' is not supported");
             }
         }
+        return attachments;
+    }
 
-        return new AttachmentMessageEvent(senderId, recipientId, timestamp, messageId, attachments);
+    private URL getUrlFromString(String url) {
+        try {
+            return new URL(url);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 }

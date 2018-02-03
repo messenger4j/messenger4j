@@ -4,18 +4,22 @@ import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_ID;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_MESSAGE;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_MID;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_PAYLOAD;
+import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_PRIOR_MESSAGE;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_QUICK_REPLY;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_RECIPIENT;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_SENDER;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_TEXT;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_TIMESTAMP;
 import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsInstant;
+import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsJsonObject;
 import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsString;
 import static com.github.messenger4j.internal.gson.GsonUtil.hasProperty;
 
 import com.github.messenger4j.webhook.event.QuickReplyMessageEvent;
+import com.github.messenger4j.webhook.event.common.PriorMessage;
 import com.google.gson.JsonObject;
 import java.time.Instant;
+import java.util.Optional;
 
 /**
  * @author Max Grabenhorst
@@ -43,7 +47,9 @@ final class QuickReplyMessageEventFactory implements BaseEventFactory<QuickReply
                 .orElseThrow(IllegalArgumentException::new);
         final String payload = getPropertyAsString(messagingEvent, PROP_MESSAGE, PROP_QUICK_REPLY, PROP_PAYLOAD)
                 .orElseThrow(IllegalArgumentException::new);
+        final Optional<PriorMessage> priorMessage = getPropertyAsJsonObject(messagingEvent, PROP_PRIOR_MESSAGE)
+                .map(this::getPriorMessageFromJsonObject);
 
-        return new QuickReplyMessageEvent(senderId, recipientId, timestamp, messageId, text, payload);
+        return new QuickReplyMessageEvent(senderId, recipientId, timestamp, messageId, text, payload, priorMessage);
     }
 }

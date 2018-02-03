@@ -3,6 +3,7 @@ package com.github.messenger4j.webhook.factory;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_ID;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_PAYLOAD;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_POSTBACK;
+import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_PRIOR_MESSAGE;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_RECIPIENT;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_REFERRAL;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_SENDER;
@@ -14,6 +15,7 @@ import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsString;
 import static com.github.messenger4j.internal.gson.GsonUtil.hasProperty;
 
 import com.github.messenger4j.webhook.event.PostbackEvent;
+import com.github.messenger4j.webhook.event.common.PriorMessage;
 import com.github.messenger4j.webhook.event.common.Referral;
 import com.google.gson.JsonObject;
 import java.time.Instant;
@@ -41,10 +43,11 @@ final class PostbackEventFactory implements BaseEventFactory<PostbackEvent> {
         final String title = getPropertyAsString(messagingEvent, PROP_POSTBACK, PROP_TITLE)
                 .orElseThrow(IllegalArgumentException::new);
         final Optional<String> payload = getPropertyAsString(messagingEvent, PROP_POSTBACK, PROP_PAYLOAD);
-
         final Optional<Referral> referral = getPropertyAsJsonObject(messagingEvent, PROP_POSTBACK, PROP_REFERRAL)
-                .map(ReferralEventFactory::createReferralFromJson);
+                .map(this::createReferralFromJson);
+        final Optional<PriorMessage> priorMessage = getPropertyAsJsonObject(messagingEvent, PROP_PRIOR_MESSAGE)
+                .map(this::getPriorMessageFromJsonObject);
 
-        return new PostbackEvent(senderId, recipientId, timestamp, title, payload, referral);
+        return new PostbackEvent(senderId, recipientId, timestamp, title, payload, referral, priorMessage);
     }
 }

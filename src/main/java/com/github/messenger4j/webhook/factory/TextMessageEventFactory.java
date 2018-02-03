@@ -6,6 +6,7 @@ import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_IS_EC
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_MESSAGE;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_MID;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_NLP;
+import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_PRIOR_MESSAGE;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_QUICK_REPLY;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_RECIPIENT;
 import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_SENDER;
@@ -17,6 +18,7 @@ import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsString;
 import static com.github.messenger4j.internal.gson.GsonUtil.hasProperty;
 
 import com.github.messenger4j.webhook.event.TextMessageEvent;
+import com.github.messenger4j.webhook.event.common.PriorMessage;
 import com.github.messenger4j.webhook.event.nlp.NLPEntity;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -56,8 +58,10 @@ final class TextMessageEventFactory implements BaseEventFactory<TextMessageEvent
                 .orElseThrow(IllegalArgumentException::new);
         final Optional<Map<String, Set<NLPEntity>>> nlpEntities = getPropertyAsJsonObject(messagingEvent,
                 PROP_MESSAGE, PROP_NLP, PROP_ENTITIES).map(this::getNlpEntitiesFromJsonObject);
+        final Optional<PriorMessage> priorMessage = getPropertyAsJsonObject(messagingEvent, PROP_PRIOR_MESSAGE)
+                .map(this::getPriorMessageFromJsonObject);
 
-        return new TextMessageEvent(senderId, recipientId, timestamp, messageId, text, nlpEntities);
+        return new TextMessageEvent(senderId, recipientId, timestamp, messageId, text, nlpEntities, priorMessage);
     }
 
     private Map<String, Set<NLPEntity>> getNlpEntitiesFromJsonObject(JsonObject jsonObject) {

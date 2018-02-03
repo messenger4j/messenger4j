@@ -136,7 +136,9 @@ public final class GsonUtil {
         PROP_IS_PAYMENT_ENABLED("is_payment_enabled"),
         PROP_LAST_AD_REFERRAL("last_ad_referral"),
         PROP_NLP("nlp"),
-        PROP_ENTITIES("entities");
+        PROP_ENTITIES("entities"),
+        PROP_PRIOR_MESSAGE("prior_message"),
+        PROP_IDENTIFIER("identifier");
 
         private final String value;
 

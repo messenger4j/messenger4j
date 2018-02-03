@@ -25,6 +25,7 @@ import com.github.messenger4j.webhook.event.ReferralEvent;
 import com.github.messenger4j.webhook.event.TextMessageEvent;
 import com.github.messenger4j.webhook.event.attachment.Attachment;
 import com.github.messenger4j.webhook.event.attachment.RichMediaAttachment;
+import com.github.messenger4j.webhook.event.common.PriorMessage;
 import com.github.messenger4j.webhook.event.nlp.NLPEntity;
 import java.net.URL;
 import java.time.Instant;
@@ -116,7 +117,11 @@ public class WebhookTest {
                 "                        }\n" +
                 "                    }\n" +
                 "                }]\n" +
-                "            }\n" +
+                "            },\n" +
+                "             \"prior_message\": {\n" +
+                "               \"source\":\"checkbox_plugin\",\n" +
+                "               \"identifier\":\"<USER_REF>\"\n" +
+                "             }\n" +
                 "        }]\n" +
                 "    }]\n" +
                 "}";
@@ -155,6 +160,11 @@ public class WebhookTest {
         assertThat(thirdAttachment.isLocationAttachment(), is(true));
         assertThat(thirdAttachment.asLocationAttachment().latitude(), equalTo(52.3765533));
         assertThat(thirdAttachment.asLocationAttachment().longitude(), equalTo(9.7389123));
+
+        assertThat(attachmentMessageEvent.priorMessage().isPresent(), is(true));
+        final PriorMessage priorMessage = attachmentMessageEvent.priorMessage().get();
+        assertThat(priorMessage.source(), equalTo("checkbox_plugin"));
+        assertThat(priorMessage.identifier(), equalTo("<USER_REF>"));
     }
 
     @Test
@@ -197,7 +207,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleOptInEventWithSenderRef() throws Exception {
+    public void shouldHandleOptInEventWithUserRef() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -345,7 +355,11 @@ public class WebhookTest {
                 "                \"quick_reply\": {\n" +
                 "                    \"payload\": \"DEVELOPER_DEFINED_PAYLOAD\"\n" +
                 "                }\n" +
-                "            }\n" +
+                "            },\n" +
+                "             \"prior_message\": {\n" +
+                "               \"source\":\"checkbox_plugin\",\n" +
+                "               \"identifier\":\"<USER_REF>\"\n" +
+                "             }\n" +
                 "        }]\n" +
                 "    }]\n" +
                 "}";
@@ -365,6 +379,10 @@ public class WebhookTest {
         assertThat(quickReplyMessageEvent.messageId(), equalTo("mid.1457764197618:41d102a3e1ae206a38"));
         assertThat(quickReplyMessageEvent.text(), equalTo("hello, world!"));
         assertThat(quickReplyMessageEvent.payload(), equalTo("DEVELOPER_DEFINED_PAYLOAD"));
+        assertThat(quickReplyMessageEvent.priorMessage().isPresent(), is(true));
+        final PriorMessage priorMessage = quickReplyMessageEvent.priorMessage().get();
+        assertThat(priorMessage.source(), equalTo("checkbox_plugin"));
+        assertThat(priorMessage.identifier(), equalTo("<USER_REF>"));
     }
 
     @Test
@@ -406,6 +424,56 @@ public class WebhookTest {
         assertThat(textMessageEvent.messageId(), equalTo("mid.1457764197618:41d102a3e1ae206a38"));
         assertThat(textMessageEvent.text(), equalTo("hello, text message world!"));
         assertThat(textMessageEvent.nlpEntities().isPresent(), is(false));
+        assertThat(textMessageEvent.priorMessage().isPresent(), is(false));
+    }
+
+    @Test
+    public void shouldHandleTextMessageEventWithPriorMessage() throws Exception {
+        //given
+        final String payload = "{\n" +
+                "    \"object\": \"page\",\n" +
+                "    \"entry\": [{\n" +
+                "        \"id\": \"PAGE_ID\",\n" +
+                "        \"time\": 1458692752478,\n" +
+                "        \"messaging\": [{\n" +
+                "             \"sender\":{\n" +
+                "               \"id\":\"<PSID>\"\n" +
+                "             },\n" +
+                "             \"recipient\":{\n" +
+                "               \"id\":\"<PAGE_ID>\"\n" +
+                "             },\n" +
+                "             \"timestamp\":1458692752478,\n" +
+                "             \"message\":{\n" +
+                "               \"mid\":\"mid.1457744567618:41d102a3e1ae206a38\",\n" +
+                "               \"text\":\"Thanks for messaging me!\"\n" +
+                "             },\n" +
+                "             \"prior_message\": {\n" +
+                "               \"source\":\"checkbox_plugin\",\n" +
+                "               \"identifier\":\"<USER_REF>\"\n" +
+                "             }\n" +
+                "           }]\n" +
+                "    }]\n" +
+                "}";
+
+        //when
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
+
+        //then
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
+
+        final TextMessageEvent textMessageEvent = event.asTextMessageEvent();
+        assertThat(textMessageEvent.senderId(), equalTo("<PSID>"));
+        assertThat(textMessageEvent.recipientId(), equalTo("<PAGE_ID>"));
+        assertThat(textMessageEvent.timestamp(), equalTo(Instant.ofEpochMilli(1458692752478L)));
+        assertThat(textMessageEvent.messageId(), equalTo("mid.1457744567618:41d102a3e1ae206a38"));
+        assertThat(textMessageEvent.text(), equalTo("Thanks for messaging me!"));
+        assertThat(textMessageEvent.priorMessage().isPresent(), is(true));
+
+        final PriorMessage priorMessage = textMessageEvent.priorMessage().get();
+        assertThat(priorMessage.source(), equalTo("checkbox_plugin"));
+        assertThat(priorMessage.identifier(), equalTo("<USER_REF>"));
     }
 
     @Test
@@ -463,7 +531,6 @@ public class WebhookTest {
 
         final NLPEntity greetingNlpEntity = greetingEntities.iterator().next();
         final Greeting greeting = greetingNlpEntity.as(Greeting.class);
-
         assertThat(greeting.confidence, equalTo(0.98786211036043));
         assertThat(greeting.value, equalTo("true"));
     }
@@ -482,24 +549,28 @@ public class WebhookTest {
                 "        \"id\": \"PAGE_ID\",\n" +
                 "        \"time\": 1458692752478,\n" +
                 "        \"messaging\": [{\n" +
-                "  \"sender\":{\n" +
-                "    \"id\":\"<PSID>\"\n" +
-                "  },\n" +
-                "  \"recipient\":{\n" +
-                "    \"id\":\"<PAGE_ID>\"\n" +
-                "  },\n" +
-                "  \"timestamp\":1458692752478,\n" +
-                "  \"postback\":{\n" +
-                "    \"title\": \"<TITLE_FOR_THE_CTA>\",  \n" +
-                "    \"payload\": \"<USER_DEFINED_PAYLOAD>\",\n" +
-                "    \"referral\": {\n" +
-                "      \"ref\": \"<REF DATA IF SPECIFIED IN THE AD>\",\n" +
-                "      \"ad_id\": \"<ID OF THE AD>\",\n" +
-                "      \"source\": \"<SHORTLINK>\",\n" +
-                "      \"type\": \"OPEN_THREAD\"\n" +
-                "    }\n" +
-                "  }\n" +
-                "}]\n" +
+                "             \"sender\":{\n" +
+                "               \"id\":\"<PSID>\"\n" +
+                "             },\n" +
+                "             \"recipient\":{\n" +
+                "               \"id\":\"<PAGE_ID>\"\n" +
+                "             },\n" +
+                "             \"timestamp\":1458692752478,\n" +
+                "             \"postback\":{\n" +
+                "               \"title\": \"<TITLE_FOR_THE_CTA>\",  \n" +
+                "               \"payload\": \"<USER_DEFINED_PAYLOAD>\",\n" +
+                "               \"referral\": {\n" +
+                "                 \"ref\": \"<REF DATA IF SPECIFIED IN THE AD>\",\n" +
+                "                 \"ad_id\": \"<ID OF THE AD>\",\n" +
+                "                 \"source\": \"<SHORTLINK>\",\n" +
+                "                 \"type\": \"OPEN_THREAD\"\n" +
+                "               }\n" +
+                "             },\n" +
+                "             \"prior_message\": {\n" +
+                "               \"source\":\"checkbox_plugin\",\n" +
+                "               \"identifier\":\"<USER_REF>\"\n" +
+                "             }\n" +
+                "           }]\n" +
                 "    }]\n" +
                 "}";
 
@@ -522,6 +593,11 @@ public class WebhookTest {
         assertThat(postbackEvent.referral().get().type(), equalTo("OPEN_THREAD"));
         assertThat(postbackEvent.referral().get().refPayload(), equalTo(of("<REF DATA IF SPECIFIED IN THE AD>")));
         assertThat(postbackEvent.referral().get().adId(), equalTo(of("<ID OF THE AD>")));
+        assertThat(postbackEvent.priorMessage().isPresent(), is(true));
+
+        final PriorMessage priorMessage = postbackEvent.priorMessage().get();
+        assertThat(priorMessage.source(), equalTo("checkbox_plugin"));
+        assertThat(priorMessage.identifier(), equalTo("<USER_REF>"));
     }
 
     @Test
