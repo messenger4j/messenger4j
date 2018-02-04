@@ -49,6 +49,7 @@ import com.github.messenger4j.send.message.template.button.ShareButton;
 import com.github.messenger4j.send.message.template.button.UrlButton;
 import com.github.messenger4j.send.message.template.common.DefaultAction;
 import com.github.messenger4j.send.message.template.common.Element;
+import com.github.messenger4j.send.message.template.common.WebviewShareButtonState;
 import com.github.messenger4j.send.message.template.opengraph.OpenGraphObject;
 import com.github.messenger4j.send.message.template.receipt.Address;
 import com.github.messenger4j.send.message.template.receipt.Adjustment;
@@ -383,7 +384,7 @@ public class SendTest {
         final UrlButton buttonA = UrlButton.create("Show Website", new URL("https://petersapparel.parseapp.com"));
         final PostbackButton buttonB = PostbackButton.create("Start Chatting", "USER_DEFINED_PAYLOAD");
         final UrlButton buttonC = UrlButton.create("Show Website", new URL("https://petersapparel.parseapp.com"),
-                of(WebviewHeightRatio.FULL), of(true), of(new URL("https://petersfancyapparel.com/fallback")));
+                of(WebviewHeightRatio.FULL), of(true), of(new URL("https://petersfancyapparel.com/fallback")), empty());
 
         final List<Button> buttons = Arrays.asList(buttonA, buttonB, buttonC);
         final ButtonTemplate buttonTemplate = ButtonTemplate.create("What do you want to do next?", buttons);
@@ -415,13 +416,15 @@ public class SendTest {
 
         final List<Button> buttons = Arrays.asList(
                 UrlButton.create("Select Criteria", new URL("https://petersfancyapparel.com/criteria_selector"),
-                        of(WebviewHeightRatio.FULL), of(true), of(new URL("https://petersfancyapparel.com/fallback"))),
+                        of(WebviewHeightRatio.FULL), of(true), of(new URL("https://petersfancyapparel.com/fallback")),
+                        empty()),
                 CallButton.create("Call Representative", "+15105551234"),
                 PostbackButton.create("Start Chatting", "DEVELOPER_DEFINED_PAYLOAD")
         );
 
         final DefaultAction defaultAction = DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/view?item=103"),
-                of(WebviewHeightRatio.TALL), of(true), of(new URL("https://peterssendreceiveapp.ngrok.io/")));
+                of(WebviewHeightRatio.TALL), of(true), of(new URL("https://peterssendreceiveapp.ngrok.io/")),
+                of(WebviewShareButtonState.HIDE));
 
         final Element element = Element.create("Welcome to Peters Hats", of("We have got the right hat for everyone."),
                 of(new URL("https://petersfancybrownhats.com/company_image.png")), of(defaultAction), of(buttons));
@@ -455,6 +458,7 @@ public class SendTest {
                 "              \"url\": \"https://peterssendreceiveapp.ngrok.io/view?item=103\",\n" +
                 "              \"messenger_extensions\": true,\n" +
                 "              \"webview_height_ratio\": \"tall\",\n" +
+                "              \"webview_share_button\": \"hide\",\n" +
                 "              \"fallback_url\": \"https://peterssendreceiveapp.ngrok.io/\"\n" +
                 "            },\n" +
                 "            \"buttons\":[\n" +
@@ -701,30 +705,31 @@ public class SendTest {
         final Element element1 = Element.create("Classic T-Shirt Collection", of("See all our colors"),
                 of(new URL("https://peterssendreceiveapp.ngrok.io/img/collection.png")),
                 of(DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/shop_collection"),
-                        of(WebviewHeightRatio.TALL), of(true), of(new URL("https://peterssendreceiveapp.ngrok.io/fallback")))),
+                        of(WebviewHeightRatio.TALL), of(true), of(new URL("https://peterssendreceiveapp.ngrok.io/fallback")),
+                        empty())),
                 of(singletonList(UrlButton.create("View", new URL("https://peterssendreceiveapp.ngrok.io/collection"),
-                        of(WebviewHeightRatio.TALL), empty(), empty()))));
+                        of(WebviewHeightRatio.TALL), empty(), empty(), empty()))));
 
         final Element element2 = Element.create("Classic White T-Shirt", of("100% Cotton, 200% Comfortable"),
                 of(new URL("https://peterssendreceiveapp.ngrok.io/img/white-t-shirt.png")),
                 of(DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/view?item=100"),
-                        of(WebviewHeightRatio.TALL), empty(), empty())),
+                        of(WebviewHeightRatio.TALL), empty(), empty(), empty())),
                 of(singletonList(UrlButton.create("Shop Now", new URL("https://peterssendreceiveapp.ngrok.io/shop?item=100"),
-                        of(WebviewHeightRatio.TALL), empty(), empty()))));
+                        of(WebviewHeightRatio.TALL), empty(), empty(), empty()))));
 
         final Element element3 = Element.create("Classic Blue T-Shirt", of("100% Cotton, 200% Comfortable"),
                 of(new URL("https://peterssendreceiveapp.ngrok.io/img/blue-t-shirt.png")),
                 of(DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/view?item=101"),
-                        of(WebviewHeightRatio.TALL), empty(), empty())),
+                        of(WebviewHeightRatio.TALL), empty(), empty(), empty())),
                 of(singletonList(UrlButton.create("Shop Now", new URL("https://peterssendreceiveapp.ngrok.io/shop?item=101"),
-                        of(WebviewHeightRatio.TALL), empty(), empty()))));
+                        of(WebviewHeightRatio.TALL), empty(), empty(), empty()))));
 
         final Element element4 = Element.create("Classic Black T-Shirt", of("100% Cotton, 200% Comfortable"),
                 of(new URL("https://peterssendreceiveapp.ngrok.io/img/black-t-shirt.png")),
                 of(DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/view?item=102"),
-                        of(WebviewHeightRatio.TALL), empty(), empty())),
+                        of(WebviewHeightRatio.TALL), empty(), empty(), empty())),
                 of(singletonList(UrlButton.create("Shop Now", new URL("https://peterssendreceiveapp.ngrok.io/shop?item=102"),
-                        of(WebviewHeightRatio.TALL), empty(), empty()))));
+                        of(WebviewHeightRatio.TALL), empty(), empty(), empty()))));
 
 
         final ListTemplate listTemplate = ListTemplate.create(Arrays.asList(element1, element2, element3, element4),
@@ -802,6 +807,67 @@ public class SendTest {
                 "            ]      \n" +
                 "          }\n" +
                 "        ]\n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
+    public void shouldSendButtonTemplateMessageWithUrlButtonWithWebviewShareButtonState() throws Exception {
+        final String recipientId = "USER_ID";
+
+        final UrlButton buttonA = UrlButton.create("Show Website", new URL("https://petersapparel.parseapp.com"));
+        final UrlButton buttonB = UrlButton.create("Show Website", new URL("https://petersapparel.parseapp.com"),
+                of(WebviewHeightRatio.FULL), of(true), of(new URL("https://petersfancyapparel.com/fallback")),
+                of(WebviewShareButtonState.SHOW));
+        final UrlButton buttonC = UrlButton.create("Show Website", new URL("https://petersapparel.parseapp.com"),
+                of(WebviewHeightRatio.FULL), of(true), of(new URL("https://petersfancyapparel.com/fallback")),
+                of(WebviewShareButtonState.HIDE));
+
+        final List<Button> buttons = Arrays.asList(buttonA, buttonB, buttonC);
+        final ButtonTemplate buttonTemplate = ButtonTemplate.create("What do you want to do next?", buttons);
+
+        final TemplateMessage templateMessage = TemplateMessage.create(buttonTemplate);
+        final MessagePayload payload = MessagePayload.create(recipientId, MessagingType.RESPONSE,
+                templateMessage);
+
+        messenger.send(payload);
+
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "  \"recipient\": {\n" +
+                "    \"id\": \"USER_ID\"\n" +
+                "  },\n" +
+                "  \"messaging_type\": \"RESPONSE\",\n" +
+                "  \"message\": {\n" +
+                "    \"attachment\": {\n" +
+                "      \"type\": \"template\",\n" +
+                "      \"payload\": {\n" +
+                "        \"text\": \"What do you want to do next?\",\n" +
+                "        \"buttons\": [{\n" +
+                "          \"url\": \"https://petersapparel.parseapp.com\",\n" +
+                "          \"title\": \"Show Website\",\n" +
+                "          \"type\": \"web_url\"\n" +
+                "        }, {\n" +
+                "          \"url\": \"https://petersapparel.parseapp.com\",\n" +
+                "          \"webview_height_ratio\": \"full\",\n" +
+                "          \"messenger_extensions\": true,\n" +
+                "          \"fallback_url\": \"https://petersfancyapparel.com/fallback\",\n" +
+                "          \"title\": \"Show Website\",\n" +
+                "          \"type\": \"web_url\"\n" +
+                "        }, {\n" +
+                "          \"url\": \"https://petersapparel.parseapp.com\",\n" +
+                "          \"webview_share_button\": \"hide\",\n" +
+                "          \"webview_height_ratio\": \"full\",\n" +
+                "          \"messenger_extensions\": true,\n" +
+                "          \"fallback_url\": \"https://petersfancyapparel.com/fallback\",\n" +
+                "          \"title\": \"Show Website\",\n" +
+                "          \"type\": \"web_url\"\n" +
+                "        }],\n" +
+                "        \"template_type\": \"button\"\n" +
                 "      }\n" +
                 "    }\n" +
                 "  }\n" +

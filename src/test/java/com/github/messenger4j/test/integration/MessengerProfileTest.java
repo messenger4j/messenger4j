@@ -31,6 +31,7 @@ import com.github.messenger4j.messengerprofile.persistentmenu.PersistentMenu;
 import com.github.messenger4j.messengerprofile.persistentmenu.action.NestedCallToAction;
 import com.github.messenger4j.messengerprofile.persistentmenu.action.PostbackCallToAction;
 import com.github.messenger4j.messengerprofile.persistentmenu.action.UrlCallToAction;
+import com.github.messenger4j.send.message.template.common.WebviewShareButtonState;
 import com.github.messenger4j.spi.MessengerHttpClient;
 import com.github.messenger4j.spi.MessengerHttpClient.HttpMethod;
 import com.github.messenger4j.spi.MessengerHttpClient.HttpResponse;
@@ -150,7 +151,8 @@ public class MessengerProfileTest {
                 Arrays.asList(callToActionAA, callToActionAB, callToActionAC));
 
         final UrlCallToAction callToActionB = UrlCallToAction.create("Latest News",
-                new URL("http://petershats.parseapp.com/hat-news"), of(WebviewHeightRatio.FULL), empty(), empty());
+                new URL("http://petershats.parseapp.com/hat-news"), of(WebviewHeightRatio.FULL), empty(), empty(),
+                of(WebviewShareButtonState.HIDE));
 
         final PersistentMenu persistentMenu = PersistentMenu.create(true, of(Arrays.asList(callToActionA, callToActionB)),
                 LocalizedPersistentMenu.create(SupportedLocale.zh_CN, false, empty()));
@@ -192,6 +194,7 @@ public class MessengerProfileTest {
                 "          \"type\":\"web_url\",\n" +
                 "          \"title\":\"Latest News\",\n" +
                 "          \"url\":\"http://petershats.parseapp.com/hat-news\",\n" +
+                "          \"webview_share_button\":\"hide\",\n" +
                 "          \"webview_height_ratio\":\"full\"\n" +
                 "        }\n" +
                 "      ]\n" +
