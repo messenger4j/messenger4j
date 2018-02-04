@@ -1,6 +1,7 @@
 package com.github.messenger4j.internal.gson;
 
 import com.github.messenger4j.messengerprofile.MessengerSettings;
+import com.github.messenger4j.messengerprofile.targetaudience.TargetAudience;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
@@ -28,6 +29,8 @@ final class MessengerSettingsSerializer implements JsonSerializer<MessengerSetti
                 messengerSettingsObject.add("account_linking_url", context.serialize(accountLinkingUrl)));
         src.homeUrl().ifPresent(homeUrl ->
                 messengerSettingsObject.add("home_url", context.serialize(homeUrl)));
+        src.targetAudience().ifPresent(targetAudience ->
+                messengerSettingsObject.add("target_audience", context.serialize(targetAudience, TargetAudience.class)));
         return messengerSettingsObject;
     }
 }

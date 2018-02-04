@@ -17,6 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.github.messenger4j.Messenger;
+import com.github.messenger4j.common.SupportedCountry;
 import com.github.messenger4j.common.SupportedLocale;
 import com.github.messenger4j.common.WebviewHeightRatio;
 import com.github.messenger4j.exception.MessengerApiException;
@@ -32,6 +33,10 @@ import com.github.messenger4j.messengerprofile.persistentmenu.PersistentMenu;
 import com.github.messenger4j.messengerprofile.persistentmenu.action.NestedCallToAction;
 import com.github.messenger4j.messengerprofile.persistentmenu.action.PostbackCallToAction;
 import com.github.messenger4j.messengerprofile.persistentmenu.action.UrlCallToAction;
+import com.github.messenger4j.messengerprofile.targetaudience.AllTargetAudience;
+import com.github.messenger4j.messengerprofile.targetaudience.BlacklistTargetAudience;
+import com.github.messenger4j.messengerprofile.targetaudience.NoneTargetAudience;
+import com.github.messenger4j.messengerprofile.targetaudience.WhitelistTargetAudience;
 import com.github.messenger4j.send.message.template.common.WebviewShareButtonState;
 import com.github.messenger4j.spi.MessengerHttpClient;
 import com.github.messenger4j.spi.MessengerHttpClient.HttpMethod;
@@ -67,7 +72,7 @@ public class MessengerProfileTest {
     public void shouldSetupStartButton() throws Exception {
         // tag::setup-StartButton[]
         final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("Button pressed")),
-                empty(), empty(), empty(), empty(), empty());
+                empty(), empty(), empty(), empty(), empty(), empty());
 
         messenger.updateSettings(messengerSettings);
         // end::setup-StartButton[]
@@ -104,7 +109,7 @@ public class MessengerProfileTest {
         final Greeting greeting = Greeting.create("Hello!", LocalizedGreeting.create(SupportedLocale.en_US,
                 "Timeless apparel for the masses."));
         final MessengerSettings messengerSettings = MessengerSettings.create(empty(), of(greeting), empty(),
-                empty(), empty(), empty());
+                empty(), empty(), empty(), empty());
 
         messenger.updateSettings(messengerSettings);
         // end::setup-GreetingText[]
@@ -160,7 +165,7 @@ public class MessengerProfileTest {
                 LocalizedPersistentMenu.create(SupportedLocale.zh_CN, false, empty()));
 
         final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(), of(persistentMenu),
-                empty(), empty(), empty());
+                empty(), empty(), empty(), empty());
 
         messenger.updateSettings(messengerSettings);
         // end::setup-PersistentMenu[]
@@ -237,7 +242,7 @@ public class MessengerProfileTest {
         );
 
         final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
-                empty(), of(whitelistedDomains), empty(), empty());
+                empty(), of(whitelistedDomains), empty(), empty(), empty());
 
         messenger.updateSettings(messengerSettings);
         // end::setup-WhitelistedDomains[]
@@ -274,7 +279,7 @@ public class MessengerProfileTest {
     public void shouldSetupAccountLinkingUrl() throws Exception {
         // tag::setup-AccountLinkingUrl[]
         final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
-                empty(), empty(), of(new URL("http://example.url")), empty());
+                empty(), empty(), of(new URL("http://example.url")), empty(), empty());
 
         messenger.updateSettings(messengerSettings);
         // end::setup-AccountLinkingUrl[]
@@ -310,7 +315,7 @@ public class MessengerProfileTest {
         final HomeUrl homeUrl = HomeUrl.create(new URL("http://example.url"), true, of(WebviewShareButtonState.HIDE));
 
         final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
-                empty(), empty(), empty(), of(homeUrl));
+                empty(), empty(), empty(), of(homeUrl), empty());
 
         messenger.updateSettings(messengerSettings);
         // end::setup-HomeUrl[]
@@ -346,12 +351,124 @@ public class MessengerProfileTest {
     }
 
     @Test
+    public void shouldSetupTargetAudienceCustomWhitelist() throws Exception {
+        // tag::setup-TargetAudienceCustomWhitelist[]
+        final WhitelistTargetAudience whitelistTargetAudience = WhitelistTargetAudience.create(
+                Arrays.asList(SupportedCountry.US, SupportedCountry.CA));
+
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
+                empty(), empty(), empty(), empty(), of(whitelistTargetAudience));
+
+        messenger.updateSettings(messengerSettings);
+        // end::setup-TargetAudienceCustomWhitelist[]
+
+        //then
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "   \"target_audience\":{\n" +
+                "     \"audience_type\":\"custom\",\n" +
+                "     \"countries\":{\n" +
+                "       \"whitelist\":[\"US\", \"CA\"]\n" +
+                "     }\n" +
+                "   }" +
+                "}";
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
+    public void shouldSetupTargetAudienceCustomBlacklist() throws Exception {
+        // tag::setup-TargetAudienceCustomBlacklist[]
+        final BlacklistTargetAudience blacklistTargetAudience = BlacklistTargetAudience.create(
+                Arrays.asList(SupportedCountry.US, SupportedCountry.CA));
+
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
+                empty(), empty(), empty(), empty(), of(blacklistTargetAudience));
+
+        messenger.updateSettings(messengerSettings);
+        // end::setup-TargetAudienceCustomBlacklist[]
+
+        //then
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "   \"target_audience\":{\n" +
+                "     \"audience_type\":\"custom\",\n" +
+                "     \"countries\":{\n" +
+                "       \"blacklist\":[\"US\", \"CA\"]\n" +
+                "     }\n" +
+                "   }" +
+                "}";
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
+    public void shouldSetupTargetAudienceAll() throws Exception {
+        // tag::setup-TargetAudienceAll[]
+        final AllTargetAudience allTargetAudience = AllTargetAudience.create();
+
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
+                empty(), empty(), empty(), empty(), of(allTargetAudience));
+
+        messenger.updateSettings(messengerSettings);
+        // end::setup-TargetAudienceAll[]
+
+        //then
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "   \"target_audience\":{\n" +
+                "     \"audience_type\":\"all\"" +
+                "   }" +
+                "}";
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
+    public void shouldSetupTargetAudienceNone() throws Exception {
+        // tag::setup-TargetAudienceNone[]
+        final NoneTargetAudience noneTargetAudience = NoneTargetAudience.create();
+
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
+                empty(), empty(), empty(), empty(), of(noneTargetAudience));
+
+        messenger.updateSettings(messengerSettings);
+        // end::setup-TargetAudienceNone[]
+
+        //then
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "   \"target_audience\":{\n" +
+                "     \"audience_type\":\"none\"" +
+                "   }" +
+                "}";
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
+    public void shouldDeleteTargetAudience() throws Exception {
+        // tag::setup-DeleteTargetAudience[]
+        messenger.deleteSettings(MessengerSettingProperty.TARGET_AUDIENCE);
+        // end::setup-DeleteTargetAudience[]
+
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "  \"fields\": [\n" +
+                "    \"target_audience\"\n" +
+                "  ]\n" +
+                "}";
+        verify(mockHttpClient).execute(eq(DELETE), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
     public void shouldHandleUpdateSuccessResponse() throws Exception {
         final HttpResponse successfulResponse = new HttpResponse(200, "{\"result\": \"success\"}");
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(successfulResponse);
 
         final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("test")),
-                empty(), empty(), empty(), empty(), empty());
+                empty(), empty(), empty(), empty(), empty(), empty());
         final SetupResponse setupResponse = messenger.updateSettings(messengerSettings);
 
         assertThat(setupResponse, is(notNullValue()));
@@ -373,7 +490,7 @@ public class MessengerProfileTest {
         MessengerApiException messengerApiException = null;
         try {
             final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("test")),
-                    empty(), empty(), empty(), empty(), empty());
+                    empty(), empty(), empty(), empty(), empty(), empty());
             messenger.updateSettings(messengerSettings);
         } catch (MessengerApiException e) {
             messengerApiException = e;

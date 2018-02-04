@@ -260,6 +260,36 @@ include::{sourcedir}/MessengerProfileTest.java[tags=setup-HomeUrl]
 include::{sourcedir}/MessengerProfileTest.java[tags=setup-DeleteHomeUrl]
 ----
 
+==== set / update target audience (open to all)
+[source,java,indent=0]
+----
+include::{sourcedir}/MessengerProfileTest.java[tags=setup-TargetAudienceAll]
+----
+
+==== set / update target audience (closed to all)
+[source,java,indent=0]
+----
+include::{sourcedir}/MessengerProfileTest.java[tags=setup-TargetAudienceNone]
+----
+
+==== set / update target audience (custom whitelist)
+[source,java,indent=0]
+----
+include::{sourcedir}/MessengerProfileTest.java[tags=setup-TargetAudienceCustomWhitelist]
+----
+
+==== set / update target audience (custom blacklist)
+[source,java,indent=0]
+----
+include::{sourcedir}/MessengerProfileTest.java[tags=setup-TargetAudienceCustomBlacklist]
+----
+
+==== delete target audience
+[source,java,indent=0]
+----
+include::{sourcedir}/MessengerProfileTest.java[tags=setup-DeleteTargetAudience]
+----
+
 == Requirements
 * Java 8+
 * slf4j

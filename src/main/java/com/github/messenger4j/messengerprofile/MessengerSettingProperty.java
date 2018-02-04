@@ -13,5 +13,6 @@ public enum MessengerSettingProperty {
     GREETING,
     WHITELISTED_DOMAINS,
     ACCOUNT_LINKING_URL,
-    HOME_URL
+    HOME_URL,
+    TARGET_AUDIENCE
 }
