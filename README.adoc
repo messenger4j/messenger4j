@@ -1,5 +1,5 @@
 :sourcedir: src/test/java/com/github/messenger4j/test/integration
-:m4j-version: 1.0.0-M2
+:m4j-version: 1.0.0-M3
 :toc: macro
 
 = messenger4j
@@ -77,7 +77,8 @@ dependencies {
                 final String text = event.asTextMessageEvent().text();
 
                 final TextMessage textMessage = TextMessage.create(text);
-                final MessagePayload messagePayload = MessagePayload.create(senderId, textMessage);
+                final MessagePayload messagePayload = MessagePayload.create(senderId,
+                        MessagingType.RESPONSE, textMessage);
 
                 try {
                     messenger.send(messagePayload);
@@ -233,7 +234,22 @@ In addition to the event types described above the following events are also sup
         final String recipientId = "USER_ID";
         final String text = "Hello Messenger Platform";
 
-        final MessagePayload payload = MessagePayload.create(recipientId, TextMessage.create(text));
+        final MessagePayload payload = MessagePayload.create(recipientId,
+                MessagingType.RESPONSE, TextMessage.create(text));
+
+        messenger.send(payload);
+----
+
+==== send text message with notification type and message tag
+[source,java,indent=0]
+----
+        final Recipient recipient = IdRecipient.create("USER_ID");
+        final TextMessage message = TextMessage.create("Hello Messenger Platform");
+        final NotificationType notificationType = NotificationType.SILENT_PUSH;
+        final MessageTag messageTag = MessageTag.APPLICATION_UPDATE;
+
+        final MessagePayload payload = MessagePayload.create(recipient, MessagingType.RESPONSE,
+                message, of(notificationType), of(messageTag));
 
         messenger.send(payload);
 ----
@@ -253,7 +269,7 @@ In addition to the event types described above the following events are also sup
         final List<QuickReply> quickReplies = Arrays.asList(quickReplyA, quickReplyB, quickReplyC);
 
         final TextMessage message = TextMessage.create(text, of(quickReplies), empty());
-        final MessagePayload payload = MessagePayload.create(recipient, message, empty());
+        final MessagePayload payload = MessagePayload.create(recipient, MessagingType.RESPONSE, message);
 
         messenger.send(payload);
 ----
@@ -267,7 +283,8 @@ In addition to the event types described above the following events are also sup
         final String metadata = "DEVELOPER_DEFINED_METADATA";
 
         final TextMessage textMessage = TextMessage.create(text, empty(), of(metadata));
-        final MessagePayload payload = MessagePayload.create(recipient, textMessage, of(notificationType));
+        final MessagePayload payload = MessagePayload.create(recipient, MessagingType.RESPONSE,
+                textMessage, of(notificationType), empty());
 
         messenger.send(payload);
 ----
@@ -280,7 +297,8 @@ In addition to the event types described above the following events are also sup
 
         final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(IMAGE, new URL(imageUrl));
         final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
-        final MessagePayload payload = MessagePayload.create(recipientId, richMediaMessage);
+        final MessagePayload payload = MessagePayload.create(recipientId, MessagingType.RESPONSE,
+                richMediaMessage);
 
         messenger.send(payload);
 ----
@@ -294,7 +312,8 @@ In addition to the event types described above the following events are also sup
 
         final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(IMAGE, new URL(imageUrl), of(true));
         final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
-        final MessagePayload payload = MessagePayload.create(recipient, richMediaMessage, of(notificationType));
+        final MessagePayload payload = MessagePayload.create(recipient, MessagingType.RESPONSE,
+                richMediaMessage, of(notificationType), empty());
 
         messenger.send(payload);
 ----
@@ -308,7 +327,8 @@ In addition to the event types described above the following events are also sup
 
         final ReusableRichMediaAsset richMediaAsset = ReusableRichMediaAsset.create(IMAGE, attachmentId);
         final RichMediaMessage richMediaMessage = RichMediaMessage.create(richMediaAsset);
-        final MessagePayload payload = MessagePayload.create(recipient, richMediaMessage, of(notificationType));
+        final MessagePayload payload = MessagePayload.create(recipient, MessagingType.RESPONSE,
+                richMediaMessage, of(notificationType), empty());
 
         messenger.send(payload);
 ----
@@ -321,13 +341,14 @@ In addition to the event types described above the following events are also sup
         final UrlButton buttonA = UrlButton.create("Show Website", new URL("https://petersapparel.parseapp.com"));
         final PostbackButton buttonB = PostbackButton.create("Start Chatting", "USER_DEFINED_PAYLOAD");
         final UrlButton buttonC = UrlButton.create("Show Website", new URL("https://petersapparel.parseapp.com"),
-                of(WebviewHeightRatio.FULL), of(true), of(new URL("https://petersfancyapparel.com/fallback")));
+                of(WebviewHeightRatio.FULL), of(true), of(new URL("https://petersfancyapparel.com/fallback")), empty());
 
         final List<Button> buttons = Arrays.asList(buttonA, buttonB, buttonC);
         final ButtonTemplate buttonTemplate = ButtonTemplate.create("What do you want to do next?", buttons);
 
         final TemplateMessage templateMessage = TemplateMessage.create(buttonTemplate);
-        final MessagePayload payload = MessagePayload.create(recipientId, templateMessage);
+        final MessagePayload payload = MessagePayload.create(recipientId, MessagingType.RESPONSE,
+                templateMessage);
 
         messenger.send(payload);
 ----
@@ -339,20 +360,23 @@ In addition to the event types described above the following events are also sup
 
         final List<Button> buttons = Arrays.asList(
                 UrlButton.create("Select Criteria", new URL("https://petersfancyapparel.com/criteria_selector"),
-                        of(WebviewHeightRatio.FULL), of(true), of(new URL("https://petersfancyapparel.com/fallback"))),
+                        of(WebviewHeightRatio.FULL), of(true), of(new URL("https://petersfancyapparel.com/fallback")),
+                        empty()),
                 CallButton.create("Call Representative", "+15105551234"),
                 PostbackButton.create("Start Chatting", "DEVELOPER_DEFINED_PAYLOAD")
         );
 
         final DefaultAction defaultAction = DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/view?item=103"),
-                of(WebviewHeightRatio.TALL), of(true), of(new URL("https://peterssendreceiveapp.ngrok.io/")));
+                of(WebviewHeightRatio.TALL), of(true), of(new URL("https://peterssendreceiveapp.ngrok.io/")),
+                of(WebviewShareButtonState.HIDE));
 
         final Element element = Element.create("Welcome to Peters Hats", of("We have got the right hat for everyone."),
                 of(new URL("https://petersfancybrownhats.com/company_image.png")), of(defaultAction), of(buttons));
 
         final GenericTemplate genericTemplate = GenericTemplate.create(singletonList(element));
 
-        final MessagePayload payload = MessagePayload.create(recipientId, TemplateMessage.create(genericTemplate));
+        final MessagePayload payload = MessagePayload.create(recipientId, MessagingType.RESPONSE,
+                TemplateMessage.create(genericTemplate));
 
         messenger.send(payload);
 ----
@@ -382,7 +406,8 @@ In addition to the event types described above the following events are also sup
                 of(new URL("http://petersapparel.parseapp.com/order?order_id=123456")), empty(),
                 of(ZonedDateTime.of(2015, 4, 7, 22, 14, 12, 0, ZoneOffset.UTC).toInstant()));
 
-        final MessagePayload payload = MessagePayload.create(recipientId, TemplateMessage.create(receiptTemplate));
+        final MessagePayload payload = MessagePayload.create(recipientId, MessagingType.RESPONSE,
+                TemplateMessage.create(receiptTemplate));
 
         messenger.send(payload);
 ----
@@ -395,36 +420,38 @@ In addition to the event types described above the following events are also sup
         final Element element1 = Element.create("Classic T-Shirt Collection", of("See all our colors"),
                 of(new URL("https://peterssendreceiveapp.ngrok.io/img/collection.png")),
                 of(DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/shop_collection"),
-                        of(WebviewHeightRatio.TALL), of(true), of(new URL("https://peterssendreceiveapp.ngrok.io/fallback")))),
+                        of(WebviewHeightRatio.TALL), of(true), of(new URL("https://peterssendreceiveapp.ngrok.io/fallback")),
+                        empty())),
                 of(singletonList(UrlButton.create("View", new URL("https://peterssendreceiveapp.ngrok.io/collection"),
-                        of(WebviewHeightRatio.TALL), empty(), empty()))));
+                        of(WebviewHeightRatio.TALL), empty(), empty(), empty()))));
 
         final Element element2 = Element.create("Classic White T-Shirt", of("100% Cotton, 200% Comfortable"),
                 of(new URL("https://peterssendreceiveapp.ngrok.io/img/white-t-shirt.png")),
                 of(DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/view?item=100"),
-                        of(WebviewHeightRatio.TALL), empty(), empty())),
+                        of(WebviewHeightRatio.TALL), empty(), empty(), empty())),
                 of(singletonList(UrlButton.create("Shop Now", new URL("https://peterssendreceiveapp.ngrok.io/shop?item=100"),
-                        of(WebviewHeightRatio.TALL), empty(), empty()))));
+                        of(WebviewHeightRatio.TALL), empty(), empty(), empty()))));
 
         final Element element3 = Element.create("Classic Blue T-Shirt", of("100% Cotton, 200% Comfortable"),
                 of(new URL("https://peterssendreceiveapp.ngrok.io/img/blue-t-shirt.png")),
                 of(DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/view?item=101"),
-                        of(WebviewHeightRatio.TALL), empty(), empty())),
+                        of(WebviewHeightRatio.TALL), empty(), empty(), empty())),
                 of(singletonList(UrlButton.create("Shop Now", new URL("https://peterssendreceiveapp.ngrok.io/shop?item=101"),
-                        of(WebviewHeightRatio.TALL), empty(), empty()))));
+                        of(WebviewHeightRatio.TALL), empty(), empty(), empty()))));
 
         final Element element4 = Element.create("Classic Black T-Shirt", of("100% Cotton, 200% Comfortable"),
                 of(new URL("https://peterssendreceiveapp.ngrok.io/img/black-t-shirt.png")),
                 of(DefaultAction.create(new URL("https://peterssendreceiveapp.ngrok.io/view?item=102"),
-                        of(WebviewHeightRatio.TALL), empty(), empty())),
+                        of(WebviewHeightRatio.TALL), empty(), empty(), empty())),
                 of(singletonList(UrlButton.create("Shop Now", new URL("https://peterssendreceiveapp.ngrok.io/shop?item=102"),
-                        of(WebviewHeightRatio.TALL), empty(), empty()))));
+                        of(WebviewHeightRatio.TALL), empty(), empty(), empty()))));
 
 
         final ListTemplate listTemplate = ListTemplate.create(Arrays.asList(element1, element2, element3, element4),
                 of(TopElementStyle.LARGE), of(singletonList(PostbackButton.create("View More", "payload"))));
 
-        messenger.send(MessagePayload.create(recipientId, TemplateMessage.create(listTemplate)));
+        messenger.send(MessagePayload.create(recipientId, MessagingType.RESPONSE,
+                TemplateMessage.create(listTemplate)));
 ----
 
 ==== send open graph template
@@ -437,18 +464,20 @@ In addition to the event types described above the following events are also sup
                 of(singletonList(urlButton)));
         final OpenGraphTemplate openGraphTemplate = OpenGraphTemplate.create(singletonList(openGraphObject));
 
-        messenger.send(MessagePayload.create(recipientId, TemplateMessage.create(openGraphTemplate)));
+        messenger.send(MessagePayload.create(recipientId, MessagingType.RESPONSE,
+                TemplateMessage.create(openGraphTemplate)));
 ----
 
 ==== handle successful response
 [source,java,indent=0]
 ----
         final UrlRichMediaAsset richMediaAsset = UrlRichMediaAsset.create(IMAGE, new URL("http://image.url"), of(true));
-        final MessagePayload payload = MessagePayload.create("USER_ID", RichMediaMessage.create(richMediaAsset));
+        final MessagePayload payload = MessagePayload.create("USER_ID", MessagingType.RESPONSE,
+                RichMediaMessage.create(richMediaAsset));
 
         final MessageResponse messageResponse = messenger.send(payload);
 
-        final String recipientId = messageResponse.recipientId();
+        final Optional<String> recipientId = messageResponse.recipientId();
         final Optional<String> messageId = messageResponse.messageId();
         final Optional<String> attachmentId = messageResponse.attachmentId();
         log.debug("RecipientId: {} | MessageId: {} | AttachmentId: {}",
@@ -467,7 +496,7 @@ In addition to the event types described above the following events are also sup
 [source,java,indent=0]
 ----
         final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("Button pressed")),
-                empty(), empty(), empty());
+                empty(), empty(), empty(), empty(), empty(), empty());
 
         messenger.updateSettings(messengerSettings);
 ----
@@ -483,7 +512,8 @@ In addition to the event types described above the following events are also sup
 ----
         final Greeting greeting = Greeting.create("Hello!", LocalizedGreeting.create(SupportedLocale.en_US,
                 "Timeless apparel for the masses."));
-        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), of(greeting), empty(), empty());
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), of(greeting), empty(),
+                empty(), empty(), empty(), empty());
 
         messenger.updateSettings(messengerSettings);
 ----
@@ -505,12 +535,14 @@ In addition to the event types described above the following events are also sup
                 Arrays.asList(callToActionAA, callToActionAB, callToActionAC));
 
         final UrlCallToAction callToActionB = UrlCallToAction.create("Latest News",
-                new URL("http://petershats.parseapp.com/hat-news"), of(WebviewHeightRatio.FULL), empty(), empty());
+                new URL("http://petershats.parseapp.com/hat-news"), of(WebviewHeightRatio.FULL), empty(), empty(),
+                of(WebviewShareButtonState.HIDE));
 
         final PersistentMenu persistentMenu = PersistentMenu.create(true, of(Arrays.asList(callToActionA, callToActionB)),
                 LocalizedPersistentMenu.create(SupportedLocale.zh_CN, false, empty()));
 
-        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(), of(persistentMenu), empty());
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(), of(persistentMenu),
+                empty(), empty(), empty(), empty());
 
         messenger.updateSettings(messengerSettings);
 ----
@@ -530,7 +562,7 @@ In addition to the event types described above the following events are also sup
         );
 
         final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
-                empty(), of(whitelistedDomains));
+                empty(), of(whitelistedDomains), empty(), empty(), empty());
 
         messenger.updateSettings(messengerSettings);
 ----
@@ -539,6 +571,90 @@ In addition to the event types described above the following events are also sup
 [source,java,indent=0]
 ----
         messenger.deleteSettings(MessengerSettingProperty.WHITELISTED_DOMAINS);
+----
+
+==== set / update account linking url
+[source,java,indent=0]
+----
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
+                empty(), empty(), of(new URL("http://example.url")), empty(), empty());
+
+        messenger.updateSettings(messengerSettings);
+----
+
+==== delete account linking url
+[source,java,indent=0]
+----
+        messenger.deleteSettings(MessengerSettingProperty.ACCOUNT_LINKING_URL);
+----
+
+==== set / update home url
+[source,java,indent=0]
+----
+        final HomeUrl homeUrl = HomeUrl.create(new URL("http://example.url"), true, of(WebviewShareButtonState.HIDE));
+
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
+                empty(), empty(), empty(), of(homeUrl), empty());
+
+        messenger.updateSettings(messengerSettings);
+----
+
+==== delete home url
+[source,java,indent=0]
+----
+        messenger.deleteSettings(MessengerSettingProperty.HOME_URL);
+----
+
+==== set / update target audience (open to all)
+[source,java,indent=0]
+----
+        final AllTargetAudience allTargetAudience = AllTargetAudience.create();
+
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
+                empty(), empty(), empty(), empty(), of(allTargetAudience));
+
+        messenger.updateSettings(messengerSettings);
+----
+
+==== set / update target audience (closed to all)
+[source,java,indent=0]
+----
+        final NoneTargetAudience noneTargetAudience = NoneTargetAudience.create();
+
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
+                empty(), empty(), empty(), empty(), of(noneTargetAudience));
+
+        messenger.updateSettings(messengerSettings);
+----
+
+==== set / update target audience (custom whitelist)
+[source,java,indent=0]
+----
+        final WhitelistTargetAudience whitelistTargetAudience = WhitelistTargetAudience.create(
+                Arrays.asList(SupportedCountry.US, SupportedCountry.CA));
+
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
+                empty(), empty(), empty(), empty(), of(whitelistTargetAudience));
+
+        messenger.updateSettings(messengerSettings);
+----
+
+==== set / update target audience (custom blacklist)
+[source,java,indent=0]
+----
+        final BlacklistTargetAudience blacklistTargetAudience = BlacklistTargetAudience.create(
+                Arrays.asList(SupportedCountry.US, SupportedCountry.CA));
+
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
+                empty(), empty(), empty(), empty(), of(blacklistTargetAudience));
+
+        messenger.updateSettings(messengerSettings);
+----
+
+==== delete target audience
+[source,java,indent=0]
+----
+        messenger.deleteSettings(MessengerSettingProperty.TARGET_AUDIENCE);
 ----
 
 == Requirements
