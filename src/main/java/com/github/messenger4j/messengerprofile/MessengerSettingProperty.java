@@ -11,5 +11,6 @@ public enum MessengerSettingProperty {
     START_BUTTON,
     PERSISTENT_MENU,
     GREETING,
-    WHITELISTED_DOMAINS
+    WHITELISTED_DOMAINS,
+    ACCOUNT_LINKING_URL
 }

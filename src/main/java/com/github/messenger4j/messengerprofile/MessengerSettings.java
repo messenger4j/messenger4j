@@ -23,20 +23,26 @@ public final class MessengerSettings {
     private final Optional<Greeting> greeting;
     private final Optional<PersistentMenu> persistentMenu;
     private final Optional<List<URL>> whitelistedDomains;
+    private final Optional<URL> accountLinkingUrl;
 
     public static MessengerSettings create(@NonNull Optional<StartButton> startButton,
                                            @NonNull Optional<Greeting> greeting,
                                            @NonNull Optional<PersistentMenu> persistentMenu,
-                                           @NonNull Optional<List<URL>> whitelistedDomains) {
-        return new MessengerSettings(startButton, greeting, persistentMenu, whitelistedDomains);
+                                           @NonNull Optional<List<URL>> whitelistedDomains,
+                                           @NonNull Optional<URL> accountLinkingUrl) {
+        return new MessengerSettings(startButton, greeting, persistentMenu, whitelistedDomains, accountLinkingUrl);
     }
 
-    private MessengerSettings(Optional<StartButton> startButton, Optional<Greeting> greeting,
-                              Optional<PersistentMenu> persistentMenu, Optional<List<URL>> whitelistedDomains) {
+    private MessengerSettings(Optional<StartButton> startButton,
+                              Optional<Greeting> greeting,
+                              Optional<PersistentMenu> persistentMenu,
+                              Optional<List<URL>> whitelistedDomains,
+                              Optional<URL> accountLinkingUrl) {
         this.startButton = startButton;
         this.greeting = greeting;
         this.persistentMenu = persistentMenu;
         this.whitelistedDomains = whitelistedDomains.map(Lists::immutableList);
+        this.accountLinkingUrl = accountLinkingUrl;
     }
 
     public Optional<StartButton> startButton() {
@@ -53,5 +59,9 @@ public final class MessengerSettings {
 
     public Optional<List<URL>> whitelistedDomains() {
         return whitelistedDomains;
+    }
+
+    public Optional<URL> accountLinkingUrl() {
+        return accountLinkingUrl;
     }
 }

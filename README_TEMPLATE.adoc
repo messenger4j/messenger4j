@@ -236,6 +236,18 @@ include::{sourcedir}/MessengerProfileTest.java[tags=setup-WhitelistedDomains]
 include::{sourcedir}/MessengerProfileTest.java[tags=setup-DeleteWhitelistedDomains]
 ----
 
+==== set / update account linking url
+[source,java,indent=0]
+----
+include::{sourcedir}/MessengerProfileTest.java[tags=setup-AccountLinkingUrl]
+----
+
+==== delete account linking url
+[source,java,indent=0]
+----
+include::{sourcedir}/MessengerProfileTest.java[tags=setup-DeleteAccountLinkingUrl]
+----
+
 == Requirements
 * Java 8+
 * slf4j

@@ -66,7 +66,7 @@ public class MessengerProfileTest {
     public void shouldSetupStartButton() throws Exception {
         // tag::setup-StartButton[]
         final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("Button pressed")),
-                empty(), empty(), empty());
+                empty(), empty(), empty(), empty());
 
         messenger.updateSettings(messengerSettings);
         // end::setup-StartButton[]
@@ -102,7 +102,8 @@ public class MessengerProfileTest {
         // tag::setup-GreetingText[]
         final Greeting greeting = Greeting.create("Hello!", LocalizedGreeting.create(SupportedLocale.en_US,
                 "Timeless apparel for the masses."));
-        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), of(greeting), empty(), empty());
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), of(greeting), empty(),
+                empty(), empty());
 
         messenger.updateSettings(messengerSettings);
         // end::setup-GreetingText[]
@@ -157,7 +158,8 @@ public class MessengerProfileTest {
         final PersistentMenu persistentMenu = PersistentMenu.create(true, of(Arrays.asList(callToActionA, callToActionB)),
                 LocalizedPersistentMenu.create(SupportedLocale.zh_CN, false, empty()));
 
-        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(), of(persistentMenu), empty());
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(), of(persistentMenu),
+                empty(), empty());
 
         messenger.updateSettings(messengerSettings);
         // end::setup-PersistentMenu[]
@@ -234,7 +236,7 @@ public class MessengerProfileTest {
         );
 
         final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
-                empty(), of(whitelistedDomains));
+                empty(), of(whitelistedDomains), empty());
 
         messenger.updateSettings(messengerSettings);
         // end::setup-WhitelistedDomains[]
@@ -268,12 +270,46 @@ public class MessengerProfileTest {
     }
 
     @Test
+    public void shouldSetupAccountLinkingUrl() throws Exception {
+        // tag::setup-AccountLinkingUrl[]
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
+                empty(), empty(), of(new URL("http://example.url")));
+
+        messenger.updateSettings(messengerSettings);
+        // end::setup-AccountLinkingUrl[]
+
+        //then
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "  \"account_linking_url\":\"http://example.url\"\n" +
+                "}";
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
+    public void shouldDeleteAccountLinkingUrl() throws Exception {
+        // tag::setup-DeleteAccountLinkingUrl[]
+        messenger.deleteSettings(MessengerSettingProperty.ACCOUNT_LINKING_URL);
+        // end::setup-DeleteAccountLinkingUrl[]
+
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "  \"fields\": [\n" +
+                "    \"account_linking_url\"\n" +
+                "  ]\n" +
+                "}";
+        verify(mockHttpClient).execute(eq(DELETE), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
     public void shouldHandleUpdateSuccessResponse() throws Exception {
         final HttpResponse successfulResponse = new HttpResponse(200, "{\"result\": \"success\"}");
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(successfulResponse);
 
         final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("test")),
-                empty(), empty(), empty());
+                empty(), empty(), empty(), empty());
         final SetupResponse setupResponse = messenger.updateSettings(messengerSettings);
 
         assertThat(setupResponse, is(notNullValue()));
@@ -295,7 +331,7 @@ public class MessengerProfileTest {
         MessengerApiException messengerApiException = null;
         try {
             final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("test")),
-                    empty(), empty(), empty());
+                    empty(), empty(), empty(), empty());
             messenger.updateSettings(messengerSettings);
         } catch (MessengerApiException e) {
             messengerApiException = e;
