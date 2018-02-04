@@ -19,6 +19,7 @@ import static org.mockito.Mockito.when;
 
 import com.github.messenger4j.Messenger;
 import com.github.messenger4j.common.WebviewHeightRatio;
+import com.github.messenger4j.common.WebviewShareButtonState;
 import com.github.messenger4j.exception.MessengerApiException;
 import com.github.messenger4j.send.MessagePayload;
 import com.github.messenger4j.send.MessageResponse;
@@ -49,7 +50,6 @@ import com.github.messenger4j.send.message.template.button.ShareButton;
 import com.github.messenger4j.send.message.template.button.UrlButton;
 import com.github.messenger4j.send.message.template.common.DefaultAction;
 import com.github.messenger4j.send.message.template.common.Element;
-import com.github.messenger4j.send.message.template.common.WebviewShareButtonState;
 import com.github.messenger4j.send.message.template.opengraph.OpenGraphObject;
 import com.github.messenger4j.send.message.template.receipt.Address;
 import com.github.messenger4j.send.message.template.receipt.Adjustment;

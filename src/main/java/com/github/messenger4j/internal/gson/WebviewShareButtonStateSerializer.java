@@ -1,6 +1,6 @@
 package com.github.messenger4j.internal.gson;
 
-import com.github.messenger4j.send.message.template.common.WebviewShareButtonState;
+import com.github.messenger4j.common.WebviewShareButtonState;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;

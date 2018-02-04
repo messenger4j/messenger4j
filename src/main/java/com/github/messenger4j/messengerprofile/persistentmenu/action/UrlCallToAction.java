@@ -3,7 +3,7 @@ package com.github.messenger4j.messengerprofile.persistentmenu.action;
 import static java.util.Optional.empty;
 
 import com.github.messenger4j.common.WebviewHeightRatio;
-import com.github.messenger4j.send.message.template.common.WebviewShareButtonState;
+import com.github.messenger4j.common.WebviewShareButtonState;
 import com.google.gson.annotations.SerializedName;
 import java.net.URL;
 import java.util.Optional;

@@ -4,6 +4,7 @@ import static com.github.messenger4j.send.message.template.button.Button.Type.WE
 import static java.util.Optional.empty;
 
 import com.github.messenger4j.common.WebviewHeightRatio;
+import com.github.messenger4j.common.WebviewShareButtonState;
 import com.github.messenger4j.send.message.template.button.Button;
 import com.google.gson.annotations.SerializedName;
 import java.net.URL;

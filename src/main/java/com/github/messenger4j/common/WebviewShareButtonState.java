@@ -1,4 +1,4 @@
-package com.github.messenger4j.send.message.template.common;
+package com.github.messenger4j.common;
 
 /**
  * @author Max Grabenhorst
