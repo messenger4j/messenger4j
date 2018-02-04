@@ -19,13 +19,4 @@ public final class LogOutButton extends Button {
         super(Type.ACCOUNT_UNLINK);
     }
 
-    @Override
-    public boolean isLogOutButton() {
-        return true;
-    }
-
-    @Override
-    public LogOutButton asLogOutButton() {
-        return this;
-    }
 }

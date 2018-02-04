@@ -54,16 +54,6 @@ public final class UrlButton extends Button {
         this.webviewShareButtonState = webviewShareButtonState;
     }
 
-    @Override
-    public boolean isUrlButton() {
-        return true;
-    }
-
-    @Override
-    public UrlButton asUrlButton() {
-        return this;
-    }
-
     public String title() {
         return title;
     }

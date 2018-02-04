@@ -25,16 +25,6 @@ public final class PostbackButton extends Button {
         this.payload = payload;
     }
 
-    @Override
-    public boolean isPostbackButton() {
-        return true;
-    }
-
-    @Override
-    public PostbackButton asPostbackButton() {
-        return this;
-    }
-
     public String title() {
         return title;
     }

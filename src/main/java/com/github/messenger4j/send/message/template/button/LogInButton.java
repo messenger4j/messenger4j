@@ -24,16 +24,6 @@ public final class LogInButton extends Button {
         this.url = url;
     }
 
-    @Override
-    public boolean isLogInButton() {
-        return true;
-    }
-
-    @Override
-    public LogInButton asLogInButton() {
-        return this;
-    }
-
     public URL url() {
         return url;
     }

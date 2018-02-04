@@ -31,16 +31,6 @@ public final class ShareButton extends Button {
         this.shareContents = shareContents;
     }
 
-    @Override
-    public boolean isShareButton() {
-        return true;
-    }
-
-    @Override
-    public ShareButton asShareButton() {
-        return this;
-    }
-
     public Optional<GenericTemplate> shareContents() {
         return shareContents;
     }

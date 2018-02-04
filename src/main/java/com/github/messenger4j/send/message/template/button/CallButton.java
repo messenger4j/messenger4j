@@ -25,16 +25,6 @@ public final class CallButton extends Button {
         this.payload = payload;
     }
 
-    @Override
-    public boolean isCallButton() {
-        return true;
-    }
-
-    @Override
-    public CallButton asCallButton() {
-        return this;
-    }
-
     public String title() {
         return title;
     }
