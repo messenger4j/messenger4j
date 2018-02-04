@@ -22,21 +22,33 @@ git checkout $SOURCE_BRANCH || {
   exit 2
 }
 
-echo "= Set release version $RELEASE_VERSION ="
-mvn -q -DnewVersion=$RELEASE_VERSION versions:set versions:commit || {
-  echo "Unable to set release version"
+echo "= Generate README.adoc ="
+./generate_readme.sh || {
+  echo "Unable to generate README.adoc"
   exit 2
 }
 
-echo "= Execute build and deploy artifact ="
-mvn clean deploy -P release,ossrh || {
-  echo "Build and deploy failed"
+echo "= Set release version $RELEASE_VERSION (README) ="
+sed -i "" "s/::m4j-version-placeholder::/${RELEASE_VERSION}/g" ../README.adoc || {
+  echo "Unable to set release version (readme)"
+  exit 2
+}
+
+echo "= Set release version $RELEASE_VERSION (POM) ="
+mvn -q -DnewVersion=$RELEASE_VERSION versions:set versions:commit -f ../pom.xml || {
+  echo "Unable to set release version (pom)"
   exit 2
 }
 
 echo "= Commit changes ="
 git commit -am "Set release version $RELEASE_VERSION" || {
   echo "Unable to commit changes"
+  exit 2
+}
+
+echo "= Execute build and deploy artifact ="
+mvn clean deploy -P release,ossrh -f ../pom.xml || {
+  echo "Build and deploy failed"
   exit 2
 }
 
@@ -63,7 +75,7 @@ git checkout $SOURCE_BRANCH || {
   exit 2
 }
 
-mvn -q -DnewVersion=$NEXT_DEV_VERSION versions:set versions:commit || {
+mvn -q -DnewVersion=$NEXT_DEV_VERSION versions:set versions:commit -f ../pom.xml || {
   echo "Unable to set next development version"
   exit 2
 }

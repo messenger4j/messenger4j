@@ -1,5 +1,5 @@
 :sourcedir: src/test/java/com/github/messenger4j/test/integration
-:m4j-version: 1.0.0-M2
+:m4j-version: ::m4j-version-placeholder::
 :toc: macro
 
 = messenger4j
