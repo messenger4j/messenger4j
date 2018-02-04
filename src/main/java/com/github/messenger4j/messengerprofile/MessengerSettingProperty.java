@@ -12,5 +12,6 @@ public enum MessengerSettingProperty {
     PERSISTENT_MENU,
     GREETING,
     WHITELISTED_DOMAINS,
-    ACCOUNT_LINKING_URL
+    ACCOUNT_LINKING_URL,
+    HOME_URL
 }

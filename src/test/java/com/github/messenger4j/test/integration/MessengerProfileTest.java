@@ -26,6 +26,7 @@ import com.github.messenger4j.messengerprofile.SetupResponse;
 import com.github.messenger4j.messengerprofile.getstarted.StartButton;
 import com.github.messenger4j.messengerprofile.greeting.Greeting;
 import com.github.messenger4j.messengerprofile.greeting.LocalizedGreeting;
+import com.github.messenger4j.messengerprofile.homeurl.HomeUrl;
 import com.github.messenger4j.messengerprofile.persistentmenu.LocalizedPersistentMenu;
 import com.github.messenger4j.messengerprofile.persistentmenu.PersistentMenu;
 import com.github.messenger4j.messengerprofile.persistentmenu.action.NestedCallToAction;
@@ -66,7 +67,7 @@ public class MessengerProfileTest {
     public void shouldSetupStartButton() throws Exception {
         // tag::setup-StartButton[]
         final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("Button pressed")),
-                empty(), empty(), empty(), empty());
+                empty(), empty(), empty(), empty(), empty());
 
         messenger.updateSettings(messengerSettings);
         // end::setup-StartButton[]
@@ -103,7 +104,7 @@ public class MessengerProfileTest {
         final Greeting greeting = Greeting.create("Hello!", LocalizedGreeting.create(SupportedLocale.en_US,
                 "Timeless apparel for the masses."));
         final MessengerSettings messengerSettings = MessengerSettings.create(empty(), of(greeting), empty(),
-                empty(), empty());
+                empty(), empty(), empty());
 
         messenger.updateSettings(messengerSettings);
         // end::setup-GreetingText[]
@@ -159,7 +160,7 @@ public class MessengerProfileTest {
                 LocalizedPersistentMenu.create(SupportedLocale.zh_CN, false, empty()));
 
         final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(), of(persistentMenu),
-                empty(), empty());
+                empty(), empty(), empty());
 
         messenger.updateSettings(messengerSettings);
         // end::setup-PersistentMenu[]
@@ -236,7 +237,7 @@ public class MessengerProfileTest {
         );
 
         final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
-                empty(), of(whitelistedDomains), empty());
+                empty(), of(whitelistedDomains), empty(), empty());
 
         messenger.updateSettings(messengerSettings);
         // end::setup-WhitelistedDomains[]
@@ -273,7 +274,7 @@ public class MessengerProfileTest {
     public void shouldSetupAccountLinkingUrl() throws Exception {
         // tag::setup-AccountLinkingUrl[]
         final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
-                empty(), empty(), of(new URL("http://example.url")));
+                empty(), empty(), of(new URL("http://example.url")), empty());
 
         messenger.updateSettings(messengerSettings);
         // end::setup-AccountLinkingUrl[]
@@ -304,12 +305,53 @@ public class MessengerProfileTest {
     }
 
     @Test
+    public void shouldSetupHomeUrl() throws Exception {
+        // tag::setup-HomeUrl[]
+        final HomeUrl homeUrl = HomeUrl.create(new URL("http://example.url"), true, of(WebviewShareButtonState.HIDE));
+
+        final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
+                empty(), empty(), empty(), of(homeUrl));
+
+        messenger.updateSettings(messengerSettings);
+        // end::setup-HomeUrl[]
+
+        //then
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "  \"home_url\" : {\n" +
+                "     \"url\": \"http://example.url\",\n" +
+                "     \"webview_height_ratio\": \"tall\",\n" +
+                "     \"webview_share_button\": \"hide\",\n" +
+                "     \"in_test\":true\n" +
+                "  }\n" +
+                "}";
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
+    public void shouldDeleteHomeUrl() throws Exception {
+        // tag::setup-DeleteHomeUrl[]
+        messenger.deleteSettings(MessengerSettingProperty.HOME_URL);
+        // end::setup-DeleteHomeUrl[]
+
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "  \"fields\": [\n" +
+                "    \"home_url\"\n" +
+                "  ]\n" +
+                "}";
+        verify(mockHttpClient).execute(eq(DELETE), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
     public void shouldHandleUpdateSuccessResponse() throws Exception {
         final HttpResponse successfulResponse = new HttpResponse(200, "{\"result\": \"success\"}");
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(successfulResponse);
 
         final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("test")),
-                empty(), empty(), empty(), empty());
+                empty(), empty(), empty(), empty(), empty());
         final SetupResponse setupResponse = messenger.updateSettings(messengerSettings);
 
         assertThat(setupResponse, is(notNullValue()));
@@ -331,7 +373,7 @@ public class MessengerProfileTest {
         MessengerApiException messengerApiException = null;
         try {
             final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("test")),
-                    empty(), empty(), empty(), empty());
+                    empty(), empty(), empty(), empty(), empty());
             messenger.updateSettings(messengerSettings);
         } catch (MessengerApiException e) {
             messengerApiException = e;

@@ -26,6 +26,8 @@ final class MessengerSettingsSerializer implements JsonSerializer<MessengerSetti
                 messengerSettingsObject.add("whitelisted_domains", context.serialize(whitelistedDomains)));
         src.accountLinkingUrl().ifPresent(accountLinkingUrl ->
                 messengerSettingsObject.add("account_linking_url", context.serialize(accountLinkingUrl)));
+        src.homeUrl().ifPresent(homeUrl ->
+                messengerSettingsObject.add("home_url", context.serialize(homeUrl)));
         return messengerSettingsObject;
     }
 }

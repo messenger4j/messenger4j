@@ -3,6 +3,7 @@ package com.github.messenger4j.messengerprofile;
 import com.github.messenger4j.internal.Lists;
 import com.github.messenger4j.messengerprofile.getstarted.StartButton;
 import com.github.messenger4j.messengerprofile.greeting.Greeting;
+import com.github.messenger4j.messengerprofile.homeurl.HomeUrl;
 import com.github.messenger4j.messengerprofile.persistentmenu.PersistentMenu;
 import java.net.URL;
 import java.util.List;
@@ -24,25 +25,29 @@ public final class MessengerSettings {
     private final Optional<PersistentMenu> persistentMenu;
     private final Optional<List<URL>> whitelistedDomains;
     private final Optional<URL> accountLinkingUrl;
+    private final Optional<HomeUrl> homeUrl;
 
     public static MessengerSettings create(@NonNull Optional<StartButton> startButton,
                                            @NonNull Optional<Greeting> greeting,
                                            @NonNull Optional<PersistentMenu> persistentMenu,
                                            @NonNull Optional<List<URL>> whitelistedDomains,
-                                           @NonNull Optional<URL> accountLinkingUrl) {
-        return new MessengerSettings(startButton, greeting, persistentMenu, whitelistedDomains, accountLinkingUrl);
+                                           @NonNull Optional<URL> accountLinkingUrl,
+                                           @NonNull Optional<HomeUrl> homeUrl) {
+        return new MessengerSettings(startButton, greeting, persistentMenu, whitelistedDomains, accountLinkingUrl, homeUrl);
     }
 
     private MessengerSettings(Optional<StartButton> startButton,
                               Optional<Greeting> greeting,
                               Optional<PersistentMenu> persistentMenu,
                               Optional<List<URL>> whitelistedDomains,
-                              Optional<URL> accountLinkingUrl) {
+                              Optional<URL> accountLinkingUrl,
+                              Optional<HomeUrl> homeUrl) {
         this.startButton = startButton;
         this.greeting = greeting;
         this.persistentMenu = persistentMenu;
         this.whitelistedDomains = whitelistedDomains.map(Lists::immutableList);
         this.accountLinkingUrl = accountLinkingUrl;
+        this.homeUrl = homeUrl;
     }
 
     public Optional<StartButton> startButton() {
@@ -63,5 +68,9 @@ public final class MessengerSettings {
 
     public Optional<URL> accountLinkingUrl() {
         return accountLinkingUrl;
+    }
+
+    public Optional<HomeUrl> homeUrl() {
+        return homeUrl;
     }
 }

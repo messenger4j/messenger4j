@@ -248,6 +248,18 @@ include::{sourcedir}/MessengerProfileTest.java[tags=setup-AccountLinkingUrl]
 include::{sourcedir}/MessengerProfileTest.java[tags=setup-DeleteAccountLinkingUrl]
 ----
 
+==== set / update home url
+[source,java,indent=0]
+----
+include::{sourcedir}/MessengerProfileTest.java[tags=setup-HomeUrl]
+----
+
+==== delete home url
+[source,java,indent=0]
+----
+include::{sourcedir}/MessengerProfileTest.java[tags=setup-DeleteHomeUrl]
+----
+
 == Requirements
 * Java 8+
 * slf4j
