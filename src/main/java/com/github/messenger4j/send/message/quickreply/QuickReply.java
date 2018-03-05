@@ -26,6 +26,8 @@ public abstract class QuickReply {
      */
     public enum ContentType {
         TEXT,
-        LOCATION
+        LOCATION,
+        USER_EMAIL,
+        USER_PHONE_NUMBER
     }
 }

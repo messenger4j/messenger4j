@@ -33,6 +33,8 @@ import com.github.messenger4j.send.message.TextMessage;
 import com.github.messenger4j.send.message.quickreply.LocationQuickReply;
 import com.github.messenger4j.send.message.quickreply.QuickReply;
 import com.github.messenger4j.send.message.quickreply.TextQuickReply;
+import com.github.messenger4j.send.message.quickreply.UserEmailQuickReply;
+import com.github.messenger4j.send.message.quickreply.UserPhoneNumberQuickReply;
 import com.github.messenger4j.send.message.richmedia.ReusableRichMediaAsset;
 import com.github.messenger4j.send.message.richmedia.UrlRichMediaAsset;
 import com.github.messenger4j.send.message.template.ButtonTemplate;
@@ -262,6 +264,44 @@ public class SendTest {
                 "        \"content_type\":\"text\",\n" +
                 "        \"title\":\"Something Else\",\n" +
                 "        \"payload\":\"<POSTBACK_PAYLOAD>\"\n" +
+                "      }\n" +
+                "    ]\n" +
+                "  }\n" +
+                "}";
+        verify(mockHttpClient).execute(eq(POST), endsWith(PAGE_ACCESS_TOKEN), payloadCaptor.capture());
+        JSONAssert.assertEquals(expectedJsonBody, payloadCaptor.getValue(), true);
+    }
+
+    @Test
+    public void shouldSendTextMessageWithEmailAndPhoneNumberQuickReplies() throws Exception {
+        final IdRecipient recipient = IdRecipient.create("<PSID>");
+
+        final String text = "Please send us your email or phone number.";
+
+        final UserEmailQuickReply userEmailQuickReply = UserEmailQuickReply.create();
+        final UserPhoneNumberQuickReply userPhoneNumberQuickReply = UserPhoneNumberQuickReply.create();
+
+        final List<QuickReply> quickReplies = Arrays.asList(userEmailQuickReply, userPhoneNumberQuickReply);
+
+        final TextMessage message = TextMessage.create(text, of(quickReplies), empty());
+        final MessagePayload payload = MessagePayload.create(recipient, MessagingType.RESPONSE, message);
+
+        messenger.send(payload);
+
+        final ArgumentCaptor<String> payloadCaptor = ArgumentCaptor.forClass(String.class);
+        final String expectedJsonBody = "{\n" +
+                "  \"recipient\":{\n" +
+                "    \"id\":\"<PSID>\"\n" +
+                "  },\n" +
+                "  \"messaging_type\":\"RESPONSE\"," +
+                "  \"message\":{\n" +
+                "    \"text\": \"Please send us your email or phone number.\",\n" +
+                "    \"quick_replies\":[\n" +
+                "      {\n" +
+                "        \"content_type\":\"user_email\"\n" +
+                "      },\n" +
+                "      {\n" +
+                "        \"content_type\":\"user_phone_number\"\n" +
                 "      }\n" +
                 "    ]\n" +
                 "  }\n" +
