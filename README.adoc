@@ -91,18 +91,42 @@ dependencies {
 
 == Reference
 === Instantiation
-==== with default HTTP-Client (okHttp)
+==== with default Latest API Version, default User Profile Fields, default HTTP-Client (okHttp)
 [source,java,indent=0]
 ----
         final Messenger messenger = Messenger.create("PAGE_ACCESS_TOKEN", "APP_SECRET", "VERIFY_TOKEN");
 ----
 
-==== with custom HTTP-Client
+==== with custom API Version and default User Profile Fields, default HTTP-Client (okHttp)
+[source,java,indent=0]
+----
+        final String version = "v2.6";
+        final Messenger messenger = Messenger.create("PAGE_ACCESS_TOKEN", "APP_SECRET",
+                "VERIFY_TOKEN", Optional.of(version));
+----
+
+==== with custom API Version (validating its correctness at date of this release) and default User Profile Fields, default HTTP-Client (okHttp)
+[source,java,indent=0]
+----
+        final String version = Messenger.Version.getVersionFromString(version).getVersionUrl();
+        final Messenger messenger = Messenger.create("PAGE_ACCESS_TOKEN", "APP_SECRET",
+                "VERIFY_TOKEN", Optional.of(version));
+----
+
+==== with custom User Profile Fields and default API Version and HTTP-Client (okHttp)
+[source,java,indent=0]
+----
+        final String userProfileFields="first_name,last_name"
+        final Messenger messenger = Messenger.create("PAGE_ACCESS_TOKEN", "APP_SECRET",
+                "VERIFY_TOKEN", Optional.empty(), Optional.of(userProfileFields));
+----
+
+==== with custom HTTP-Client and default API Version and User Profile Fields
 [source,java,indent=0]
 ----
         final MyCustomMessengerHttpClient customHttpClient = new MyCustomMessengerHttpClient();
         final Messenger messenger = Messenger.create("PAGE_ACCESS_TOKEN", "APP_SECRET",
-                "VERIFY_TOKEN", Optional.of(customHttpClient));
+                "VERIFY_TOKEN", Optional.empty(), Optional.empty(), Optional.of(customHttpClient));
 ----
 
 === Webhook / Receive Events
@@ -489,6 +513,13 @@ In addition to the event types described above the following events are also sup
 [source,java,indent=0]
 ----
         final UserProfile userProfile = messenger.queryUserProfile(userId);
+----
+
+==== query user information by user ID with Custom User Profile Fields
+[source,java,indent=0]
+----
+        final String userProfileFields = "first_name,last_name"
+        final UserProfile userProfile = messenger.queryUserProfile(userId, userProfileFields);
 ----
 
 === Messenger Profile API

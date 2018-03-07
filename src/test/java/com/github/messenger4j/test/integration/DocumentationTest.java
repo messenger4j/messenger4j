@@ -54,7 +54,7 @@ public class DocumentationTest {
         // tag::doc-CreateCustomHttp[]
         final MyCustomMessengerHttpClient customHttpClient = new MyCustomMessengerHttpClient();
         final Messenger messenger = Messenger.create("PAGE_ACCESS_TOKEN", "APP_SECRET",
-                "VERIFY_TOKEN", Optional.of(customHttpClient));
+                "VERIFY_TOKEN", Optional.empty(), Optional.empty(), Optional.of(customHttpClient));
         // end::doc-CreateCustomHttp[]
 
         assertThat(messenger, is(notNullValue()));

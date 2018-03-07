@@ -1,10 +1,11 @@
 package com.github.messenger4j.userprofile;
 
 import com.github.messenger4j.webhook.event.common.Referral;
-import java.util.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.ToString;
+
+import java.util.Optional;
 
 /**
  * @author Max Grabenhorst
@@ -14,65 +15,67 @@ import lombok.ToString;
 @EqualsAndHashCode
 public final class UserProfile {
 
-    private final String firstName;
-    private final String lastName;
-    private final String profilePicture;
-    private final String locale;
-    private final float timezoneOffset;
-    private final Gender gender;
-    private final boolean isPaymentEnabled;
-    private final Optional<Referral> lastAdReferral;
+	/**
+	 * @since 1.0.0
+	 */
+	public enum Gender {
+		MALE,
+		FEMALE
+	}
 
-    public UserProfile(@NonNull String firstName, @NonNull String lastName, @NonNull String profilePicture,
-                       @NonNull String locale, float timezoneOffset, @NonNull Gender gender, boolean isPaymentEnabled,
-                       @NonNull Optional<Referral> lastAdReferral) {
+	private final Optional<String> firstName;
+	private final Optional<String> lastName;
+	private final Optional<String> profilePicture;
+	private final Optional<String> locale;
+	private final Optional<Float> timezoneOffset;
+	private final Optional<Gender> gender;
+	private final Optional<Boolean> isPaymentEnabled;
+	private final Optional<Referral> lastAdReferral;
 
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.profilePicture = profilePicture;
-        this.locale = locale;
-        this.timezoneOffset = timezoneOffset;
-        this.gender = gender;
-        this.isPaymentEnabled = isPaymentEnabled;
-        this.lastAdReferral = lastAdReferral;
-    }
+	public UserProfile(@NonNull Optional<String> firstName, @NonNull Optional<String> lastName, @NonNull Optional<String> profilePicture,
+			@NonNull Optional<String> locale, @NonNull Optional<Float> timezoneOffset, @NonNull Optional<Gender> gender,
+			@NonNull Optional<Boolean> isPaymentEnabled, @NonNull Optional<Referral> lastAdReferral) {
 
-    public String firstName() {
-        return firstName;
-    }
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.profilePicture = profilePicture;
+		this.locale = locale;
+		this.timezoneOffset = timezoneOffset;
+		this.gender = gender;
+		this.isPaymentEnabled = isPaymentEnabled;
+		this.lastAdReferral = lastAdReferral;
+	}
 
-    public String lastName() {
-        return lastName;
-    }
+	public Optional<String> firstName() {
+		return firstName;
+	}
 
-    public String profilePicture() {
-        return profilePicture;
-    }
+	public Optional<String> lastName() {
+		return lastName;
+	}
 
-    public String locale() {
-        return locale;
-    }
+	public Optional<String> profilePicture() {
+		return profilePicture;
+	}
 
-    public float timezoneOffset() {
-        return timezoneOffset;
-    }
+	public Optional<String> locale() {
+		return locale;
+	}
 
-    public Gender gender() {
-        return gender;
-    }
+	public Optional<Float> timezoneOffset() {
+		return timezoneOffset;
+	}
 
-    public boolean isPaymentEnabled() {
-        return isPaymentEnabled;
-    }
+	public Optional<Gender> gender() {
+		return gender;
+	}
 
-    public Optional<Referral> lastAdReferral() {
-        return lastAdReferral;
-    }
+	public Optional<Boolean> isPaymentEnabled() {
+		return isPaymentEnabled;
+	}
 
-    /**
-     * @since 1.0.0
-     */
-    public enum Gender {
-        MALE, FEMALE
-    }
+	public Optional<Referral> lastAdReferral() {
+		return lastAdReferral;
+	}
+
 }
