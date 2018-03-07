@@ -25,8 +25,8 @@ public final class UserProfile {
 	private final Optional<Referral> lastAdReferral;
 
 	public UserProfile(@NonNull Optional<String> firstName, @NonNull Optional<String> lastName, @NonNull Optional<String> profilePicture,
-			@NonNull Optional<String> locale, Optional<Float> timezoneOffset, @NonNull Optional<Gender> gender, Optional<Boolean> isPaymentEnabled,
-			@NonNull Optional<Referral> lastAdReferral) {
+			@NonNull Optional<String> locale, @NonNull Optional<Float> timezoneOffset, @NonNull Optional<Gender> gender,
+			@NonNull Optional<Boolean> isPaymentEnabled, @NonNull Optional<Referral> lastAdReferral) {
 
 		this.firstName = firstName;
 		this.lastName = lastName;
