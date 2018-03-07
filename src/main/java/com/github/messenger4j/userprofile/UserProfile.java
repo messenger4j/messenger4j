@@ -15,6 +15,14 @@ import java.util.Optional;
 @EqualsAndHashCode
 public final class UserProfile {
 
+	/**
+	 * @since 1.0.0
+	 */
+	public enum Gender {
+		MALE,
+		FEMALE
+	}
+
 	private final Optional<String> firstName;
 	private final Optional<String> lastName;
 	private final Optional<String> profilePicture;
@@ -70,11 +78,4 @@ public final class UserProfile {
 		return lastAdReferral;
 	}
 
-	/**
-	 * @since 1.0.0
-	 */
-	public enum Gender {
-		MALE,
-		FEMALE
-	}
 }
