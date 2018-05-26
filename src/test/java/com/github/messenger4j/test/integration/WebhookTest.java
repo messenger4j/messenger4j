@@ -13,7 +13,17 @@ import static org.mockito.Mockito.verify;
 import com.github.messenger4j.Messenger;
 import com.github.messenger4j.exception.MessengerVerificationException;
 import com.github.messenger4j.webhook.Event;
-import com.github.messenger4j.webhook.event.*;
+import com.github.messenger4j.webhook.event.AccountLinkingEvent;
+import com.github.messenger4j.webhook.event.AttachmentMessageEvent;
+import com.github.messenger4j.webhook.event.InstantGameEvent;
+import com.github.messenger4j.webhook.event.MessageDeliveredEvent;
+import com.github.messenger4j.webhook.event.MessageEchoEvent;
+import com.github.messenger4j.webhook.event.MessageReadEvent;
+import com.github.messenger4j.webhook.event.OptInEvent;
+import com.github.messenger4j.webhook.event.PostbackEvent;
+import com.github.messenger4j.webhook.event.QuickReplyMessageEvent;
+import com.github.messenger4j.webhook.event.ReferralEvent;
+import com.github.messenger4j.webhook.event.TextMessageEvent;
 import com.github.messenger4j.webhook.event.attachment.Attachment;
 import com.github.messenger4j.webhook.event.attachment.RichMediaAttachment;
 import com.github.messenger4j.webhook.event.common.PriorMessage;
@@ -908,7 +918,7 @@ public class WebhookTest {
                 "                \"id\": \"USER_ID\"\n" +
                 "            },\n" +
                 "            \"recipient\": {\n" +
-                "                \"id\": \"\"\n" +
+                "                \"id\": \"PAGE_ID\"\n" +
                 "            },\n" +
                 "            \"timestamp\": 1458668856463,\n" +
                 "            \"read\": {\n" +

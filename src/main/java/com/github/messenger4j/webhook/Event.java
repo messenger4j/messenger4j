@@ -1,7 +1,17 @@
 package com.github.messenger4j.webhook;
 
-import com.github.messenger4j.webhook.event.*;
-
+import com.github.messenger4j.webhook.event.AccountLinkingEvent;
+import com.github.messenger4j.webhook.event.AttachmentMessageEvent;
+import com.github.messenger4j.webhook.event.BaseEvent;
+import com.github.messenger4j.webhook.event.MessageDeliveredEvent;
+import com.github.messenger4j.webhook.event.MessageEchoEvent;
+import com.github.messenger4j.webhook.event.MessageReadEvent;
+import com.github.messenger4j.webhook.event.OptInEvent;
+import com.github.messenger4j.webhook.event.PostbackEvent;
+import com.github.messenger4j.webhook.event.QuickReplyMessageEvent;
+import com.github.messenger4j.webhook.event.ReferralEvent;
+import com.github.messenger4j.webhook.event.TextMessageEvent;
+import com.github.messenger4j.webhook.event.InstantGameEvent;
 import java.time.Instant;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
