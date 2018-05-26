@@ -138,7 +138,13 @@ public final class GsonUtil {
         PROP_NLP("nlp"),
         PROP_ENTITIES("entities"),
         PROP_PRIOR_MESSAGE("prior_message"),
-        PROP_IDENTIFIER("identifier");
+        PROP_IDENTIFIER("identifier"),
+        PROP_GAME_PLAY("game_play"),
+        PROP_GAME_ID("game_id"),
+        PROP_PLAYER_ID("player_id"),
+        PROP_CONTEXT_TYPE("context_type"),
+        PROP_CONTEXT_ID("context_id"),
+        PROP_SCORE("score");
 
         private final String value;
 
