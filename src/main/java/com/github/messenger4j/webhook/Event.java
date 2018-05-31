@@ -11,6 +11,7 @@ import com.github.messenger4j.webhook.event.PostbackEvent;
 import com.github.messenger4j.webhook.event.QuickReplyMessageEvent;
 import com.github.messenger4j.webhook.event.ReferralEvent;
 import com.github.messenger4j.webhook.event.TextMessageEvent;
+import com.github.messenger4j.webhook.event.InstantGameEvent;
 import java.time.Instant;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -151,4 +152,16 @@ public final class Event {
         }
         return (ReferralEvent) baseEvent;
     }
+
+    public boolean isInstantGameEvent() {
+        return baseEvent instanceof InstantGameEvent;
+    }
+
+    public InstantGameEvent asInstantGameEvent() {
+        if (!isInstantGameEvent()) {
+            throw new UnsupportedOperationException("not a InstantGameEvent");
+        }
+        return (InstantGameEvent) baseEvent;
+    }
+
 }

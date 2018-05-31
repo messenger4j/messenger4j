@@ -30,7 +30,8 @@ public final class EventFactory {
             new MessageEchoEventFactory(),
             new MessageDeliveredEventFactory(),
             new MessageReadEventFactory(),
-            new AccountLinkingEventFactory()
+            new AccountLinkingEventFactory(),
+            new InstantGameEventFactory()
     );
 
     private EventFactory() {

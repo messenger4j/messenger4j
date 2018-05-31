@@ -15,6 +15,7 @@ import com.github.messenger4j.exception.MessengerVerificationException;
 import com.github.messenger4j.webhook.Event;
 import com.github.messenger4j.webhook.event.AccountLinkingEvent;
 import com.github.messenger4j.webhook.event.AttachmentMessageEvent;
+import com.github.messenger4j.webhook.event.InstantGameEvent;
 import com.github.messenger4j.webhook.event.MessageDeliveredEvent;
 import com.github.messenger4j.webhook.event.MessageEchoEvent;
 import com.github.messenger4j.webhook.event.MessageReadEvent;
@@ -1066,6 +1067,56 @@ public class WebhookTest {
         assertThat(event.isAttachmentMessageEvent(), is(false));
         assertThat(event.isQuickReplyMessageEvent(), is(false));
         assertThat(event.isTextMessageEvent(), is(false));
+    }
+
+    @Test
+    public void shouldHandleInstantGameEvent() throws Exception {
+        //given
+        final String payload = "{\n" +
+                "   \"object\":\"page\",\n" +
+                "   \"entry\":[\n" +
+                "      {\n" +
+                "         \"id\":\"1717527131834678\",\n" +
+                "         \"time\":\"1458692752478\",\n" +
+                "         \"messaging\":[\n" +
+                "            {\n" +
+                "               \"sender\":{\n" +
+                "                  \"id\":\"USER_ID\"\n" +
+                "               },\n" +
+                "               \"recipient\":{\n" +
+                "                  \"id\":\"PAGE_ID\"\n" +
+                "               },\n" +
+                "               \"timestamp\":\"1458668856463\",\n" +
+                "               \"game_play\":{\n" +
+                "                  \"game_id\":\"<GAME-APP-ID>\",\n" +
+                "                  \"player_id\":\"<PLAYER-ID>\",\n" +
+                "                  \"context_type\":\"SOLO\",\n" +
+                "                  \"context_id\": 666666, \n" +
+                "                  \"payload\":\"PAYLOAD\"\n" +
+                "               }\n" +
+                "            }\n" +
+                "         ]\n" +
+                "      }\n" +
+                "   ]\n" +
+                "}";
+
+        //when
+        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
+
+        //then
+        final ArgumentCaptor<Event> eventCaptor = ArgumentCaptor.forClass(Event.class);
+        verify(mockEventHandler).accept(eventCaptor.capture());
+        final Event event = eventCaptor.getValue();
+
+        final InstantGameEvent messageReadEvent = event.asInstantGameEvent();
+        assertThat(messageReadEvent.senderId(), equalTo("USER_ID"));
+        assertThat(messageReadEvent.recipientId(), equalTo("PAGE_ID"));
+        assertThat(messageReadEvent.timestamp(), equalTo(Instant.ofEpochMilli(1458668856463L)));
+        assertThat(messageReadEvent.gameId(), equalTo("<GAME-APP-ID>"));
+        assertThat(messageReadEvent.playerId(), equalTo("<PLAYER-ID>"));
+        assertThat(messageReadEvent.contextType(), equalTo("SOLO"));
+        assertThat(messageReadEvent.contextId(), equalTo(of("666666")));
+        assertThat(messageReadEvent.payload(), equalTo(of("PAYLOAD")));
     }
 
     @Test(expected = IllegalArgumentException.class)
