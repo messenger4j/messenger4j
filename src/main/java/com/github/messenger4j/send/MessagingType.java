@@ -15,8 +15,5 @@ public enum MessagingType {
     UPDATE,
 
     @SerializedName("MESSAGE_TAG")
-    MESSAGE_TAG,
-
-    @SerializedName("NON_PROMOTIONAL_SUBSCRIPTION")
-    NON_PROMOTIONAL_SUBSCRIPTION
+    MESSAGE_TAG
 }

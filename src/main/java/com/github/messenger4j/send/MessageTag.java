@@ -8,6 +8,15 @@ import com.google.gson.annotations.SerializedName;
  */
 public enum MessageTag {
 
+    @SerializedName("COMMUNITY_ALERT")
+    COMMUNITY_ALERT,
+
+    @SerializedName("CONFIRMED_EVENT_REMINDER")
+    CONFIRMED_EVENT_REMINDER,
+
+    @SerializedName("NON_PROMOTIONAL_SUBSCRIPTION")
+    NON_PROMOTIONAL_SUBSCRIPTION,
+
     @SerializedName("PAIRING_UPDATE")
     PAIRING_UPDATE,
 
