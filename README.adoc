@@ -1,5 +1,5 @@
 :sourcedir: src/test/java/com/github/messenger4j/test/integration
-:m4j-version: 1.0.0-M3
+:m4j-version: 1.0.0
 :toc: macro
 
 = messenger4j
@@ -8,6 +8,8 @@ image:https://travis-ci.org/messenger4j/messenger4j.svg?branch=master[Build Stat
 image:https://api.codacy.com/project/badge/Grade/b26d8f1fe4794b89b2ba439f35ac2af4[Codacy Badge,link=https://www.codacy.com/app/max_11/messenger4j?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=messenger4j/messenger4j&amp;utm_campaign=Badge_Grade]
 image:https://coveralls.io/repos/github/messenger4j/messenger4j/badge.svg[Coverage Status,link=https://coveralls.io/github/messenger4j/messenger4j]
 image:https://img.shields.io/badge/license-MIT-blue.svg[License Badge, link=LICENSE]
+
+[red]*This project is currently NOT MAINTAINED due to lack of time, sorry.*
 
 *A Java library for building Chatbots on the Facebook Messenger Platform.*
 
