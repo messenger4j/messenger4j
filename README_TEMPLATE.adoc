@@ -9,6 +9,8 @@ image:https://api.codacy.com/project/badge/Grade/b26d8f1fe4794b89b2ba439f35ac2af
 image:https://coveralls.io/repos/github/messenger4j/messenger4j/badge.svg[Coverage Status,link=https://coveralls.io/github/messenger4j/messenger4j]
 image:https://img.shields.io/badge/license-MIT-blue.svg[License Badge, link=LICENSE]
 
+[red]*This project is currently NOT MAINTAINED due to lack of time, sorry.*
+
 *A Java library for building Chatbots on the Facebook Messenger Platform.*
 
 Using messenger4j is easy.
