@@ -4,24 +4,39 @@ import static java.util.Optional.of;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import com.github.messenger4j.Messenger;
 import com.github.messenger4j.exception.MessengerApiException;
 import com.github.messenger4j.exception.MessengerIOException;
+import com.github.messenger4j.internal.gson.GsonUtil;
 import com.github.messenger4j.send.MessagePayload;
 import com.github.messenger4j.send.MessagingType;
 import com.github.messenger4j.send.message.TextMessage;
 import com.github.messenger4j.spi.MessengerHttpClient;
 import com.github.messenger4j.webhook.event.AttachmentMessageEvent;
+import com.github.messenger4j.webhook.event.BaseEvent;
+import com.github.messenger4j.webhook.event.PostbackEvent;
 import com.github.messenger4j.webhook.event.TextMessageEvent;
 import com.github.messenger4j.webhook.event.attachment.Attachment;
 import com.github.messenger4j.webhook.event.attachment.LocationAttachment;
 import com.github.messenger4j.webhook.event.attachment.RichMediaAttachment;
+import com.github.messenger4j.webhook.factory.BaseEventFactory;
+import com.github.messenger4j.webhook.factory.EventFactory;
+import com.google.gson.JsonObject;
+
 import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.Optional;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
+
+import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
@@ -202,5 +217,71 @@ public class DocumentationTest {
             }
         });
         // end::doc-EchoExample[]
+    }
+    
+    @ToString(callSuper = true)
+    @EqualsAndHashCode(callSuper = true)
+    public static class CustomEvent extends BaseEvent {
+    	
+    	@Getter
+    	@Accessors(fluent=true)
+    	private String custom;
+
+		CustomEvent(String custom) {
+			super(null, null, null);
+			this.custom = custom;
+		}
+    	
+    }
+    
+    public static class CustomEventFactory implements BaseEventFactory<CustomEvent> {
+
+		@Override
+		public boolean isResponsible(JsonObject messagingEvent) {
+			return messagingEvent.has("custom");
+		}
+
+		@Override
+		public CustomEvent createEventFromJson(JsonObject messagingEvent) {
+			return new CustomEvent(messagingEvent.get("custom").getAsString());
+		}
+    	
+    }
+    
+    @Test
+    public void shouldAllowCustomEventFactory() throws Exception{
+        final Messenger messenger = Messenger.create("test", "test", "test");
+
+        // tag::doc-ReceiveEventsText[]
+        final String payload = "{\n" +
+                "  \"object\": \"page\",\n" +
+                "  \"entry\": [{\n" +
+                "    \"id\": \"1717527131834678\",\n" +
+                "    \"time\": 1475942721780,\n" +
+                "    \"messaging\": [{\n" +
+                "      \"custom\": \"test\""+
+                "    }]\n" +
+                "  }]\n" +
+                "}";
+        
+        CustomEventFactory customEventFactory = new CustomEventFactory();
+        EventFactory.regiterBaseEventFactory(customEventFactory);
+
+        try {
+			messenger.onReceiveEvents(payload, Optional.empty(), event -> {
+			    final String senderId = event.senderId();
+			    final Instant timestamp = event.timestamp();
+			    
+			    assertEquals(true, event.isEventCompatible(CustomEvent.class));
+			    assertEquals(true, event.getBaseEvent(CustomEvent.class).isPresent());
+			    assertEquals(false, event.getBaseEvent(TextMessageEvent.class).isPresent());
+			    assertThat(event.getBaseEvent(), is(notNullValue()));
+			    assertEquals("test", event.getBaseEvent(CustomEvent.class).get().custom());
+			    assertEquals("test", ((CustomEvent)event.getBaseEvent()).custom());
+
+			});
+		} finally {
+			EventFactory.unregiterBaseEventFactory(customEventFactory);
+		}
     }
 }

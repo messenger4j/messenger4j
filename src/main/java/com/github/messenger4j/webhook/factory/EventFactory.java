@@ -12,6 +12,8 @@ import com.github.messenger4j.webhook.Event;
 import com.github.messenger4j.webhook.event.FallbackEvent;
 import com.google.gson.JsonObject;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -20,25 +22,47 @@ import java.util.List;
  */
 public final class EventFactory {
 
-    private static final List<BaseEventFactory> FACTORIES = Lists.immutableList(
-            new TextMessageEventFactory(),
-            new AttachmentMessageEventFactory(),
-            new QuickReplyMessageEventFactory(),
-            new PostbackEventFactory(),
-            new ReferralEventFactory(),
-            new OptInEventFactory(),
-            new MessageEchoEventFactory(),
-            new MessageDeliveredEventFactory(),
-            new MessageReadEventFactory(),
-            new AccountLinkingEventFactory(),
-            new InstantGameEventFactory()
-    );
+    private static final List<BaseEventFactory<?>> FACTORIES = new ArrayList<>(16);
+    
+    static {
+    	resetFactoriesDefault();
+    }
 
     private EventFactory() {
     }
+    
+    public static synchronized void regiterBaseEventFactory(BaseEventFactory<?> eventFactory) {
+		FACTORIES.add(eventFactory);
+    }
+    
+    public static synchronized void regiterBaseEventFactories(BaseEventFactory<?>... eventFactories) {
+    	for (int i = 0; i < eventFactories.length; i++) {
+    		regiterBaseEventFactory(eventFactories[i]);
+		}
+    }
+    
+    public static synchronized boolean unregiterBaseEventFactory(BaseEventFactory<?> eventFactory) {
+    	return FACTORIES.remove(eventFactory);
+    }
+    
+    public static void resetFactoriesDefault() {
+    	regiterBaseEventFactories(  
+    			new TextMessageEventFactory(),
+		        new AttachmentMessageEventFactory(),
+		        new QuickReplyMessageEventFactory(),
+		        new PostbackEventFactory(),
+		        new ReferralEventFactory(),
+		        new OptInEventFactory(),
+		        new MessageEchoEventFactory(),
+		        new MessageDeliveredEventFactory(),
+		        new MessageReadEventFactory(),
+		        new AccountLinkingEventFactory(),
+		        new InstantGameEventFactory()
+		     );
+    }
 
     public static Event createEvent(JsonObject messagingEvent) {
-        for (BaseEventFactory factory : FACTORIES) {
+        for (BaseEventFactory<?> factory : FACTORIES) {
             if (factory.isResponsible(messagingEvent)) {
                 return new Event(factory.createEventFromJson(messagingEvent));
             }

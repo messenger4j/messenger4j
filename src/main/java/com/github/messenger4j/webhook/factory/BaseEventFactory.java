@@ -17,7 +17,7 @@ import java.util.Optional;
  * @author Max Grabenhorst
  * @since 1.0.0
  */
-interface BaseEventFactory<E extends BaseEvent> {
+public interface BaseEventFactory<E extends BaseEvent> {
 
     boolean isResponsible(JsonObject messagingEvent);
 
