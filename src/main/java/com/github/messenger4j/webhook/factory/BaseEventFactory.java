@@ -33,7 +33,7 @@ interface BaseEventFactory<E extends BaseEvent> {
 
     default Referral createReferralFromJson(JsonObject jsonObject) {
         final String source = getPropertyAsString(jsonObject, PROP_SOURCE).orElseThrow(IllegalArgumentException::new);
-        final String type = getPropertyAsString(jsonObject, PROP_TYPE).orElseThrow(IllegalArgumentException::new);
+        final String type = getPropertyAsString(jsonObject, PROP_TYPE).orElse("OPEN_THREAD"); //Default type for referral
         final Optional<String> refPayload = getPropertyAsString(jsonObject, PROP_REF);
         final Optional<String> adId = getPropertyAsString(jsonObject, PROP_AD_ID);
 
