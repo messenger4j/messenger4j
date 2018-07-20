@@ -7,13 +7,11 @@ import static com.github.messenger4j.internal.gson.GsonUtil.Constants.PROP_TIMES
 import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsInstant;
 import static com.github.messenger4j.internal.gson.GsonUtil.getPropertyAsString;
 
-import com.github.messenger4j.internal.Lists;
 import com.github.messenger4j.webhook.Event;
 import com.github.messenger4j.webhook.event.FallbackEvent;
 import com.google.gson.JsonObject;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**

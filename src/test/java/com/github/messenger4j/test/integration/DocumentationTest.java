@@ -9,14 +9,12 @@ import static org.junit.Assert.assertEquals;
 import com.github.messenger4j.Messenger;
 import com.github.messenger4j.exception.MessengerApiException;
 import com.github.messenger4j.exception.MessengerIOException;
-import com.github.messenger4j.internal.gson.GsonUtil;
 import com.github.messenger4j.send.MessagePayload;
 import com.github.messenger4j.send.MessagingType;
 import com.github.messenger4j.send.message.TextMessage;
 import com.github.messenger4j.spi.MessengerHttpClient;
 import com.github.messenger4j.webhook.event.AttachmentMessageEvent;
 import com.github.messenger4j.webhook.event.BaseEvent;
-import com.github.messenger4j.webhook.event.PostbackEvent;
 import com.github.messenger4j.webhook.event.TextMessageEvent;
 import com.github.messenger4j.webhook.event.attachment.Attachment;
 import com.github.messenger4j.webhook.event.attachment.LocationAttachment;
@@ -36,7 +34,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 
-import org.hamcrest.Matchers;
 import org.junit.Test;
 
 /**
@@ -251,8 +248,8 @@ public class DocumentationTest {
     @Test
     public void shouldAllowCustomEventFactory() throws Exception{
         final Messenger messenger = Messenger.create("test", "test", "test");
+        assertThat(messenger, is(notNullValue()));
 
-        // tag::doc-ReceiveEventsText[]
         final String payload = "{\n" +
                 "  \"object\": \"page\",\n" +
                 "  \"entry\": [{\n" +
@@ -269,9 +266,6 @@ public class DocumentationTest {
 
         try {
 			messenger.onReceiveEvents(payload, Optional.empty(), event -> {
-			    final String senderId = event.senderId();
-			    final Instant timestamp = event.timestamp();
-			    
 			    assertEquals(true, event.isEventCompatible(CustomEvent.class));
 			    assertEquals(true, event.getBaseEvent(CustomEvent.class).isPresent());
 			    assertEquals(false, event.getBaseEvent(TextMessageEvent.class).isPresent());
