@@ -28,7 +28,7 @@ import org.junit.Test;
 public class UserProfileTest {
 
     private static final String FB_GRAPH_API_URL = "https://graph.facebook.com/v2.11/%s?fields=first_name," +
-            "last_name,profile_pic,locale,timezone,gender,is_payment_enabled,last_ad_referral&access_token=%s";
+            "last_name,profile_pic&access_token=%s";
     private static final String PAGE_ACCESS_TOKEN = "PAGE_ACCESS_TOKEN";
 
     private final MessengerHttpClient mockHttpClient = mock(MessengerHttpClient.class);
@@ -42,16 +42,7 @@ public class UserProfileTest {
                 "  \"last_name\": \"Chang\",\n" +
                 "  \"profile_pic\": \"https://fbcdn-profile-a.akamaihd.net/hprofile-ak-xpf1/v/t1.0-1/p200x200/" +
                 "13055603_10105219398495383_8237637584159975445_n.jpg?oh=1d241d4b6d4dac50eaf9bb73288ea192&oe=57AF5C03&" +
-                "__gda__=1470213755_ab17c8c8e3a0a447fed3f272fa2179ce\",\n" +
-                "  \"locale\": \"en_US\",\n" +
-                "  \"timezone\": -7,\n" +
-                "  \"gender\": \"male\",\n" +
-                "  \"is_payment_enabled\": true,\n" +
-                "  \"last_ad_referral\": {\n" +
-                "    \"source\": \"ADS\",\n" +
-                "    \"type\": \"OPEN_THREAD\",\n" +
-                "    \"ad_id\": \"6045246247433\"\n" +
-                "  }\n" +
+                "__gda__=1470213755_ab17c8c8e3a0a447fed3f272fa2179ce\"\n" +
                 "}");
         when(mockHttpClient.execute(eq(GET), anyString(), isNull())).thenReturn(successfulResponse);
 
@@ -68,14 +59,6 @@ public class UserProfileTest {
         assertThat(userProfile.profilePicture(), is(equalTo("https://fbcdn-profile-a.akamaihd.net/" +
                 "hprofile-ak-xpf1/v/t1.0-1/p200x200/13055603_10105219398495383_8237637584159975445_n.jpg" +
                 "?oh=1d241d4b6d4dac50eaf9bb73288ea192&oe=57AF5C03&__gda__=1470213755_ab17c8c8e3a0a447fed3f272fa2179ce")));
-        assertThat(userProfile.locale(), is(equalTo("en_US")));
-        assertThat(userProfile.timezoneOffset(), is(equalTo(-7f)));
-        assertThat(userProfile.gender(), is(equalTo(UserProfile.Gender.MALE)));
-        assertThat(userProfile.isPaymentEnabled(), is(true));
-        assertThat(userProfile.lastAdReferral().isPresent(), is(true));
-        assertThat(userProfile.lastAdReferral().get().source(), is(equalTo("ADS")));
-        assertThat(userProfile.lastAdReferral().get().type(), is(equalTo("OPEN_THREAD")));
-        assertThat(userProfile.lastAdReferral().get().adId(), is(equalTo(of("6045246247433"))));
     }
 
     @Test
