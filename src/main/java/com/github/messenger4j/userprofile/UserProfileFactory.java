@@ -38,30 +38,7 @@ public final class UserProfileFactory {
                 .orElseThrow(IllegalArgumentException::new);
         final String profilePic = getPropertyAsString(jsonObject, PROP_PROFILE_PIC)
                 .orElseThrow(IllegalArgumentException::new);
-        final String locale = getPropertyAsString(jsonObject, PROP_LOCALE)
-                .orElseThrow(IllegalArgumentException::new);
-        final Float timezoneOffset = getPropertyAsFloat(jsonObject, PROP_TIMEZONE)
-                .orElseThrow(IllegalArgumentException::new);
-        final UserProfile.Gender gender = getPropertyAsString(jsonObject, PROP_GENDER)
-                .map(String::toUpperCase)
-                .map(UserProfile.Gender::valueOf)
-                .orElseThrow(IllegalArgumentException::new);
-        final boolean isPaymentEnabled = getPropertyAsBoolean(jsonObject, PROP_IS_PAYMENT_ENABLED)
-                .orElseThrow(IllegalArgumentException::new);
 
-        final Optional<Referral> lastAdReferral = getPropertyAsJsonObject(jsonObject, PROP_LAST_AD_REFERRAL)
-                .map(referralJsonObject -> {
-                    final String source = getPropertyAsString(referralJsonObject, PROP_SOURCE)
-                            .orElseThrow(IllegalArgumentException::new);
-                    final String type = getPropertyAsString(referralJsonObject, PROP_TYPE)
-                            .orElseThrow(IllegalArgumentException::new);
-                    final String adId = getPropertyAsString(referralJsonObject, PROP_AD_ID)
-                            .orElseThrow(IllegalArgumentException::new);
-                    return of(new Referral(source, type, empty(), of(adId)));
-                })
-                .orElse(empty());
-
-        return new UserProfile(firstName, lastName, profilePic, locale, timezoneOffset, gender,
-                isPaymentEnabled, lastAdReferral);
+        return new UserProfile(firstName, lastName, profilePic);
     }
 }
