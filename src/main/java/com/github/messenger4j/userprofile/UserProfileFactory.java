@@ -46,22 +46,7 @@ public final class UserProfileFactory {
                 .map(String::toUpperCase)
                 .map(UserProfile.Gender::valueOf)
                 .orElseThrow(IllegalArgumentException::new);
-        final boolean isPaymentEnabled = getPropertyAsBoolean(jsonObject, PROP_IS_PAYMENT_ENABLED)
-                .orElseThrow(IllegalArgumentException::new);
 
-        final Optional<Referral> lastAdReferral = getPropertyAsJsonObject(jsonObject, PROP_LAST_AD_REFERRAL)
-                .map(referralJsonObject -> {
-                    final String source = getPropertyAsString(referralJsonObject, PROP_SOURCE)
-                            .orElseThrow(IllegalArgumentException::new);
-                    final String type = getPropertyAsString(referralJsonObject, PROP_TYPE)
-                            .orElseThrow(IllegalArgumentException::new);
-                    final String adId = getPropertyAsString(referralJsonObject, PROP_AD_ID)
-                            .orElseThrow(IllegalArgumentException::new);
-                    return of(new Referral(source, type, empty(), of(adId)));
-                })
-                .orElse(empty());
-
-        return new UserProfile(firstName, lastName, profilePic, locale, timezoneOffset, gender,
-                isPaymentEnabled, lastAdReferral);
+        return new UserProfile(firstName, lastName, profilePic, locale, timezoneOffset, gender);
     }
 }
