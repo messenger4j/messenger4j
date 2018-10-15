@@ -45,13 +45,7 @@ public class UserProfileTest {
                 "__gda__=1470213755_ab17c8c8e3a0a447fed3f272fa2179ce\",\n" +
                 "  \"locale\": \"en_US\",\n" +
                 "  \"timezone\": -7,\n" +
-                "  \"gender\": \"male\",\n" +
-                "  \"is_payment_enabled\": true,\n" +
-                "  \"last_ad_referral\": {\n" +
-                "    \"source\": \"ADS\",\n" +
-                "    \"type\": \"OPEN_THREAD\",\n" +
-                "    \"ad_id\": \"6045246247433\"\n" +
-                "  }\n" +
+                "  \"gender\": \"male\"\n" +
                 "}");
         when(mockHttpClient.execute(eq(GET), anyString(), isNull())).thenReturn(successfulResponse);
 
@@ -71,11 +65,6 @@ public class UserProfileTest {
         assertThat(userProfile.locale(), is(equalTo("en_US")));
         assertThat(userProfile.timezoneOffset(), is(equalTo(-7f)));
         assertThat(userProfile.gender(), is(equalTo(UserProfile.Gender.MALE)));
-        assertThat(userProfile.isPaymentEnabled(), is(true));
-        assertThat(userProfile.lastAdReferral().isPresent(), is(true));
-        assertThat(userProfile.lastAdReferral().get().source(), is(equalTo("ADS")));
-        assertThat(userProfile.lastAdReferral().get().type(), is(equalTo("OPEN_THREAD")));
-        assertThat(userProfile.lastAdReferral().get().adId(), is(equalTo(of("6045246247433"))));
     }
 
     @Test
