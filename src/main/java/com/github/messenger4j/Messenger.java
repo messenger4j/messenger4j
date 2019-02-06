@@ -80,7 +80,7 @@ public final class Messenger {
     private static final String FB_GRAPH_API_URL_MESSAGES = "https://graph.facebook.com/v2.11/me/messages?access_token=%s";
     private static final String FB_GRAPH_API_URL_MESSENGER_PROFILE = "https://graph.facebook.com/v2.11/me/messenger_profile?access_token=%s";
     private static final String FB_GRAPH_API_URL_USER = "https://graph.facebook.com/v2.11/%s?fields=first_name," +
-            "last_name,profile_pic,locale,timezone,gender,is_payment_enabled,last_ad_referral&access_token=%s";
+            "last_name,profile_pic,locale,timezone,gender&access_token=%s";
 
     private final String pageAccessToken;
     private final String appSecret;
