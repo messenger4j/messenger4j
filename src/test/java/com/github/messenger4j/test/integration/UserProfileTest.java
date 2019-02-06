@@ -28,7 +28,7 @@ import org.junit.Test;
 public class UserProfileTest {
 
     private static final String FB_GRAPH_API_URL = "https://graph.facebook.com/v2.11/%s?fields=first_name," +
-            "last_name,profile_pic,locale,timezone,gender,is_payment_enabled,last_ad_referral&access_token=%s";
+            "last_name,profile_pic,locale,timezone,gender&access_token=%s";
     private static final String PAGE_ACCESS_TOKEN = "PAGE_ACCESS_TOKEN";
 
     private final MessengerHttpClient mockHttpClient = mock(MessengerHttpClient.class);
@@ -71,11 +71,6 @@ public class UserProfileTest {
         assertThat(userProfile.locale(), is(equalTo("en_US")));
         assertThat(userProfile.timezoneOffset(), is(equalTo(-7f)));
         assertThat(userProfile.gender(), is(equalTo(UserProfile.Gender.MALE)));
-        assertThat(userProfile.isPaymentEnabled(), is(true));
-        assertThat(userProfile.lastAdReferral().isPresent(), is(true));
-        assertThat(userProfile.lastAdReferral().get().source(), is(equalTo("ADS")));
-        assertThat(userProfile.lastAdReferral().get().type(), is(equalTo("OPEN_THREAD")));
-        assertThat(userProfile.lastAdReferral().get().adId(), is(equalTo(of("6045246247433"))));
     }
 
     @Test

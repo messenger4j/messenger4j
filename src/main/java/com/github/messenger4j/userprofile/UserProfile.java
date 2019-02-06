@@ -20,12 +20,9 @@ public final class UserProfile {
     private final String locale;
     private final float timezoneOffset;
     private final Gender gender;
-    private final boolean isPaymentEnabled;
-    private final Optional<Referral> lastAdReferral;
 
     public UserProfile(@NonNull String firstName, @NonNull String lastName, @NonNull String profilePicture,
-                       @NonNull String locale, float timezoneOffset, @NonNull Gender gender, boolean isPaymentEnabled,
-                       @NonNull Optional<Referral> lastAdReferral) {
+                       @NonNull String locale, float timezoneOffset, @NonNull Gender gender) {
 
         this.firstName = firstName;
         this.lastName = lastName;
@@ -33,8 +30,6 @@ public final class UserProfile {
         this.locale = locale;
         this.timezoneOffset = timezoneOffset;
         this.gender = gender;
-        this.isPaymentEnabled = isPaymentEnabled;
-        this.lastAdReferral = lastAdReferral;
     }
 
     public String firstName() {
@@ -59,14 +54,6 @@ public final class UserProfile {
 
     public Gender gender() {
         return gender;
-    }
-
-    public boolean isPaymentEnabled() {
-        return isPaymentEnabled;
-    }
-
-    public Optional<Referral> lastAdReferral() {
-        return lastAdReferral;
     }
 
     /**
