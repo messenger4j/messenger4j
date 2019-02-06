@@ -77,9 +77,9 @@ public final class Messenger {
     private static final String OBJECT_TYPE_PAGE = "page";
     private static final String HUB_MODE_SUBSCRIBE = "subscribe";
 
-    private static final String FB_GRAPH_API_URL_MESSAGES = "https://graph.facebook.com/v2.11/me/messages?access_token=%s";
-    private static final String FB_GRAPH_API_URL_MESSENGER_PROFILE = "https://graph.facebook.com/v2.11/me/messenger_profile?access_token=%s";
-    private static final String FB_GRAPH_API_URL_USER = "https://graph.facebook.com/v2.11/%s?fields=first_name," +
+    private static final String FB_GRAPH_API_URL_MESSAGES = "https://graph.facebook.com/v3.2/me/messages?access_token=%s";
+    private static final String FB_GRAPH_API_URL_MESSENGER_PROFILE = "https://graph.facebook.com/v3.2/me/messenger_profile?access_token=%s";
+    private static final String FB_GRAPH_API_URL_USER = "https://graph.facebook.com/v3.2/%s?fields=first_name," +
             "last_name,profile_pic,locale,timezone,gender&access_token=%s";
 
     private final String pageAccessToken;

@@ -27,7 +27,7 @@ import org.junit.Test;
  */
 public class UserProfileTest {
 
-    private static final String FB_GRAPH_API_URL = "https://graph.facebook.com/v2.11/%s?fields=first_name," +
+    private static final String FB_GRAPH_API_URL = "https://graph.facebook.com/v3.2/%s?fields=first_name," +
             "last_name,profile_pic,locale,timezone,gender&access_token=%s";
     private static final String PAGE_ACCESS_TOKEN = "PAGE_ACCESS_TOKEN";
 
