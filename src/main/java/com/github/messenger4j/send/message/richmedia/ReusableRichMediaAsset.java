@@ -12,18 +12,18 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class ReusableRichMediaAsset extends RichMediaAsset {
 
-    private final String attachmentId;
+  private final String attachmentId;
 
-    public static ReusableRichMediaAsset create(@NonNull Type type, @NonNull String attachmentId) {
-        return new ReusableRichMediaAsset(type, attachmentId);
-    }
+  private ReusableRichMediaAsset(Type type, String attachmentId) {
+    super(type);
+    this.attachmentId = attachmentId;
+  }
 
-    private ReusableRichMediaAsset(Type type, String attachmentId) {
-        super(type);
-        this.attachmentId = attachmentId;
-    }
+  public static ReusableRichMediaAsset create(@NonNull Type type, @NonNull String attachmentId) {
+    return new ReusableRichMediaAsset(type, attachmentId);
+  }
 
-    public String attachmentId() {
-        return attachmentId;
-    }
+  public String attachmentId() {
+    return attachmentId;
+  }
 }

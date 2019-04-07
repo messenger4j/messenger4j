@@ -18,22 +18,26 @@ import lombok.ToString;
 @EqualsAndHashCode
 public final class PersistentMenu {
 
-    private final List<LocalizedPersistentMenu> localizedPersistentMenus;
+  private final List<LocalizedPersistentMenu> localizedPersistentMenus;
 
-    public static PersistentMenu create(boolean composerInputDisabled, @NonNull Optional<List<CallToAction>> callToActions,
-                                        @NonNull LocalizedPersistentMenu... localizedPersistentMenus) {
+  private PersistentMenu(List<LocalizedPersistentMenu> localizedPersistentMenus) {
+    this.localizedPersistentMenus = Collections.unmodifiableList(localizedPersistentMenus);
+  }
 
-        final List<LocalizedPersistentMenu> localizedPersistentMenuList = new ArrayList<>(localizedPersistentMenus.length + 1);
-        localizedPersistentMenuList.add(LocalizedPersistentMenu.create("default", composerInputDisabled, callToActions));
-        localizedPersistentMenuList.addAll(Arrays.asList(localizedPersistentMenus));
-        return new PersistentMenu(localizedPersistentMenuList);
-    }
+  public static PersistentMenu create(
+      boolean composerInputDisabled,
+      @NonNull Optional<List<CallToAction>> callToActions,
+      @NonNull LocalizedPersistentMenu... localizedPersistentMenus) {
 
-    private PersistentMenu(List<LocalizedPersistentMenu> localizedPersistentMenus) {
-        this.localizedPersistentMenus = Collections.unmodifiableList(localizedPersistentMenus);
-    }
+    final List<LocalizedPersistentMenu> localizedPersistentMenuList =
+        new ArrayList<>(localizedPersistentMenus.length + 1);
+    localizedPersistentMenuList.add(
+        LocalizedPersistentMenu.create("default", composerInputDisabled, callToActions));
+    localizedPersistentMenuList.addAll(Arrays.asList(localizedPersistentMenus));
+    return new PersistentMenu(localizedPersistentMenuList);
+  }
 
-    public List<LocalizedPersistentMenu> localizedPersistentMenus() {
-        return localizedPersistentMenus;
-    }
+  public List<LocalizedPersistentMenu> localizedPersistentMenus() {
+    return localizedPersistentMenus;
+  }
 }

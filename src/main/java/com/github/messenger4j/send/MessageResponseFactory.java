@@ -14,13 +14,12 @@ import java.util.Optional;
  */
 public final class MessageResponseFactory {
 
-    private MessageResponseFactory() {
-    }
+  private MessageResponseFactory() {}
 
-    public static MessageResponse create(JsonObject jsonObject) {
-        final Optional<String> recipientId = getPropertyAsString(jsonObject, PROP_RECIPIENT_ID);
-        final Optional<String> messageId = getPropertyAsString(jsonObject, PROP_MESSAGE_ID);
-        final Optional<String> attachmentId = getPropertyAsString(jsonObject, PROP_ATTACHMENT_ID);
-        return new MessageResponse(recipientId, messageId, attachmentId);
-    }
+  public static MessageResponse create(JsonObject jsonObject) {
+    final Optional<String> recipientId = getPropertyAsString(jsonObject, PROP_RECIPIENT_ID);
+    final Optional<String> messageId = getPropertyAsString(jsonObject, PROP_MESSAGE_ID);
+    final Optional<String> attachmentId = getPropertyAsString(jsonObject, PROP_ATTACHMENT_ID);
+    return new MessageResponse(recipientId, messageId, attachmentId);
+  }
 }

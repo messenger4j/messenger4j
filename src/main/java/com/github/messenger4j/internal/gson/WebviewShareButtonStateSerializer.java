@@ -12,12 +12,14 @@ import java.lang.reflect.Type;
  */
 final class WebviewShareButtonStateSerializer implements JsonSerializer<WebviewShareButtonState> {
 
-    @Override
-    public JsonElement serialize(WebviewShareButtonState webviewShareButtonState,
-                                 Type typeOfSrc, JsonSerializationContext context) {
-        if (webviewShareButtonState != WebviewShareButtonState.HIDE) {
-            return null;
-        }
-        return context.serialize(WebviewShareButtonState.HIDE.name().toLowerCase());
+  @Override
+  public JsonElement serialize(
+      WebviewShareButtonState webviewShareButtonState,
+      Type typeOfSrc,
+      JsonSerializationContext context) {
+    if (webviewShareButtonState != WebviewShareButtonState.HIDE) {
+      return null;
     }
+    return context.serialize(WebviewShareButtonState.HIDE.name().toLowerCase());
+  }
 }

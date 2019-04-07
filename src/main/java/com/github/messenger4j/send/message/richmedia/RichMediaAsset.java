@@ -11,23 +11,21 @@ import lombok.ToString;
 @EqualsAndHashCode
 public abstract class RichMediaAsset {
 
-    private final Type type;
+  private final Type type;
 
-    RichMediaAsset(Type type) {
-        this.type = type;
-    }
+  RichMediaAsset(Type type) {
+    this.type = type;
+  }
 
-    public Type type() {
-        return type;
-    }
+  public Type type() {
+    return type;
+  }
 
-    /**
-     * @since 1.0.0
-     */
-    public enum Type {
-        IMAGE,
-        AUDIO,
-        VIDEO,
-        FILE
-    }
+  /** @since 1.0.0 */
+  public enum Type {
+    IMAGE,
+    AUDIO,
+    VIDEO,
+    FILE
+  }
 }

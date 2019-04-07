@@ -13,18 +13,20 @@ import java.lang.reflect.Type;
  */
 final class PhoneNumberRecipientSerializer implements JsonSerializer<PhoneNumberRecipient> {
 
-    @Override
-    public JsonElement serialize(PhoneNumberRecipient phoneNumberRecipient, Type typeOfSrc, JsonSerializationContext context) {
-        final JsonObject phoneNumberRecipientObject = new JsonObject();
-        phoneNumberRecipientObject.addProperty("phone_number", phoneNumberRecipient.phoneNumber());
+  @Override
+  public JsonElement serialize(
+      PhoneNumberRecipient phoneNumberRecipient, Type typeOfSrc, JsonSerializationContext context) {
+    final JsonObject phoneNumberRecipientObject = new JsonObject();
+    phoneNumberRecipientObject.addProperty("phone_number", phoneNumberRecipient.phoneNumber());
 
-        if (phoneNumberRecipient.firstName().isPresent() && phoneNumberRecipient.lastName().isPresent()) {
-            final JsonObject nameObject = new JsonObject();
-            nameObject.addProperty("first_name", phoneNumberRecipient.firstName().get());
-            nameObject.addProperty("last_name", phoneNumberRecipient.lastName().get());
-            phoneNumberRecipientObject.add("name", nameObject);
-        }
-
-        return phoneNumberRecipientObject;
+    if (phoneNumberRecipient.firstName().isPresent()
+        && phoneNumberRecipient.lastName().isPresent()) {
+      final JsonObject nameObject = new JsonObject();
+      nameObject.addProperty("first_name", phoneNumberRecipient.firstName().get());
+      nameObject.addProperty("last_name", phoneNumberRecipient.lastName().get());
+      phoneNumberRecipientObject.add("name", nameObject);
     }
+
+    return phoneNumberRecipientObject;
+  }
 }

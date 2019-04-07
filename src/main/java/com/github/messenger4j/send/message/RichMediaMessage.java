@@ -18,23 +18,28 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class RichMediaMessage extends Message {
 
-    private final RichMediaAsset richMediaAsset;
+  private final RichMediaAsset richMediaAsset;
 
-    public static RichMediaMessage create(@NonNull RichMediaAsset richMediaAsset) {
-        return create(richMediaAsset, empty(), empty());
-    }
+  private RichMediaMessage(
+      RichMediaAsset richMediaAsset,
+      Optional<List<QuickReply>> quickReplies,
+      Optional<String> metadata) {
+    super(quickReplies, metadata);
+    this.richMediaAsset = richMediaAsset;
+  }
 
-    public static RichMediaMessage create(@NonNull RichMediaAsset richMediaAsset, @NonNull Optional<List<QuickReply>> quickReplies,
-                                          @NonNull Optional<String> metadata) {
-        return new RichMediaMessage(richMediaAsset, quickReplies, metadata);
-    }
+  public static RichMediaMessage create(@NonNull RichMediaAsset richMediaAsset) {
+    return create(richMediaAsset, empty(), empty());
+  }
 
-    private RichMediaMessage(RichMediaAsset richMediaAsset, Optional<List<QuickReply>> quickReplies, Optional<String> metadata) {
-        super(quickReplies, metadata);
-        this.richMediaAsset = richMediaAsset;
-    }
+  public static RichMediaMessage create(
+      @NonNull RichMediaAsset richMediaAsset,
+      @NonNull Optional<List<QuickReply>> quickReplies,
+      @NonNull Optional<String> metadata) {
+    return new RichMediaMessage(richMediaAsset, quickReplies, metadata);
+  }
 
-    public RichMediaAsset richMediaAsset() {
-        return richMediaAsset;
-    }
+  public RichMediaAsset richMediaAsset() {
+    return richMediaAsset;
+  }
 }

@@ -12,13 +12,13 @@ import lombok.ToString;
 @EqualsAndHashCode
 public abstract class Payload {
 
-    private final Recipient recipient;
+  private final Recipient recipient;
 
-    Payload(Recipient recipient) {
-        this.recipient = recipient;
-    }
+  Payload(Recipient recipient) {
+    this.recipient = recipient;
+  }
 
-    public Recipient recipient() {
-        return recipient;
-    }
+  public Recipient recipient() {
+    return recipient;
+  }
 }

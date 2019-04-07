@@ -11,11 +11,11 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public class UserEmailQuickReply extends QuickReply {
 
-    public static UserEmailQuickReply create() {
-        return new UserEmailQuickReply();
-    }
+  private UserEmailQuickReply() {
+    super(ContentType.USER_EMAIL);
+  }
 
-    private UserEmailQuickReply() {
-        super(ContentType.USER_EMAIL);
-    }
+  public static UserEmailQuickReply create() {
+    return new UserEmailQuickReply();
+  }
 }

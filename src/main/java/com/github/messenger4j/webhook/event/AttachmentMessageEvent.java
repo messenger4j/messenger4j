@@ -18,28 +18,32 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class AttachmentMessageEvent extends BaseEvent {
 
-    private final String messageId;
-    private final List<Attachment> attachments;
-    private final Optional<PriorMessage> priorMessage;
+  private final String messageId;
+  private final List<Attachment> attachments;
+  private final Optional<PriorMessage> priorMessage;
 
-    public AttachmentMessageEvent(@NonNull String senderId, @NonNull String recipientId, @NonNull Instant timestamp,
-                                  @NonNull String messageId, @NonNull List<Attachment> attachments,
-                                  @NonNull Optional<PriorMessage> priorMessage) {
-        super(senderId, recipientId, timestamp);
-        this.messageId = messageId;
-        this.attachments = Lists.immutableList(attachments);
-        this.priorMessage = priorMessage;
-    }
+  public AttachmentMessageEvent(
+      @NonNull String senderId,
+      @NonNull String recipientId,
+      @NonNull Instant timestamp,
+      @NonNull String messageId,
+      @NonNull List<Attachment> attachments,
+      @NonNull Optional<PriorMessage> priorMessage) {
+    super(senderId, recipientId, timestamp);
+    this.messageId = messageId;
+    this.attachments = Lists.immutableList(attachments);
+    this.priorMessage = priorMessage;
+  }
 
-    public String messageId() {
-        return messageId;
-    }
+  public String messageId() {
+    return messageId;
+  }
 
-    public List<Attachment> attachments() {
-        return attachments;
-    }
+  public List<Attachment> attachments() {
+    return attachments;
+  }
 
-    public Optional<PriorMessage> priorMessage() {
-        return priorMessage;
-    }
+  public Optional<PriorMessage> priorMessage() {
+    return priorMessage;
+  }
 }

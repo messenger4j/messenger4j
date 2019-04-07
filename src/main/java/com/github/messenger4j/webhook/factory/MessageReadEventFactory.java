@@ -20,22 +20,26 @@ import java.time.Instant;
  */
 final class MessageReadEventFactory implements BaseEventFactory<MessageReadEvent> {
 
-    @Override
-    public boolean isResponsible(JsonObject messagingEvent) {
-        return hasProperty(messagingEvent, PROP_READ);
-    }
+  @Override
+  public boolean isResponsible(JsonObject messagingEvent) {
+    return hasProperty(messagingEvent, PROP_READ);
+  }
 
-    @Override
-    public MessageReadEvent createEventFromJson(JsonObject messagingEvent) {
-        final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
-                .orElseThrow(IllegalArgumentException::new);
-        final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
-                .orElseThrow(IllegalArgumentException::new);
-        final Instant timestamp = getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP)
-                .orElseThrow(IllegalArgumentException::new);
-        final Instant watermark = getPropertyAsInstant(messagingEvent, PROP_READ, PROP_WATERMARK)
-                .orElseThrow(IllegalArgumentException::new);
+  @Override
+  public MessageReadEvent createEventFromJson(JsonObject messagingEvent) {
+    final String senderId =
+        getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
+            .orElseThrow(IllegalArgumentException::new);
+    final String recipientId =
+        getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
+            .orElseThrow(IllegalArgumentException::new);
+    final Instant timestamp =
+        getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP)
+            .orElseThrow(IllegalArgumentException::new);
+    final Instant watermark =
+        getPropertyAsInstant(messagingEvent, PROP_READ, PROP_WATERMARK)
+            .orElseThrow(IllegalArgumentException::new);
 
-        return new MessageReadEvent(senderId, recipientId, timestamp, watermark);
-    }
+    return new MessageReadEvent(senderId, recipientId, timestamp, watermark);
+  }
 }

@@ -21,23 +21,27 @@ import java.time.Instant;
  */
 final class ReferralEventFactory implements BaseEventFactory<ReferralEvent> {
 
-    @Override
-    public boolean isResponsible(JsonObject messagingEvent) {
-        return hasProperty(messagingEvent, PROP_REFERRAL);
-    }
+  @Override
+  public boolean isResponsible(JsonObject messagingEvent) {
+    return hasProperty(messagingEvent, PROP_REFERRAL);
+  }
 
-    @Override
-    public ReferralEvent createEventFromJson(JsonObject messagingEvent) {
-        final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
-                .orElseThrow(IllegalArgumentException::new);
-        final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
-                .orElseThrow(IllegalArgumentException::new);
-        final Instant timestamp = getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP)
-                .orElseThrow(IllegalArgumentException::new);
-        final Referral referral = getPropertyAsJsonObject(messagingEvent, PROP_REFERRAL)
-                .map(this::createReferralFromJson)
-                .orElseThrow(IllegalArgumentException::new);
+  @Override
+  public ReferralEvent createEventFromJson(JsonObject messagingEvent) {
+    final String senderId =
+        getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
+            .orElseThrow(IllegalArgumentException::new);
+    final String recipientId =
+        getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
+            .orElseThrow(IllegalArgumentException::new);
+    final Instant timestamp =
+        getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP)
+            .orElseThrow(IllegalArgumentException::new);
+    final Referral referral =
+        getPropertyAsJsonObject(messagingEvent, PROP_REFERRAL)
+            .map(this::createReferralFromJson)
+            .orElseThrow(IllegalArgumentException::new);
 
-        return new ReferralEvent(senderId, recipientId, timestamp, referral);
-    }
+    return new ReferralEvent(senderId, recipientId, timestamp, referral);
+  }
 }

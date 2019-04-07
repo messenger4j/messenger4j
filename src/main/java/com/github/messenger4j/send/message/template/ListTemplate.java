@@ -20,43 +20,46 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class ListTemplate extends Template {
 
-    private final List<Element> elements;
-    private final Optional<TopElementStyle> topElementStyle;
-    private final Optional<List<Button>> buttons;
+  private final List<Element> elements;
+  private final Optional<TopElementStyle> topElementStyle;
+  private final Optional<List<Button>> buttons;
 
-    public static ListTemplate create(@NonNull List<Element> elements) {
-        return create(elements, empty(), empty());
-    }
+  private ListTemplate(
+      List<Element> elements,
+      Optional<TopElementStyle> topElementStyle,
+      Optional<List<Button>> buttons) {
+    super(Type.LIST);
+    this.elements = Lists.immutableList(elements);
+    this.topElementStyle = topElementStyle;
+    this.buttons = buttons.map(Lists::immutableList);
+  }
 
-    public static ListTemplate create(@NonNull List<Element> elements, @NonNull Optional<TopElementStyle> topElementStyle,
-                                      @NonNull Optional<List<Button>> buttons) {
-        return new ListTemplate(elements, topElementStyle, buttons);
-    }
+  public static ListTemplate create(@NonNull List<Element> elements) {
+    return create(elements, empty(), empty());
+  }
 
-    private ListTemplate(List<Element> elements, Optional<TopElementStyle> topElementStyle, Optional<List<Button>> buttons) {
-        super(Type.LIST);
-        this.elements = Lists.immutableList(elements);
-        this.topElementStyle = topElementStyle;
-        this.buttons = buttons.map(Lists::immutableList);
-    }
+  public static ListTemplate create(
+      @NonNull List<Element> elements,
+      @NonNull Optional<TopElementStyle> topElementStyle,
+      @NonNull Optional<List<Button>> buttons) {
+    return new ListTemplate(elements, topElementStyle, buttons);
+  }
 
-    public List<Element> elements() {
-        return elements;
-    }
+  public List<Element> elements() {
+    return elements;
+  }
 
-    public Optional<TopElementStyle> topElementStyle() {
-        return topElementStyle;
-    }
+  public Optional<TopElementStyle> topElementStyle() {
+    return topElementStyle;
+  }
 
-    public Optional<List<Button>> buttons() {
-        return buttons;
-    }
+  public Optional<List<Button>> buttons() {
+    return buttons;
+  }
 
-    /**
-     * @since 1.0.0
-     */
-    public enum TopElementStyle {
-        LARGE,
-        COMPACT
-    }
+  /** @since 1.0.0 */
+  public enum TopElementStyle {
+    LARGE,
+    COMPACT
+  }
 }

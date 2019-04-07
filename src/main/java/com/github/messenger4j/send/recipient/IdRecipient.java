@@ -12,17 +12,17 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = false)
 public final class IdRecipient extends Recipient {
 
-    private final String id;
+  private final String id;
 
-    public static IdRecipient create(@NonNull String id) {
-        return new IdRecipient(id);
-    }
+  private IdRecipient(String id) {
+    this.id = id;
+  }
 
-    private IdRecipient(String id) {
-        this.id = id;
-    }
+  public static IdRecipient create(@NonNull String id) {
+    return new IdRecipient(id);
+  }
 
-    public String id() {
-        return id;
-    }
+  public String id() {
+    return id;
+  }
 }

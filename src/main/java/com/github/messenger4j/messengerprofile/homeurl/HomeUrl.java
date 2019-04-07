@@ -19,37 +19,41 @@ import lombok.ToString;
 @EqualsAndHashCode
 public final class HomeUrl {
 
-    private final URL url;
-    private final WebviewHeightRatio webviewHeightRatio;
-    private final boolean inTest;
-    @SerializedName("webview_share_button")
-    private final Optional<WebviewShareButtonState> webviewShareButtonState;
+  private final URL url;
+  private final WebviewHeightRatio webviewHeightRatio;
+  private final boolean inTest;
 
-    public static HomeUrl create(@NonNull URL url, boolean inTest) {
-        return create(url, inTest, empty());
-    }
+  @SerializedName("webview_share_button")
+  private final Optional<WebviewShareButtonState> webviewShareButtonState;
 
-    public static HomeUrl create(@NonNull URL url, boolean inTest,
-                                 @NonNull Optional<WebviewShareButtonState> webviewShareButtonState) {
-        return new HomeUrl(url, inTest, webviewShareButtonState);
-    }
+  private HomeUrl(
+      URL url, boolean inTest, Optional<WebviewShareButtonState> webviewShareButtonState) {
+    this.url = url;
+    this.webviewHeightRatio = WebviewHeightRatio.TALL;
+    this.inTest = inTest;
+    this.webviewShareButtonState = webviewShareButtonState;
+  }
 
-    private HomeUrl(URL url, boolean inTest, Optional<WebviewShareButtonState> webviewShareButtonState) {
-        this.url = url;
-        this.webviewHeightRatio = WebviewHeightRatio.TALL;
-        this.inTest = inTest;
-        this.webviewShareButtonState = webviewShareButtonState;
-    }
+  public static HomeUrl create(@NonNull URL url, boolean inTest) {
+    return create(url, inTest, empty());
+  }
 
-    public URL url() {
-        return url;
-    }
+  public static HomeUrl create(
+      @NonNull URL url,
+      boolean inTest,
+      @NonNull Optional<WebviewShareButtonState> webviewShareButtonState) {
+    return new HomeUrl(url, inTest, webviewShareButtonState);
+  }
 
-    public boolean inTest() {
-        return inTest;
-    }
+  public URL url() {
+    return url;
+  }
 
-    public Optional<WebviewShareButtonState> webviewShareButtonState() {
-        return webviewShareButtonState;
-    }
+  public boolean inTest() {
+    return inTest;
+  }
+
+  public Optional<WebviewShareButtonState> webviewShareButtonState() {
+    return webviewShareButtonState;
+  }
 }

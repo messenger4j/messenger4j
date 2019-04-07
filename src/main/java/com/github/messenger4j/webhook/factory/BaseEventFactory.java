@@ -19,24 +19,26 @@ import java.util.Optional;
  */
 interface BaseEventFactory<E extends BaseEvent> {
 
-    boolean isResponsible(JsonObject messagingEvent);
+  boolean isResponsible(JsonObject messagingEvent);
 
-    E createEventFromJson(JsonObject messagingEvent);
+  E createEventFromJson(JsonObject messagingEvent);
 
-    default PriorMessage getPriorMessageFromJsonObject(JsonObject jsonObject) {
-        final String source = getPropertyAsString(jsonObject, PROP_SOURCE)
-                .orElseThrow(IllegalArgumentException::new);
-        final String identifier = getPropertyAsString(jsonObject, PROP_IDENTIFIER)
-                .orElseThrow(IllegalArgumentException::new);
-        return new PriorMessage(source, identifier);
-    }
+  default PriorMessage getPriorMessageFromJsonObject(JsonObject jsonObject) {
+    final String source =
+        getPropertyAsString(jsonObject, PROP_SOURCE).orElseThrow(IllegalArgumentException::new);
+    final String identifier =
+        getPropertyAsString(jsonObject, PROP_IDENTIFIER).orElseThrow(IllegalArgumentException::new);
+    return new PriorMessage(source, identifier);
+  }
 
-    default Referral createReferralFromJson(JsonObject jsonObject) {
-        final String source = getPropertyAsString(jsonObject, PROP_SOURCE).orElseThrow(IllegalArgumentException::new);
-        final String type = getPropertyAsString(jsonObject, PROP_TYPE).orElseThrow(IllegalArgumentException::new);
-        final Optional<String> refPayload = getPropertyAsString(jsonObject, PROP_REF);
-        final Optional<String> adId = getPropertyAsString(jsonObject, PROP_AD_ID);
+  default Referral createReferralFromJson(JsonObject jsonObject) {
+    final String source =
+        getPropertyAsString(jsonObject, PROP_SOURCE).orElseThrow(IllegalArgumentException::new);
+    final String type =
+        getPropertyAsString(jsonObject, PROP_TYPE).orElseThrow(IllegalArgumentException::new);
+    final Optional<String> refPayload = getPropertyAsString(jsonObject, PROP_REF);
+    final Optional<String> adId = getPropertyAsString(jsonObject, PROP_AD_ID);
 
-        return new Referral(source, type, refPayload, adId);
-    }
+    return new Referral(source, type, refPayload, adId);
+  }
 }

@@ -20,23 +20,21 @@ import java.util.Optional;
  */
 public final class GsonFactory {
 
-    private GsonFactory() {
-    }
+  private GsonFactory() {}
 
-    public static Gson createGson() {
-        return new GsonBuilder()
-                .setFieldNamingPolicy(LOWER_CASE_WITH_UNDERSCORES)
-                .registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory())
-                .registerTypeAdapter(Optional.class, new OptionalSerializer())
-                .registerTypeAdapter(Float.class, new FloatSerializer())
-                .registerTypeAdapter(Message.class, new MessageSerializer())
-                .registerTypeAdapter(RichMediaAsset.class, new RichMediaAssetSerializer())
-                .registerTypeAdapter(MessengerSettings.class, new MessengerSettingsSerializer())
-                .registerTypeAdapter(PhoneNumberRecipient.class, new PhoneNumberRecipientSerializer())
-                .registerTypeAdapter(ShareButton.class, new ShareButtonSerializer())
-                .registerTypeAdapter(WebviewShareButtonState.class, new WebviewShareButtonStateSerializer())
-                .registerTypeAdapter(TargetAudience.class, new TargetAudienceSerializer())
-                .create();
-    }
-
+  public static Gson createGson() {
+    return new GsonBuilder()
+        .setFieldNamingPolicy(LOWER_CASE_WITH_UNDERSCORES)
+        .registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory())
+        .registerTypeAdapter(Optional.class, new OptionalSerializer())
+        .registerTypeAdapter(Float.class, new FloatSerializer())
+        .registerTypeAdapter(Message.class, new MessageSerializer())
+        .registerTypeAdapter(RichMediaAsset.class, new RichMediaAssetSerializer())
+        .registerTypeAdapter(MessengerSettings.class, new MessengerSettingsSerializer())
+        .registerTypeAdapter(PhoneNumberRecipient.class, new PhoneNumberRecipientSerializer())
+        .registerTypeAdapter(ShareButton.class, new ShareButtonSerializer())
+        .registerTypeAdapter(WebviewShareButtonState.class, new WebviewShareButtonStateSerializer())
+        .registerTypeAdapter(TargetAudience.class, new TargetAudienceSerializer())
+        .create();
+  }
 }

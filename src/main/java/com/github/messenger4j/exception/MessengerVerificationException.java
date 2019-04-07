@@ -8,7 +8,7 @@ import lombok.NonNull;
  */
 public final class MessengerVerificationException extends Exception {
 
-    public MessengerVerificationException(@NonNull String message) {
-        super(message);
-    }
+  public MessengerVerificationException(@NonNull String message) {
+    super(message);
+  }
 }

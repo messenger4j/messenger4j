@@ -14,18 +14,18 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class WhitelistTargetAudience extends TargetAudience {
 
-    private final List<SupportedCountry> countries;
+  private final List<SupportedCountry> countries;
 
-    public static WhitelistTargetAudience create(@NonNull List<SupportedCountry> countries) {
-        return new WhitelistTargetAudience(countries);
-    }
+  private WhitelistTargetAudience(List<SupportedCountry> countries) {
+    super(Type.CUSTOM);
+    this.countries = countries;
+  }
 
-    private WhitelistTargetAudience(List<SupportedCountry> countries) {
-        super(Type.CUSTOM);
-        this.countries = countries;
-    }
+  public static WhitelistTargetAudience create(@NonNull List<SupportedCountry> countries) {
+    return new WhitelistTargetAudience(countries);
+  }
 
-    public List<SupportedCountry> countries() {
-        return countries;
-    }
+  public List<SupportedCountry> countries() {
+    return countries;
+  }
 }

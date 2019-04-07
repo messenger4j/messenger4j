@@ -12,18 +12,18 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class PostbackCallToAction extends CallToAction {
 
-    private final String payload;
+  private final String payload;
 
-    public static PostbackCallToAction create(@NonNull String title, @NonNull String payload) {
-        return new PostbackCallToAction(title, payload);
-    }
+  private PostbackCallToAction(String title, String payload) {
+    super(Type.POSTBACK, title);
+    this.payload = payload;
+  }
 
-    private PostbackCallToAction(String title, String payload) {
-        super(Type.POSTBACK, title);
-        this.payload = payload;
-    }
+  public static PostbackCallToAction create(@NonNull String title, @NonNull String payload) {
+    return new PostbackCallToAction(title, payload);
+  }
 
-    public String payload() {
-        return payload;
-    }
+  public String payload() {
+    return payload;
+  }
 }

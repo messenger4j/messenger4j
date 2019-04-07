@@ -20,34 +20,36 @@ import java.util.List;
  */
 public final class EventFactory {
 
-    private static final List<BaseEventFactory> FACTORIES = Lists.immutableList(
-            new TextMessageEventFactory(),
-            new AttachmentMessageEventFactory(),
-            new QuickReplyMessageEventFactory(),
-            new PostbackEventFactory(),
-            new ReferralEventFactory(),
-            new OptInEventFactory(),
-            new MessageEchoEventFactory(),
-            new MessageDeliveredEventFactory(),
-            new MessageReadEventFactory(),
-            new AccountLinkingEventFactory(),
-            new InstantGameEventFactory()
-    );
+  private static final List<BaseEventFactory> FACTORIES =
+      Lists.immutableList(
+          new TextMessageEventFactory(),
+          new AttachmentMessageEventFactory(),
+          new QuickReplyMessageEventFactory(),
+          new PostbackEventFactory(),
+          new ReferralEventFactory(),
+          new OptInEventFactory(),
+          new MessageEchoEventFactory(),
+          new MessageDeliveredEventFactory(),
+          new MessageReadEventFactory(),
+          new AccountLinkingEventFactory(),
+          new InstantGameEventFactory());
 
-    private EventFactory() {
-    }
+  private EventFactory() {}
 
-    public static Event createEvent(JsonObject messagingEvent) {
-        for (BaseEventFactory factory : FACTORIES) {
-            if (factory.isResponsible(messagingEvent)) {
-                return new Event(factory.createEventFromJson(messagingEvent));
-            }
-        }
-        final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
-                .orElseThrow(IllegalArgumentException::new);
-        final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
-                .orElseThrow(IllegalArgumentException::new);
-        final Instant timestamp = getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP).orElse(Instant.now());
-        return new Event(new FallbackEvent(senderId, recipientId, timestamp));
+  public static Event createEvent(JsonObject messagingEvent) {
+    for (BaseEventFactory factory : FACTORIES) {
+      if (factory.isResponsible(messagingEvent)) {
+        return new Event(factory.createEventFromJson(messagingEvent));
+      }
     }
+    final String senderId =
+        getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
+            .orElseThrow(IllegalArgumentException::new);
+    final String recipientId =
+        getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
+            .orElseThrow(IllegalArgumentException::new);
+    final Instant timestamp =
+        getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP).orElse(Instant.now());
+    return new Event(new FallbackEvent(senderId, recipientId, timestamp));
+  }
 }

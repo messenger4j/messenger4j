@@ -11,22 +11,20 @@ import lombok.ToString;
 @EqualsAndHashCode
 public abstract class TargetAudience {
 
-    private final Type audienceType;
+  private final Type audienceType;
 
-    TargetAudience(Type audienceType) {
-        this.audienceType = audienceType;
-    }
+  TargetAudience(Type audienceType) {
+    this.audienceType = audienceType;
+  }
 
-    public Type audienceType() {
-        return audienceType;
-    }
+  public Type audienceType() {
+    return audienceType;
+  }
 
-    /**
-     * @since 1.0.0
-     */
-    public enum Type {
-        ALL,
-        NONE,
-        CUSTOM
-    }
+  /** @since 1.0.0 */
+  public enum Type {
+    ALL,
+    NONE,
+    CUSTOM
+  }
 }

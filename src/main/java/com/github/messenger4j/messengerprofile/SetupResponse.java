@@ -13,13 +13,13 @@ import lombok.ToString;
 @EqualsAndHashCode
 public final class SetupResponse {
 
-    private final String result;
+  private final String result;
 
-    public SetupResponse(@NonNull String result) {
-        this.result = result;
-    }
+  public SetupResponse(@NonNull String result) {
+    this.result = result;
+  }
 
-    public String result() {
-        return result;
-    }
+  public String result() {
+    return result;
+  }
 }

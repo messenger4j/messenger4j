@@ -15,24 +15,24 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class ButtonTemplate extends Template {
 
-    private final String text;
-    private final List<Button> buttons;
+  private final String text;
+  private final List<Button> buttons;
 
-    public static ButtonTemplate create(@NonNull String text, @NonNull List<Button> buttons) {
-        return new ButtonTemplate(text, buttons);
-    }
+  private ButtonTemplate(String text, List<Button> buttons) {
+    super(Type.BUTTON);
+    this.text = text;
+    this.buttons = Lists.immutableList(buttons);
+  }
 
-    private ButtonTemplate(String text, List<Button> buttons) {
-        super(Type.BUTTON);
-        this.text = text;
-        this.buttons = Lists.immutableList(buttons);
-    }
+  public static ButtonTemplate create(@NonNull String text, @NonNull List<Button> buttons) {
+    return new ButtonTemplate(text, buttons);
+  }
 
-    public String text() {
-        return text;
-    }
+  public String text() {
+    return text;
+  }
 
-    public List<Button> buttons() {
-        return buttons;
-    }
+  public List<Button> buttons() {
+    return buttons;
+  }
 }

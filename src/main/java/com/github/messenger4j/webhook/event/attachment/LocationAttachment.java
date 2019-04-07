@@ -11,29 +11,29 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = false)
 public final class LocationAttachment extends Attachment {
 
-    private final double latitude;
-    private final double longitude;
+  private final double latitude;
+  private final double longitude;
 
-    public LocationAttachment(double latitude, double longitude) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
+  public LocationAttachment(double latitude, double longitude) {
+    this.latitude = latitude;
+    this.longitude = longitude;
+  }
 
-    @Override
-    public boolean isLocationAttachment() {
-        return true;
-    }
+  @Override
+  public boolean isLocationAttachment() {
+    return true;
+  }
 
-    @Override
-    public LocationAttachment asLocationAttachment() {
-        return this;
-    }
+  @Override
+  public LocationAttachment asLocationAttachment() {
+    return this;
+  }
 
-    public double latitude() {
-        return latitude;
-    }
+  public double latitude() {
+    return latitude;
+  }
 
-    public double longitude() {
-        return longitude;
-    }
+  public double longitude() {
+    return longitude;
+  }
 }

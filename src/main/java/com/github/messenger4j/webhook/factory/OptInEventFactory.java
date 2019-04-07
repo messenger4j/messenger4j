@@ -22,21 +22,24 @@ import java.util.Optional;
  */
 final class OptInEventFactory implements BaseEventFactory<OptInEvent> {
 
-    @Override
-    public boolean isResponsible(JsonObject messagingEvent) {
-        return hasProperty(messagingEvent, PROP_OPTIN);
-    }
+  @Override
+  public boolean isResponsible(JsonObject messagingEvent) {
+    return hasProperty(messagingEvent, PROP_OPTIN);
+  }
 
-    @Override
-    public OptInEvent createEventFromJson(JsonObject messagingEvent) {
-        final Optional<String> senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID);
-        final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
-                .orElseThrow(IllegalArgumentException::new);
-        final Instant timestamp = getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP)
-                .orElseThrow(IllegalArgumentException::new);
-        final Optional<String> refPayload = getPropertyAsString(messagingEvent, PROP_OPTIN, PROP_REF);
-        final Optional<String> userRefPayload = getPropertyAsString(messagingEvent, PROP_OPTIN, PROP_USER_REF);
+  @Override
+  public OptInEvent createEventFromJson(JsonObject messagingEvent) {
+    final Optional<String> senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID);
+    final String recipientId =
+        getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
+            .orElseThrow(IllegalArgumentException::new);
+    final Instant timestamp =
+        getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP)
+            .orElseThrow(IllegalArgumentException::new);
+    final Optional<String> refPayload = getPropertyAsString(messagingEvent, PROP_OPTIN, PROP_REF);
+    final Optional<String> userRefPayload =
+        getPropertyAsString(messagingEvent, PROP_OPTIN, PROP_USER_REF);
 
-        return new OptInEvent(senderId, recipientId, timestamp, refPayload, userRefPayload);
-    }
+    return new OptInEvent(senderId, recipientId, timestamp, refPayload, userRefPayload);
+  }
 }

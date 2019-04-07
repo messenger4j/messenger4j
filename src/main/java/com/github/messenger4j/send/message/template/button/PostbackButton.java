@@ -12,24 +12,24 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class PostbackButton extends Button {
 
-    private final String title;
-    private final String payload;
+  private final String title;
+  private final String payload;
 
-    public static PostbackButton create(@NonNull String title, @NonNull String payload) {
-        return new PostbackButton(title, payload);
-    }
+  private PostbackButton(String title, String payload) {
+    super(Type.POSTBACK);
+    this.title = title;
+    this.payload = payload;
+  }
 
-    private PostbackButton(String title, String payload) {
-        super(Type.POSTBACK);
-        this.title = title;
-        this.payload = payload;
-    }
+  public static PostbackButton create(@NonNull String title, @NonNull String payload) {
+    return new PostbackButton(title, payload);
+  }
 
-    public String title() {
-        return title;
-    }
+  public String title() {
+    return title;
+  }
 
-    public String payload() {
-        return payload;
-    }
+  public String payload() {
+    return payload;
+  }
 }

@@ -7,13 +7,12 @@ import com.google.gson.annotations.SerializedName;
  * @since 1.0.0
  */
 public enum MessagingType {
+  @SerializedName("RESPONSE")
+  RESPONSE,
 
-    @SerializedName("RESPONSE")
-    RESPONSE,
+  @SerializedName("UPDATE")
+  UPDATE,
 
-    @SerializedName("UPDATE")
-    UPDATE,
-
-    @SerializedName("MESSAGE_TAG")
-    MESSAGE_TAG
+  @SerializedName("MESSAGE_TAG")
+  MESSAGE_TAG
 }

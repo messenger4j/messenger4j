@@ -17,37 +17,41 @@ import lombok.ToString;
 @EqualsAndHashCode
 public final class LocalizedPersistentMenu {
 
-    private final String locale;
-    private final boolean composerInputDisabled;
-    private final Optional<List<CallToAction>> callToActions;
+  private final String locale;
+  private final boolean composerInputDisabled;
+  private final Optional<List<CallToAction>> callToActions;
 
-    public static LocalizedPersistentMenu create(@NonNull SupportedLocale locale, boolean composerInputDisabled,
-                                                 @NonNull Optional<List<CallToAction>> callToActions) {
+  private LocalizedPersistentMenu(
+      String locale, boolean composerInputDisabled, Optional<List<CallToAction>> callToActions) {
+    this.locale = locale;
+    this.composerInputDisabled = composerInputDisabled;
+    this.callToActions = callToActions.map(Lists::immutableList);
+  }
 
-        return create(locale.name(), composerInputDisabled, callToActions);
-    }
+  public static LocalizedPersistentMenu create(
+      @NonNull SupportedLocale locale,
+      boolean composerInputDisabled,
+      @NonNull Optional<List<CallToAction>> callToActions) {
 
-    public static LocalizedPersistentMenu create(@NonNull String locale, boolean composerInputDisabled,
-                                                 @NonNull Optional<List<CallToAction>> callToActions) {
-        return new LocalizedPersistentMenu(locale, composerInputDisabled, callToActions);
-    }
+    return create(locale.name(), composerInputDisabled, callToActions);
+  }
 
-    private LocalizedPersistentMenu(String locale, boolean composerInputDisabled,
-                                    Optional<List<CallToAction>> callToActions) {
-        this.locale = locale;
-        this.composerInputDisabled = composerInputDisabled;
-        this.callToActions = callToActions.map(Lists::immutableList);
-    }
+  public static LocalizedPersistentMenu create(
+      @NonNull String locale,
+      boolean composerInputDisabled,
+      @NonNull Optional<List<CallToAction>> callToActions) {
+    return new LocalizedPersistentMenu(locale, composerInputDisabled, callToActions);
+  }
 
-    public String locale() {
-        return locale;
-    }
+  public String locale() {
+    return locale;
+  }
 
-    public boolean composerInputDisabled() {
-        return composerInputDisabled;
-    }
+  public boolean composerInputDisabled() {
+    return composerInputDisabled;
+  }
 
-    public Optional<List<CallToAction>> callToActions() {
-        return callToActions;
-    }
+  public Optional<List<CallToAction>> callToActions() {
+    return callToActions;
+  }
 }

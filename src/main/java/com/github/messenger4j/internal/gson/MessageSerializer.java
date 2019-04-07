@@ -17,29 +17,33 @@ import java.lang.reflect.Type;
  */
 final class MessageSerializer implements JsonSerializer<Message> {
 
-    @Override
-    public JsonElement serialize(Message message, Type typeOfSrc, JsonSerializationContext context) {
-        final JsonObject messageObject = new JsonObject();
+  @Override
+  public JsonElement serialize(Message message, Type typeOfSrc, JsonSerializationContext context) {
+    final JsonObject messageObject = new JsonObject();
 
-        if (message instanceof TextMessage) {
-            final TextMessage textMessage = (TextMessage) message;
-            messageObject.addProperty("text", textMessage.text());
-        }
-        if (message instanceof RichMediaMessage) {
-            final RichMediaMessage richMediaMessage = (RichMediaMessage) message;
-            messageObject.add("attachment", context.serialize(richMediaMessage.richMediaAsset(), RichMediaAsset.class));
-        }
-        if (message instanceof TemplateMessage) {
-            final TemplateMessage templateMessage = (TemplateMessage) message;
-            final JsonObject attachmentObject = new JsonObject();
-            attachmentObject.addProperty("type", "template");
-            attachmentObject.add("payload", context.serialize(templateMessage.template()));
-            messageObject.add("attachment", attachmentObject);
-        }
-
-        message.quickReplies().ifPresent(quickReplies -> messageObject.add("quick_replies", context.serialize(quickReplies)));
-        message.metadata().ifPresent(metadata -> messageObject.addProperty("metadata", metadata));
-
-        return messageObject;
+    if (message instanceof TextMessage) {
+      final TextMessage textMessage = (TextMessage) message;
+      messageObject.addProperty("text", textMessage.text());
     }
+    if (message instanceof RichMediaMessage) {
+      final RichMediaMessage richMediaMessage = (RichMediaMessage) message;
+      messageObject.add(
+          "attachment", context.serialize(richMediaMessage.richMediaAsset(), RichMediaAsset.class));
+    }
+    if (message instanceof TemplateMessage) {
+      final TemplateMessage templateMessage = (TemplateMessage) message;
+      final JsonObject attachmentObject = new JsonObject();
+      attachmentObject.addProperty("type", "template");
+      attachmentObject.add("payload", context.serialize(templateMessage.template()));
+      messageObject.add("attachment", attachmentObject);
+    }
+
+    message
+        .quickReplies()
+        .ifPresent(
+            quickReplies -> messageObject.add("quick_replies", context.serialize(quickReplies)));
+    message.metadata().ifPresent(metadata -> messageObject.addProperty("metadata", metadata));
+
+    return messageObject;
+  }
 }

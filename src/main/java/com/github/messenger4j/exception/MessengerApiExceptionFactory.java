@@ -17,15 +17,16 @@ import java.util.Optional;
  */
 public final class MessengerApiExceptionFactory {
 
-    private MessengerApiExceptionFactory() {
-    }
+  private MessengerApiExceptionFactory() {}
 
-    public static MessengerApiException create(JsonObject jsonObject) {
-        final String message = getPropertyAsString(jsonObject, PROP_ERROR, PROP_MESSAGE)
-                .orElseThrow(IllegalArgumentException::new);
-        final Optional<String> type = getPropertyAsString(jsonObject, PROP_ERROR, PROP_TYPE);
-        final Optional<Integer> code = getPropertyAsInt(jsonObject, PROP_ERROR, PROP_CODE);
-        final Optional<String> fbTraceId = getPropertyAsString(jsonObject, PROP_ERROR, PROP_FB_TRACE_ID);
-        return new MessengerApiException(message, type, code, fbTraceId);
-    }
+  public static MessengerApiException create(JsonObject jsonObject) {
+    final String message =
+        getPropertyAsString(jsonObject, PROP_ERROR, PROP_MESSAGE)
+            .orElseThrow(IllegalArgumentException::new);
+    final Optional<String> type = getPropertyAsString(jsonObject, PROP_ERROR, PROP_TYPE);
+    final Optional<Integer> code = getPropertyAsInt(jsonObject, PROP_ERROR, PROP_CODE);
+    final Optional<String> fbTraceId =
+        getPropertyAsString(jsonObject, PROP_ERROR, PROP_FB_TRACE_ID);
+    return new MessengerApiException(message, type, code, fbTraceId);
+  }
 }

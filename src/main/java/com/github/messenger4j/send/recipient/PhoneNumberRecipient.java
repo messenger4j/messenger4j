@@ -16,34 +16,35 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = false)
 public final class PhoneNumberRecipient extends Recipient {
 
-    private final String phoneNumber;
-    private final Optional<String> firstName;
-    private final Optional<String> lastName;
+  private final String phoneNumber;
+  private final Optional<String> firstName;
+  private final Optional<String> lastName;
 
-    public static PhoneNumberRecipient create(@NonNull String phoneNumber) {
-        return new PhoneNumberRecipient(phoneNumber, empty(), empty());
-    }
+  private PhoneNumberRecipient(
+      String phoneNumber, Optional<String> firstName, Optional<String> lastName) {
+    this.phoneNumber = phoneNumber;
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
 
-    public static PhoneNumberRecipient create(@NonNull String phoneNumber, @NonNull String firstName,
-                                              @NonNull String lastName) {
-        return new PhoneNumberRecipient(phoneNumber, of(firstName), of(lastName));
-    }
+  public static PhoneNumberRecipient create(@NonNull String phoneNumber) {
+    return new PhoneNumberRecipient(phoneNumber, empty(), empty());
+  }
 
-    private PhoneNumberRecipient(String phoneNumber, Optional<String> firstName, Optional<String> lastName) {
-        this.phoneNumber = phoneNumber;
-        this.firstName = firstName;
-        this.lastName = lastName;
-    }
+  public static PhoneNumberRecipient create(
+      @NonNull String phoneNumber, @NonNull String firstName, @NonNull String lastName) {
+    return new PhoneNumberRecipient(phoneNumber, of(firstName), of(lastName));
+  }
 
-    public String phoneNumber() {
-        return phoneNumber;
-    }
+  public String phoneNumber() {
+    return phoneNumber;
+  }
 
-    public Optional<String> firstName() {
-        return firstName;
-    }
+  public Optional<String> firstName() {
+    return firstName;
+  }
 
-    public Optional<String> lastName() {
-        return lastName;
-    }
+  public Optional<String> lastName() {
+    return lastName;
+  }
 }

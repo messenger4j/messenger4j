@@ -12,17 +12,17 @@ import lombok.ToString;
 @EqualsAndHashCode
 public final class StartButton {
 
-    private final String payload;
+  private final String payload;
 
-    public static StartButton create(@NonNull String payload) {
-        return new StartButton(payload);
-    }
+  private StartButton(String payload) {
+    this.payload = payload;
+  }
 
-    private StartButton(String payload) {
-        this.payload = payload;
-    }
+  public static StartButton create(@NonNull String payload) {
+    return new StartButton(payload);
+  }
 
-    public String payload() {
-        return payload;
-    }
+  public String payload() {
+    return payload;
+  }
 }

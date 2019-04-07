@@ -17,23 +17,23 @@ import lombok.ToString;
 @EqualsAndHashCode
 public final class OpenGraphObject {
 
-    private final URL url;
-    private final Optional<List<Button>> buttons;
+  private final URL url;
+  private final Optional<List<Button>> buttons;
 
-    public static OpenGraphObject create(@NonNull URL url, @NonNull Optional<List<Button>> buttons) {
-        return new OpenGraphObject(url, buttons);
-    }
+  private OpenGraphObject(URL url, Optional<List<Button>> buttons) {
+    this.url = url;
+    this.buttons = buttons.map(Lists::immutableList);
+  }
 
-    private OpenGraphObject(URL url, Optional<List<Button>> buttons) {
-        this.url = url;
-        this.buttons = buttons.map(Lists::immutableList);
-    }
+  public static OpenGraphObject create(@NonNull URL url, @NonNull Optional<List<Button>> buttons) {
+    return new OpenGraphObject(url, buttons);
+  }
 
-    public URL url() {
-        return url;
-    }
+  public URL url() {
+    return url;
+  }
 
-    public Optional<List<Button>> buttons() {
-        return buttons;
-    }
+  public Optional<List<Button>> buttons() {
+    return buttons;
+  }
 }

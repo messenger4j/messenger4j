@@ -12,23 +12,23 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = false)
 public final class FallbackAttachment extends Attachment {
 
-    private final String json;
+  private final String json;
 
-    public FallbackAttachment(@NonNull String json) {
-        this.json = json;
-    }
+  public FallbackAttachment(@NonNull String json) {
+    this.json = json;
+  }
 
-    @Override
-    public boolean isFallbackAttachment() {
-        return true;
-    }
+  @Override
+  public boolean isFallbackAttachment() {
+    return true;
+  }
 
-    @Override
-    public FallbackAttachment asFallbackAttachment() {
-        return this;
-    }
+  @Override
+  public FallbackAttachment asFallbackAttachment() {
+    return this;
+  }
 
-    public String json() {
-        return json;
-    }
+  public String json() {
+    return json;
+  }
 }

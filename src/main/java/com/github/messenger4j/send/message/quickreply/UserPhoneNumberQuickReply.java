@@ -11,11 +11,11 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public class UserPhoneNumberQuickReply extends QuickReply {
 
-    public static UserPhoneNumberQuickReply create() {
-        return new UserPhoneNumberQuickReply();
-    }
+  private UserPhoneNumberQuickReply() {
+    super(ContentType.USER_PHONE_NUMBER);
+  }
 
-    private UserPhoneNumberQuickReply() {
-        super(ContentType.USER_PHONE_NUMBER);
-    }
+  public static UserPhoneNumberQuickReply create() {
+    return new UserPhoneNumberQuickReply();
+  }
 }

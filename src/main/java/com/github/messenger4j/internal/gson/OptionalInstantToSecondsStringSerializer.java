@@ -12,10 +12,13 @@ import java.util.Optional;
  * @author Max Grabenhorst
  * @since 1.0.0
  */
-public final class OptionalInstantToSecondsStringSerializer implements JsonSerializer<Optional<Instant>> {
+public final class OptionalInstantToSecondsStringSerializer
+    implements JsonSerializer<Optional<Instant>> {
 
-    @Override
-    public JsonElement serialize(Optional<Instant> src, Type typeOfSrc, JsonSerializationContext context) {
-        return src.map(instant -> new JsonPrimitive(Long.toString(instant.getEpochSecond()))).orElse(null);
-    }
+  @Override
+  public JsonElement serialize(
+      Optional<Instant> src, Type typeOfSrc, JsonSerializationContext context) {
+    return src.map(instant -> new JsonPrimitive(Long.toString(instant.getEpochSecond())))
+        .orElse(null);
+  }
 }

@@ -16,28 +16,29 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class UrlRichMediaAsset extends RichMediaAsset {
 
-    private final URL url;
-    private final Optional<Boolean> isReusable;
+  private final URL url;
+  private final Optional<Boolean> isReusable;
 
-    public static UrlRichMediaAsset create(@NonNull Type type, @NonNull URL url) {
-        return create(type, url, empty());
-    }
+  private UrlRichMediaAsset(Type type, URL url, Optional<Boolean> isReusable) {
+    super(type);
+    this.url = url;
+    this.isReusable = isReusable;
+  }
 
-    public static UrlRichMediaAsset create(@NonNull Type type, @NonNull URL url, @NonNull Optional<Boolean> isReusable) {
-        return new UrlRichMediaAsset(type, url, isReusable);
-    }
+  public static UrlRichMediaAsset create(@NonNull Type type, @NonNull URL url) {
+    return create(type, url, empty());
+  }
 
-    private UrlRichMediaAsset(Type type, URL url, Optional<Boolean> isReusable) {
-        super(type);
-        this.url = url;
-        this.isReusable = isReusable;
-    }
+  public static UrlRichMediaAsset create(
+      @NonNull Type type, @NonNull URL url, @NonNull Optional<Boolean> isReusable) {
+    return new UrlRichMediaAsset(type, url, isReusable);
+  }
 
-    public URL url() {
-        return url;
-    }
+  public URL url() {
+    return url;
+  }
 
-    public Optional<Boolean> isReusable() {
-        return isReusable;
-    }
+  public Optional<Boolean> isReusable() {
+    return isReusable;
+  }
 }

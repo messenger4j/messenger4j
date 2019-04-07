@@ -13,7 +13,8 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class FallbackEvent extends BaseEvent {
 
-    public FallbackEvent(@NonNull String senderId, @NonNull String recipientId, @NonNull Instant timestamp) {
-        super(senderId, recipientId, timestamp);
-    }
+  public FallbackEvent(
+      @NonNull String senderId, @NonNull String recipientId, @NonNull Instant timestamp) {
+    super(senderId, recipientId, timestamp);
+  }
 }

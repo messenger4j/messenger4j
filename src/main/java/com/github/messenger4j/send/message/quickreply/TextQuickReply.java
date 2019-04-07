@@ -16,35 +16,35 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class TextQuickReply extends QuickReply {
 
-    private final String title;
-    private final String payload;
-    private final Optional<URL> imageUrl;
+  private final String title;
+  private final String payload;
+  private final Optional<URL> imageUrl;
 
-    public static TextQuickReply create(@NonNull String title, @NonNull String payload) {
-        return create(title, payload, empty());
-    }
+  private TextQuickReply(String title, String payload, Optional<URL> imageUrl) {
+    super(ContentType.TEXT);
+    this.title = title;
+    this.payload = payload;
+    this.imageUrl = imageUrl;
+  }
 
-    public static TextQuickReply create(@NonNull String title, @NonNull String payload,
-                                        @NonNull Optional<URL> imageUrl) {
-        return new TextQuickReply(title, payload, imageUrl);
-    }
+  public static TextQuickReply create(@NonNull String title, @NonNull String payload) {
+    return create(title, payload, empty());
+  }
 
-    private TextQuickReply(String title, String payload, Optional<URL> imageUrl) {
-        super(ContentType.TEXT);
-        this.title = title;
-        this.payload = payload;
-        this.imageUrl = imageUrl;
-    }
+  public static TextQuickReply create(
+      @NonNull String title, @NonNull String payload, @NonNull Optional<URL> imageUrl) {
+    return new TextQuickReply(title, payload, imageUrl);
+  }
 
-    public String title() {
-        return title;
-    }
+  public String title() {
+    return title;
+  }
 
-    public String payload() {
-        return payload;
-    }
+  public String payload() {
+    return payload;
+  }
 
-    public Optional<URL> imageUrl() {
-        return imageUrl;
-    }
+  public Optional<URL> imageUrl() {
+    return imageUrl;
+  }
 }

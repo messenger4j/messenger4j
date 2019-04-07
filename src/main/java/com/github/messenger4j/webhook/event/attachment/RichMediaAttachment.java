@@ -13,39 +13,37 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = false)
 public final class RichMediaAttachment extends Attachment {
 
-    private final Type type;
-    private final URL url;
+  private final Type type;
+  private final URL url;
 
-    public RichMediaAttachment(@NonNull Type type, @NonNull URL url) {
-        this.type = type;
-        this.url = url;
-    }
+  public RichMediaAttachment(@NonNull Type type, @NonNull URL url) {
+    this.type = type;
+    this.url = url;
+  }
 
-    @Override
-    public boolean isRichMediaAttachment() {
-        return true;
-    }
+  @Override
+  public boolean isRichMediaAttachment() {
+    return true;
+  }
 
-    @Override
-    public RichMediaAttachment asRichMediaAttachment() {
-        return this;
-    }
+  @Override
+  public RichMediaAttachment asRichMediaAttachment() {
+    return this;
+  }
 
-    public Type type() {
-        return type;
-    }
+  public Type type() {
+    return type;
+  }
 
-    public URL url() {
-        return url;
-    }
+  public URL url() {
+    return url;
+  }
 
-    /**
-     * @since 1.0.0
-     */
-    public enum Type {
-        IMAGE,
-        AUDIO,
-        VIDEO,
-        FILE;
-    }
+  /** @since 1.0.0 */
+  public enum Type {
+    IMAGE,
+    AUDIO,
+    VIDEO,
+    FILE
+  }
 }

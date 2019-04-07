@@ -11,11 +11,11 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class NoneTargetAudience extends TargetAudience {
 
-    public static NoneTargetAudience create() {
-        return new NoneTargetAudience();
-    }
+  private NoneTargetAudience() {
+    super(Type.NONE);
+  }
 
-    private NoneTargetAudience() {
-        super(Type.NONE);
-    }
+  public static NoneTargetAudience create() {
+    return new NoneTargetAudience();
+  }
 }

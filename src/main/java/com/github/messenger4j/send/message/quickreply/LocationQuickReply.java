@@ -11,11 +11,11 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class LocationQuickReply extends QuickReply {
 
-    public static LocationQuickReply create() {
-        return new LocationQuickReply();
-    }
+  private LocationQuickReply() {
+    super(ContentType.LOCATION);
+  }
 
-    private LocationQuickReply() {
-        super(ContentType.LOCATION);
-    }
+  public static LocationQuickReply create() {
+    return new LocationQuickReply();
+  }
 }

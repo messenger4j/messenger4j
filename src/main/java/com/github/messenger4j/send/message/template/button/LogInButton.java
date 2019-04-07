@@ -13,18 +13,18 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class LogInButton extends Button {
 
-    private final URL url;
+  private final URL url;
 
-    public static LogInButton create(@NonNull URL url) {
-        return new LogInButton(url);
-    }
+  private LogInButton(URL url) {
+    super(Type.ACCOUNT_LINK);
+    this.url = url;
+  }
 
-    private LogInButton(URL url) {
-        super(Type.ACCOUNT_LINK);
-        this.url = url;
-    }
+  public static LogInButton create(@NonNull URL url) {
+    return new LogInButton(url);
+  }
 
-    public URL url() {
-        return url;
-    }
+  public URL url() {
+    return url;
+  }
 }

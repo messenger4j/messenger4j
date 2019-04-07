@@ -5,7 +5,7 @@ package com.github.messenger4j.common;
  * @since 1.0.0
  */
 public enum WebviewHeightRatio {
-    COMPACT,
-    TALL,
-    FULL
+  COMPACT,
+  TALL,
+  FULL
 }

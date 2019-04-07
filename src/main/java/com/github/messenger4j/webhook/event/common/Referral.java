@@ -13,32 +13,35 @@ import lombok.ToString;
 @EqualsAndHashCode
 public final class Referral {
 
-    private final String source;
-    private final String type;
-    private final Optional<String> refPayload;
-    private final Optional<String> adId;
+  private final String source;
+  private final String type;
+  private final Optional<String> refPayload;
+  private final Optional<String> adId;
 
-    public Referral(@NonNull String source, @NonNull String type, @NonNull Optional<String> refPayload,
-                    @NonNull Optional<String> adId) {
-        this.source = source;
-        this.type = type;
-        this.refPayload = refPayload;
-        this.adId = adId;
-    }
+  public Referral(
+      @NonNull String source,
+      @NonNull String type,
+      @NonNull Optional<String> refPayload,
+      @NonNull Optional<String> adId) {
+    this.source = source;
+    this.type = type;
+    this.refPayload = refPayload;
+    this.adId = adId;
+  }
 
-    public String source() {
-        return source;
-    }
+  public String source() {
+    return source;
+  }
 
-    public String type() {
-        return type;
-    }
+  public String type() {
+    return type;
+  }
 
-    public Optional<String> refPayload() {
-        return refPayload;
-    }
+  public Optional<String> refPayload() {
+    return refPayload;
+  }
 
-    public Optional<String> adId() {
-        return adId;
-    }
+  public Optional<String> adId() {
+    return adId;
+  }
 }

@@ -16,22 +16,22 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class ShareButton extends Button {
 
-    private final Optional<GenericTemplate> shareContents;
+  private final Optional<GenericTemplate> shareContents;
 
-    public static ShareButton create() {
-        return create(empty());
-    }
+  private ShareButton(Optional<GenericTemplate> shareContents) {
+    super(Type.ELEMENT_SHARE);
+    this.shareContents = shareContents;
+  }
 
-    public static ShareButton create(@NonNull Optional<GenericTemplate> shareContents) {
-        return new ShareButton(shareContents);
-    }
+  public static ShareButton create() {
+    return create(empty());
+  }
 
-    private ShareButton(Optional<GenericTemplate> shareContents) {
-        super(Type.ELEMENT_SHARE);
-        this.shareContents = shareContents;
-    }
+  public static ShareButton create(@NonNull Optional<GenericTemplate> shareContents) {
+    return new ShareButton(shareContents);
+  }
 
-    public Optional<GenericTemplate> shareContents() {
-        return shareContents;
-    }
+  public Optional<GenericTemplate> shareContents() {
+    return shareContents;
+  }
 }

@@ -19,58 +19,68 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class UrlCallToAction extends CallToAction {
 
-    private final URL url;
-    private final Optional<WebviewHeightRatio> webviewHeightRatio;
-    private final Optional<Boolean> messengerExtensions;
-    private final Optional<URL> fallbackUrl;
-    @SerializedName("webview_share_button")
-    private final Optional<WebviewShareButtonState> webviewShareButtonState;
+  private final URL url;
+  private final Optional<WebviewHeightRatio> webviewHeightRatio;
+  private final Optional<Boolean> messengerExtensions;
+  private final Optional<URL> fallbackUrl;
 
-    public static UrlCallToAction create(@NonNull String title, @NonNull URL url) {
-        return create(title, url, empty());
-    }
+  @SerializedName("webview_share_button")
+  private final Optional<WebviewShareButtonState> webviewShareButtonState;
 
-    public static UrlCallToAction create(@NonNull String title, @NonNull URL url,
-                                         @NonNull Optional<WebviewHeightRatio> webviewHeightRatio) {
-        return create(title, url, webviewHeightRatio, empty(), empty(), empty());
-    }
+  private UrlCallToAction(
+      String title,
+      URL url,
+      Optional<WebviewHeightRatio> webviewHeightRatio,
+      Optional<Boolean> messengerExtensions,
+      Optional<URL> fallbackUrl,
+      Optional<WebviewShareButtonState> webviewShareButtonState) {
+    super(Type.WEB_URL, title);
+    this.url = url;
+    this.webviewHeightRatio = webviewHeightRatio;
+    this.messengerExtensions = messengerExtensions;
+    this.fallbackUrl = fallbackUrl;
+    this.webviewShareButtonState = webviewShareButtonState;
+  }
 
-    public static UrlCallToAction create(@NonNull String title, @NonNull URL url,
-                                         @NonNull Optional<WebviewHeightRatio> webviewHeightRatio,
-                                         @NonNull Optional<Boolean> messengerExtensions,
-                                         @NonNull Optional<URL> fallbackUrl,
-                                         @NonNull Optional<WebviewShareButtonState> webviewShareButtonState) {
-        return new UrlCallToAction(title, url, webviewHeightRatio, messengerExtensions, fallbackUrl, webviewShareButtonState);
-    }
+  public static UrlCallToAction create(@NonNull String title, @NonNull URL url) {
+    return create(title, url, empty());
+  }
 
-    private UrlCallToAction(String title, URL url, Optional<WebviewHeightRatio> webviewHeightRatio,
-                            Optional<Boolean> messengerExtensions, Optional<URL> fallbackUrl,
-                            Optional<WebviewShareButtonState> webviewShareButtonState) {
-        super(Type.WEB_URL, title);
-        this.url = url;
-        this.webviewHeightRatio = webviewHeightRatio;
-        this.messengerExtensions = messengerExtensions;
-        this.fallbackUrl = fallbackUrl;
-        this.webviewShareButtonState = webviewShareButtonState;
-    }
+  public static UrlCallToAction create(
+      @NonNull String title,
+      @NonNull URL url,
+      @NonNull Optional<WebviewHeightRatio> webviewHeightRatio) {
+    return create(title, url, webviewHeightRatio, empty(), empty(), empty());
+  }
 
-    public URL url() {
-        return url;
-    }
+  public static UrlCallToAction create(
+      @NonNull String title,
+      @NonNull URL url,
+      @NonNull Optional<WebviewHeightRatio> webviewHeightRatio,
+      @NonNull Optional<Boolean> messengerExtensions,
+      @NonNull Optional<URL> fallbackUrl,
+      @NonNull Optional<WebviewShareButtonState> webviewShareButtonState) {
+    return new UrlCallToAction(
+        title, url, webviewHeightRatio, messengerExtensions, fallbackUrl, webviewShareButtonState);
+  }
 
-    public Optional<WebviewHeightRatio> webviewHeightRatio() {
-        return webviewHeightRatio;
-    }
+  public URL url() {
+    return url;
+  }
 
-    public Optional<Boolean> messengerExtensions() {
-        return messengerExtensions;
-    }
+  public Optional<WebviewHeightRatio> webviewHeightRatio() {
+    return webviewHeightRatio;
+  }
 
-    public Optional<URL> fallbackUrl() {
-        return fallbackUrl;
-    }
+  public Optional<Boolean> messengerExtensions() {
+    return messengerExtensions;
+  }
 
-    public Optional<WebviewShareButtonState> webviewShareButtonState() {
-        return webviewShareButtonState;
-    }
+  public Optional<URL> fallbackUrl() {
+    return fallbackUrl;
+  }
+
+  public Optional<WebviewShareButtonState> webviewShareButtonState() {
+    return webviewShareButtonState;
+  }
 }

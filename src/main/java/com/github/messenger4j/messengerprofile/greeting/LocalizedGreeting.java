@@ -13,27 +13,27 @@ import lombok.ToString;
 @EqualsAndHashCode
 public final class LocalizedGreeting {
 
-    private final String locale;
-    private final String text;
+  private final String locale;
+  private final String text;
 
-    public static LocalizedGreeting create(@NonNull SupportedLocale locale, @NonNull String text) {
-        return create(locale.name(), text);
-    }
+  private LocalizedGreeting(String locale, String text) {
+    this.locale = locale;
+    this.text = text;
+  }
 
-    public static LocalizedGreeting create(@NonNull String locale, @NonNull String text) {
-        return new LocalizedGreeting(locale, text);
-    }
+  public static LocalizedGreeting create(@NonNull SupportedLocale locale, @NonNull String text) {
+    return create(locale.name(), text);
+  }
 
-    private LocalizedGreeting(String locale, String text) {
-        this.locale = locale;
-        this.text = text;
-    }
+  public static LocalizedGreeting create(@NonNull String locale, @NonNull String text) {
+    return new LocalizedGreeting(locale, text);
+  }
 
-    public String locale() {
-        return locale;
-    }
+  public String locale() {
+    return locale;
+  }
 
-    public String text() {
-        return text;
-    }
+  public String text() {
+    return text;
+  }
 }

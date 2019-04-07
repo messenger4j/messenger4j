@@ -12,11 +12,11 @@ import java.util.Optional;
  */
 final class OptionalSerializer implements JsonSerializer<Optional> {
 
-    @Override
-    public JsonElement serialize(Optional src, Type typeOfSrc, JsonSerializationContext context) {
-        if (!src.isPresent()) {
-            return null;
-        }
-        return context.serialize(src.get());
+  @Override
+  public JsonElement serialize(Optional src, Type typeOfSrc, JsonSerializationContext context) {
+    if (!src.isPresent()) {
+      return null;
     }
+    return context.serialize(src.get());
+  }
 }

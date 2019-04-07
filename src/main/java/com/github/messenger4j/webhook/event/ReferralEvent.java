@@ -14,15 +14,18 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class ReferralEvent extends BaseEvent {
 
-    private final Referral referral;
+  private final Referral referral;
 
-    public ReferralEvent(@NonNull String senderId, @NonNull String recipientId, @NonNull Instant timestamp,
-                         @NonNull Referral referral) {
-        super(senderId, recipientId, timestamp);
-        this.referral = referral;
-    }
+  public ReferralEvent(
+      @NonNull String senderId,
+      @NonNull String recipientId,
+      @NonNull Instant timestamp,
+      @NonNull Referral referral) {
+    super(senderId, recipientId, timestamp);
+    this.referral = referral;
+  }
 
-    public Referral referral() {
-        return referral;
-    }
+  public Referral referral() {
+    return referral;
+  }
 }

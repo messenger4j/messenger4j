@@ -13,19 +13,23 @@ import java.lang.reflect.Type;
  */
 final class ShareButtonSerializer implements JsonSerializer<ShareButton> {
 
-    @Override
-    public JsonElement serialize(ShareButton shareButton, Type typeOfSrc, JsonSerializationContext context) {
-        final JsonObject shareButtonObject = new JsonObject();
-        shareButtonObject.add("type", context.serialize(shareButton.type()));
-        shareButton.shareContents().ifPresent(genericTemplate -> {
-            final JsonObject shareContentsObject = new JsonObject();
-            final JsonObject attachmentObject = new JsonObject();
-            attachmentObject.addProperty("type", "template");
-            attachmentObject.add("payload", context.serialize(genericTemplate));
-            shareContentsObject.add("attachment", attachmentObject);
-            shareButtonObject.add("share_contents", shareContentsObject);
-        });
+  @Override
+  public JsonElement serialize(
+      ShareButton shareButton, Type typeOfSrc, JsonSerializationContext context) {
+    final JsonObject shareButtonObject = new JsonObject();
+    shareButtonObject.add("type", context.serialize(shareButton.type()));
+    shareButton
+        .shareContents()
+        .ifPresent(
+            genericTemplate -> {
+              final JsonObject shareContentsObject = new JsonObject();
+              final JsonObject attachmentObject = new JsonObject();
+              attachmentObject.addProperty("type", "template");
+              attachmentObject.add("payload", context.serialize(genericTemplate));
+              shareContentsObject.add("attachment", attachmentObject);
+              shareButtonObject.add("share_contents", shareContentsObject);
+            });
 
-        return shareButtonObject;
-    }
+    return shareButtonObject;
+  }
 }

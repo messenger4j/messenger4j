@@ -13,15 +13,18 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class MessageReadEvent extends BaseEvent {
 
-    private final Instant watermark;
+  private final Instant watermark;
 
-    public MessageReadEvent(@NonNull String senderId, @NonNull String recipientId, @NonNull Instant timestamp,
-                            @NonNull Instant watermark) {
-        super(senderId, recipientId, timestamp);
-        this.watermark = watermark;
-    }
+  public MessageReadEvent(
+      @NonNull String senderId,
+      @NonNull String recipientId,
+      @NonNull Instant timestamp,
+      @NonNull Instant watermark) {
+    super(senderId, recipientId, timestamp);
+    this.watermark = watermark;
+  }
 
-    public Instant watermark() {
-        return watermark;
-    }
+  public Instant watermark() {
+    return watermark;
+  }
 }

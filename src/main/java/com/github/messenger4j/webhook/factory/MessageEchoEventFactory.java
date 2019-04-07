@@ -24,25 +24,31 @@ import java.util.Optional;
  */
 final class MessageEchoEventFactory implements BaseEventFactory<MessageEchoEvent> {
 
-    @Override
-    public boolean isResponsible(JsonObject messagingEvent) {
-        return hasProperty(messagingEvent, PROP_MESSAGE, PROP_IS_ECHO);
-    }
+  @Override
+  public boolean isResponsible(JsonObject messagingEvent) {
+    return hasProperty(messagingEvent, PROP_MESSAGE, PROP_IS_ECHO);
+  }
 
-    @Override
-    public MessageEchoEvent createEventFromJson(JsonObject messagingEvent) {
-        final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
-                .orElseThrow(IllegalArgumentException::new);
-        final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
-                .orElseThrow(IllegalArgumentException::new);
-        final Instant timestamp = getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP)
-                .orElseThrow(IllegalArgumentException::new);
-        final String messageId = getPropertyAsString(messagingEvent, PROP_MESSAGE, PROP_MID)
-                .orElseThrow(IllegalArgumentException::new);
-        final String appId = getPropertyAsString(messagingEvent, PROP_MESSAGE, PROP_APP_ID)
-                .orElseThrow(IllegalArgumentException::new);
-        final Optional<String> metadata = getPropertyAsString(messagingEvent, PROP_MESSAGE, PROP_METADATA);
+  @Override
+  public MessageEchoEvent createEventFromJson(JsonObject messagingEvent) {
+    final String senderId =
+        getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
+            .orElseThrow(IllegalArgumentException::new);
+    final String recipientId =
+        getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
+            .orElseThrow(IllegalArgumentException::new);
+    final Instant timestamp =
+        getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP)
+            .orElseThrow(IllegalArgumentException::new);
+    final String messageId =
+        getPropertyAsString(messagingEvent, PROP_MESSAGE, PROP_MID)
+            .orElseThrow(IllegalArgumentException::new);
+    final String appId =
+        getPropertyAsString(messagingEvent, PROP_MESSAGE, PROP_APP_ID)
+            .orElseThrow(IllegalArgumentException::new);
+    final Optional<String> metadata =
+        getPropertyAsString(messagingEvent, PROP_MESSAGE, PROP_METADATA);
 
-        return new MessageEchoEvent(senderId, recipientId, timestamp, messageId, appId, metadata);
-    }
+    return new MessageEchoEvent(senderId, recipientId, timestamp, messageId, appId, metadata);
+  }
 }

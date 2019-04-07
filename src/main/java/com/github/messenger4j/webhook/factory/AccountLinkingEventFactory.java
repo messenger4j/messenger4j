@@ -22,26 +22,30 @@ import java.util.Optional;
  */
 final class AccountLinkingEventFactory implements BaseEventFactory<AccountLinkingEvent> {
 
-    @Override
-    public boolean isResponsible(JsonObject messagingEvent) {
-        return hasProperty(messagingEvent, PROP_ACCOUNT_LINKING);
-    }
+  @Override
+  public boolean isResponsible(JsonObject messagingEvent) {
+    return hasProperty(messagingEvent, PROP_ACCOUNT_LINKING);
+  }
 
-    @Override
-    public AccountLinkingEvent createEventFromJson(JsonObject messagingEvent) {
-        final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
-                .orElseThrow(IllegalArgumentException::new);
-        final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
-                .orElseThrow(IllegalArgumentException::new);
-        final Instant timestamp = getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP)
-                .orElseThrow(IllegalArgumentException::new);
-        final AccountLinkingEvent.Status status = getPropertyAsString(messagingEvent, PROP_ACCOUNT_LINKING, PROP_STATUS)
-                .map(String::toUpperCase)
-                .map(AccountLinkingEvent.Status::valueOf)
-                .orElseThrow(IllegalArgumentException::new);
-        final Optional<String> authorizationCode = getPropertyAsString(messagingEvent,
-                PROP_ACCOUNT_LINKING, PROP_AUTHORIZATION_CODE);
+  @Override
+  public AccountLinkingEvent createEventFromJson(JsonObject messagingEvent) {
+    final String senderId =
+        getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
+            .orElseThrow(IllegalArgumentException::new);
+    final String recipientId =
+        getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
+            .orElseThrow(IllegalArgumentException::new);
+    final Instant timestamp =
+        getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP)
+            .orElseThrow(IllegalArgumentException::new);
+    final AccountLinkingEvent.Status status =
+        getPropertyAsString(messagingEvent, PROP_ACCOUNT_LINKING, PROP_STATUS)
+            .map(String::toUpperCase)
+            .map(AccountLinkingEvent.Status::valueOf)
+            .orElseThrow(IllegalArgumentException::new);
+    final Optional<String> authorizationCode =
+        getPropertyAsString(messagingEvent, PROP_ACCOUNT_LINKING, PROP_AUTHORIZATION_CODE);
 
-        return new AccountLinkingEvent(senderId, recipientId, timestamp, status, authorizationCode);
-    }
+    return new AccountLinkingEvent(senderId, recipientId, timestamp, status, authorizationCode);
+  }
 }

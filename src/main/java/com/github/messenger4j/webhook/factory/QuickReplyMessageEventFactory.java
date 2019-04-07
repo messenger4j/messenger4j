@@ -27,29 +27,37 @@ import java.util.Optional;
  */
 final class QuickReplyMessageEventFactory implements BaseEventFactory<QuickReplyMessageEvent> {
 
-    @Override
-    public boolean isResponsible(JsonObject messagingEvent) {
-        return hasProperty(messagingEvent, PROP_MESSAGE, PROP_TEXT)
-                && hasProperty(messagingEvent, PROP_MESSAGE, PROP_QUICK_REPLY);
-    }
+  @Override
+  public boolean isResponsible(JsonObject messagingEvent) {
+    return hasProperty(messagingEvent, PROP_MESSAGE, PROP_TEXT)
+        && hasProperty(messagingEvent, PROP_MESSAGE, PROP_QUICK_REPLY);
+  }
 
-    @Override
-    public QuickReplyMessageEvent createEventFromJson(JsonObject messagingEvent) {
-        final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
-                .orElseThrow(IllegalArgumentException::new);
-        final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
-                .orElseThrow(IllegalArgumentException::new);
-        final Instant timestamp = getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP)
-                .orElseThrow(IllegalArgumentException::new);
-        final String messageId = getPropertyAsString(messagingEvent, PROP_MESSAGE, PROP_MID)
-                .orElseThrow(IllegalArgumentException::new);
-        final String text = getPropertyAsString(messagingEvent, PROP_MESSAGE, PROP_TEXT)
-                .orElseThrow(IllegalArgumentException::new);
-        final String payload = getPropertyAsString(messagingEvent, PROP_MESSAGE, PROP_QUICK_REPLY, PROP_PAYLOAD)
-                .orElseThrow(IllegalArgumentException::new);
-        final Optional<PriorMessage> priorMessage = getPropertyAsJsonObject(messagingEvent, PROP_PRIOR_MESSAGE)
-                .map(this::getPriorMessageFromJsonObject);
+  @Override
+  public QuickReplyMessageEvent createEventFromJson(JsonObject messagingEvent) {
+    final String senderId =
+        getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
+            .orElseThrow(IllegalArgumentException::new);
+    final String recipientId =
+        getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
+            .orElseThrow(IllegalArgumentException::new);
+    final Instant timestamp =
+        getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP)
+            .orElseThrow(IllegalArgumentException::new);
+    final String messageId =
+        getPropertyAsString(messagingEvent, PROP_MESSAGE, PROP_MID)
+            .orElseThrow(IllegalArgumentException::new);
+    final String text =
+        getPropertyAsString(messagingEvent, PROP_MESSAGE, PROP_TEXT)
+            .orElseThrow(IllegalArgumentException::new);
+    final String payload =
+        getPropertyAsString(messagingEvent, PROP_MESSAGE, PROP_QUICK_REPLY, PROP_PAYLOAD)
+            .orElseThrow(IllegalArgumentException::new);
+    final Optional<PriorMessage> priorMessage =
+        getPropertyAsJsonObject(messagingEvent, PROP_PRIOR_MESSAGE)
+            .map(this::getPriorMessageFromJsonObject);
 
-        return new QuickReplyMessageEvent(senderId, recipientId, timestamp, messageId, text, payload, priorMessage);
-    }
+    return new QuickReplyMessageEvent(
+        senderId, recipientId, timestamp, messageId, text, payload, priorMessage);
+  }
 }

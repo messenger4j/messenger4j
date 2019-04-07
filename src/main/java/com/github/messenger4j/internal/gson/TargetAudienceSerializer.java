@@ -18,31 +18,36 @@ import java.util.stream.Collectors;
  */
 final class TargetAudienceSerializer implements JsonSerializer<TargetAudience> {
 
-    @Override
-    public JsonElement serialize(TargetAudience targetAudience, Type typeOfSrc, JsonSerializationContext context) {
-        final JsonObject targetAudienceObject = new JsonObject();
-        targetAudienceObject.add("audience_type", context.serialize(targetAudience.audienceType()));
+  @Override
+  public JsonElement serialize(
+      TargetAudience targetAudience, Type typeOfSrc, JsonSerializationContext context) {
+    final JsonObject targetAudienceObject = new JsonObject();
+    targetAudienceObject.add("audience_type", context.serialize(targetAudience.audienceType()));
 
-        boolean isWhitelistAudience = targetAudience instanceof WhitelistTargetAudience;
-        boolean isBlacklistAudience = targetAudience instanceof BlacklistTargetAudience;
+    boolean isWhitelistAudience = targetAudience instanceof WhitelistTargetAudience;
+    boolean isBlacklistAudience = targetAudience instanceof BlacklistTargetAudience;
 
-        if (isWhitelistAudience || isBlacklistAudience) {
-            final JsonObject countriesObject = new JsonObject();
-            if (isWhitelistAudience) {
-                countriesObject.add("whitelist", context.serialize(transformCountries(
-                        ((WhitelistTargetAudience) targetAudience).countries())));
-            }
-            if (isBlacklistAudience) {
-                countriesObject.add("blacklist", context.serialize(transformCountries(
-                        ((BlacklistTargetAudience) targetAudience).countries())));
-            }
-            targetAudienceObject.add("countries", countriesObject);
-        }
-
-        return targetAudienceObject;
+    if (isWhitelistAudience || isBlacklistAudience) {
+      final JsonObject countriesObject = new JsonObject();
+      if (isWhitelistAudience) {
+        countriesObject.add(
+            "whitelist",
+            context.serialize(
+                transformCountries(((WhitelistTargetAudience) targetAudience).countries())));
+      }
+      if (isBlacklistAudience) {
+        countriesObject.add(
+            "blacklist",
+            context.serialize(
+                transformCountries(((BlacklistTargetAudience) targetAudience).countries())));
+      }
+      targetAudienceObject.add("countries", countriesObject);
     }
 
-    private List<String> transformCountries(List<SupportedCountry> countries) {
-        return countries.stream().map(Enum::name).collect(Collectors.toList());
-    }
+    return targetAudienceObject;
+  }
+
+  private List<String> transformCountries(List<SupportedCountry> countries) {
+    return countries.stream().map(Enum::name).collect(Collectors.toList());
+  }
 }

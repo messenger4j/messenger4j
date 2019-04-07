@@ -12,17 +12,17 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = false)
 public final class UserRefRecipient extends Recipient {
 
-    private final String userRef;
+  private final String userRef;
 
-    public static UserRefRecipient create(@NonNull String userRef) {
-        return new UserRefRecipient(userRef);
-    }
+  private UserRefRecipient(String userRef) {
+    this.userRef = userRef;
+  }
 
-    private UserRefRecipient(String userRef) {
-        this.userRef = userRef;
-    }
+  public static UserRefRecipient create(@NonNull String userRef) {
+    return new UserRefRecipient(userRef);
+  }
 
-    public String userRef() {
-        return userRef;
-    }
+  public String userRef() {
+    return userRef;
+  }
 }

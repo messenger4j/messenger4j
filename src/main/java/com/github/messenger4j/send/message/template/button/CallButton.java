@@ -12,24 +12,24 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class CallButton extends Button {
 
-    private final String title;
-    private final String payload;
+  private final String title;
+  private final String payload;
 
-    public static CallButton create(@NonNull String title, @NonNull String payload) {
-        return new CallButton(title, payload);
-    }
+  private CallButton(String title, String payload) {
+    super(Type.PHONE_NUMBER);
+    this.title = title;
+    this.payload = payload;
+  }
 
-    private CallButton(String title, String payload) {
-        super(Type.PHONE_NUMBER);
-        this.title = title;
-        this.payload = payload;
-    }
+  public static CallButton create(@NonNull String title, @NonNull String payload) {
+    return new CallButton(title, payload);
+  }
 
-    public String title() {
-        return title;
-    }
+  public String title() {
+    return title;
+  }
 
-    public String payload() {
-        return payload;
-    }
+  public String payload() {
+    return payload;
+  }
 }

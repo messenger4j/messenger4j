@@ -8,7 +8,7 @@ import lombok.NonNull;
  */
 public final class MessengerIOException extends Exception {
 
-    public MessengerIOException(@NonNull Throwable cause) {
-        super(cause);
-    }
+  public MessengerIOException(@NonNull Throwable cause) {
+    super(cause);
+  }
 }

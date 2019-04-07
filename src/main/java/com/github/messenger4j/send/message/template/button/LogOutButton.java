@@ -11,12 +11,11 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class LogOutButton extends Button {
 
-    public static LogOutButton create() {
-        return new LogOutButton();
-    }
+  private LogOutButton() {
+    super(Type.ACCOUNT_UNLINK);
+  }
 
-    private LogOutButton() {
-        super(Type.ACCOUNT_UNLINK);
-    }
-
+  public static LogOutButton create() {
+    return new LogOutButton();
+  }
 }

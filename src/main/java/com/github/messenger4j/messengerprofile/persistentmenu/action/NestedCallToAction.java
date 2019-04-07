@@ -14,18 +14,19 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class NestedCallToAction extends CallToAction {
 
-    private final List<CallToAction> callToActions;
+  private final List<CallToAction> callToActions;
 
-    public static NestedCallToAction create(@NonNull String title, @NonNull List<CallToAction> callToActions) {
-        return new NestedCallToAction(title, callToActions);
-    }
+  private NestedCallToAction(String title, List<CallToAction> callToActions) {
+    super(Type.NESTED, title);
+    this.callToActions = Lists.immutableList(callToActions);
+  }
 
-    private NestedCallToAction(String title, List<CallToAction> callToActions) {
-        super(Type.NESTED, title);
-        this.callToActions = Lists.immutableList(callToActions);
-    }
+  public static NestedCallToAction create(
+      @NonNull String title, @NonNull List<CallToAction> callToActions) {
+    return new NestedCallToAction(title, callToActions);
+  }
 
-    public List<CallToAction> callToActions() {
-        return callToActions;
-    }
+  public List<CallToAction> callToActions() {
+    return callToActions;
+  }
 }

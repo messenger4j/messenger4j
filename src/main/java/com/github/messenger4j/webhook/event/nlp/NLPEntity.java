@@ -13,19 +13,19 @@ import lombok.ToString;
 @EqualsAndHashCode
 public final class NLPEntity {
 
-    private static final Gson gson = new Gson();
+  private static final Gson gson = new Gson();
 
-    private final String json;
+  private final String json;
 
-    public NLPEntity(@NonNull String json) {
-        this.json = json;
-    }
+  public NLPEntity(@NonNull String json) {
+    this.json = json;
+  }
 
-    public String asString() {
-        return json;
-    }
+  public String asString() {
+    return json;
+  }
 
-    public <T> T as(Class<T> classOfT) {
-        return gson.fromJson(json, classOfT);
-    }
+  public <T> T as(Class<T> classOfT) {
+    return gson.fromJson(json, classOfT);
+  }
 }

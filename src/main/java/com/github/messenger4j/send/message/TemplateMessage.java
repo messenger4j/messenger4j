@@ -18,23 +18,26 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class TemplateMessage extends Message {
 
-    private final Template template;
+  private final Template template;
 
-    public static TemplateMessage create(@NonNull Template template) {
-        return create(template, empty(), empty());
-    }
+  private TemplateMessage(
+      Template template, Optional<List<QuickReply>> quickReplies, Optional<String> metadata) {
+    super(quickReplies, metadata);
+    this.template = template;
+  }
 
-    public static TemplateMessage create(@NonNull Template template, @NonNull Optional<List<QuickReply>> quickReplies,
-                                         @NonNull Optional<String> metadata) {
-        return new TemplateMessage(template, quickReplies, metadata);
-    }
+  public static TemplateMessage create(@NonNull Template template) {
+    return create(template, empty(), empty());
+  }
 
-    private TemplateMessage(Template template, Optional<List<QuickReply>> quickReplies, Optional<String> metadata) {
-        super(quickReplies, metadata);
-        this.template = template;
-    }
+  public static TemplateMessage create(
+      @NonNull Template template,
+      @NonNull Optional<List<QuickReply>> quickReplies,
+      @NonNull Optional<String> metadata) {
+    return new TemplateMessage(template, quickReplies, metadata);
+  }
 
-    public Template template() {
-        return template;
-    }
+  public Template template() {
+    return template;
+  }
 }

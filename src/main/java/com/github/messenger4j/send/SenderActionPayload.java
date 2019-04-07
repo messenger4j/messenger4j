@@ -15,22 +15,24 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class SenderActionPayload extends Payload {
 
-    private final SenderAction senderAction;
+  private final SenderAction senderAction;
 
-    public static SenderActionPayload create(@NonNull String recipientId, @NonNull SenderAction senderAction) {
-        return create(IdRecipient.create(recipientId), senderAction);
-    }
+  private SenderActionPayload(Recipient recipient, SenderAction senderAction) {
+    super(recipient);
+    this.senderAction = senderAction;
+  }
 
-    public static SenderActionPayload create(@NonNull Recipient recipient, @NonNull SenderAction senderAction) {
-        return new SenderActionPayload(recipient, senderAction);
-    }
+  public static SenderActionPayload create(
+      @NonNull String recipientId, @NonNull SenderAction senderAction) {
+    return create(IdRecipient.create(recipientId), senderAction);
+  }
 
-    private SenderActionPayload(Recipient recipient, SenderAction senderAction) {
-        super(recipient);
-        this.senderAction = senderAction;
-    }
+  public static SenderActionPayload create(
+      @NonNull Recipient recipient, @NonNull SenderAction senderAction) {
+    return new SenderActionPayload(recipient, senderAction);
+  }
 
-    public SenderAction senderAction() {
-        return senderAction;
-    }
+  public SenderAction senderAction() {
+    return senderAction;
+  }
 }

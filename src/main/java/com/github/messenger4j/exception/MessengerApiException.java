@@ -13,31 +13,34 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class MessengerApiException extends Exception {
 
-    private final Optional<String> type;
-    private final Optional<Integer> code;
-    private final Optional<String> fbTraceId;
+  private final Optional<String> type;
+  private final Optional<Integer> code;
+  private final Optional<String> fbTraceId;
 
-    public MessengerApiException(@NonNull String message, @NonNull Optional<String> type,
-                                 @NonNull Optional<Integer> code, @NonNull Optional<String> fbTraceId) {
-        super(message);
-        this.type = type;
-        this.code = code;
-        this.fbTraceId = fbTraceId;
-    }
+  public MessengerApiException(
+      @NonNull String message,
+      @NonNull Optional<String> type,
+      @NonNull Optional<Integer> code,
+      @NonNull Optional<String> fbTraceId) {
+    super(message);
+    this.type = type;
+    this.code = code;
+    this.fbTraceId = fbTraceId;
+  }
 
-    public String message() {
-        return super.getMessage();
-    }
+  public String message() {
+    return super.getMessage();
+  }
 
-    public Optional<String> type() {
-        return type;
-    }
+  public Optional<String> type() {
+    return type;
+  }
 
-    public Optional<Integer> code() {
-        return code;
-    }
+  public Optional<Integer> code() {
+    return code;
+  }
 
-    public Optional<String> fbTraceId() {
-        return fbTraceId;
-    }
+  public Optional<String> fbTraceId() {
+    return fbTraceId;
+  }
 }

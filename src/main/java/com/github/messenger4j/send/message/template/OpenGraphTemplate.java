@@ -15,18 +15,18 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class OpenGraphTemplate extends Template {
 
-    private final List<OpenGraphObject> elements;
+  private final List<OpenGraphObject> elements;
 
-    public static OpenGraphTemplate create(@NonNull List<OpenGraphObject> elements) {
-        return new OpenGraphTemplate(elements);
-    }
+  private OpenGraphTemplate(List<OpenGraphObject> elements) {
+    super(Type.OPEN_GRAPH);
+    this.elements = Lists.immutableList(elements);
+  }
 
-    private OpenGraphTemplate(List<OpenGraphObject> elements) {
-        super(Type.OPEN_GRAPH);
-        this.elements = Lists.immutableList(elements);
-    }
+  public static OpenGraphTemplate create(@NonNull List<OpenGraphObject> elements) {
+    return new OpenGraphTemplate(elements);
+  }
 
-    public List<OpenGraphObject> elements() {
-        return elements;
-    }
+  public List<OpenGraphObject> elements() {
+    return elements;
+  }
 }

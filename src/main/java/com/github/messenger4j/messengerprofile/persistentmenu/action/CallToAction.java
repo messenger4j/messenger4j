@@ -12,28 +12,26 @@ import lombok.ToString;
 @EqualsAndHashCode
 public abstract class CallToAction {
 
-    private final Type type;
-    private final String title;
+  private final Type type;
+  private final String title;
 
-    CallToAction(Type type, String title) {
-        this.type = type;
-        this.title = title;
-    }
+  CallToAction(Type type, String title) {
+    this.type = type;
+    this.title = title;
+  }
 
-    public Type type() {
-        return type;
-    }
+  public Type type() {
+    return type;
+  }
 
-    public String title() {
-        return title;
-    }
+  public String title() {
+    return title;
+  }
 
-    /**
-     * @since 1.0.0
-     */
-    public enum Type {
-        WEB_URL,
-        POSTBACK,
-        NESTED
-    }
+  /** @since 1.0.0 */
+  public enum Type {
+    WEB_URL,
+    POSTBACK,
+    NESTED
+  }
 }

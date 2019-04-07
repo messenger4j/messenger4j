@@ -11,23 +11,21 @@ import lombok.ToString;
 @EqualsAndHashCode
 public abstract class QuickReply {
 
-    private final ContentType contentType;
+  private final ContentType contentType;
 
-    QuickReply(ContentType contentType) {
-        this.contentType = contentType;
-    }
+  QuickReply(ContentType contentType) {
+    this.contentType = contentType;
+  }
 
-    public ContentType contentType() {
-        return contentType;
-    }
+  public ContentType contentType() {
+    return contentType;
+  }
 
-    /**
-     * @since 1.0.0
-     */
-    public enum ContentType {
-        TEXT,
-        LOCATION,
-        USER_EMAIL,
-        USER_PHONE_NUMBER
-    }
+  /** @since 1.0.0 */
+  public enum ContentType {
+    TEXT,
+    LOCATION,
+    USER_EMAIL,
+    USER_PHONE_NUMBER
+  }
 }

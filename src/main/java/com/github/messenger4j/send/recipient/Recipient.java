@@ -6,6 +6,5 @@ package com.github.messenger4j.send.recipient;
  */
 public abstract class Recipient {
 
-    Recipient() {
-    }
+  Recipient() {}
 }

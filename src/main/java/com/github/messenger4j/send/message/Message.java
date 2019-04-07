@@ -15,19 +15,19 @@ import lombok.ToString;
 @EqualsAndHashCode
 public abstract class Message {
 
-    private final Optional<List<QuickReply>> quickReplies;
-    private final Optional<String> metadata;
+  private final Optional<List<QuickReply>> quickReplies;
+  private final Optional<String> metadata;
 
-    Message(Optional<List<QuickReply>> quickReplies, Optional<String> metadata) {
-        this.quickReplies = quickReplies.map(Lists::immutableList);
-        this.metadata = metadata;
-    }
+  Message(Optional<List<QuickReply>> quickReplies, Optional<String> metadata) {
+    this.quickReplies = quickReplies.map(Lists::immutableList);
+    this.metadata = metadata;
+  }
 
-    public Optional<List<QuickReply>> quickReplies() {
-        return quickReplies;
-    }
+  public Optional<List<QuickReply>> quickReplies() {
+    return quickReplies;
+  }
 
-    public Optional<String> metadata() {
-        return metadata;
-    }
+  public Optional<String> metadata() {
+    return metadata;
+  }
 }

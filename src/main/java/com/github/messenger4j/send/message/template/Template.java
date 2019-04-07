@@ -11,24 +11,22 @@ import lombok.ToString;
 @EqualsAndHashCode
 public abstract class Template {
 
-    private final Type templateType;
+  private final Type templateType;
 
-    Template(Type templateType) {
-        this.templateType = templateType;
-    }
+  Template(Type templateType) {
+    this.templateType = templateType;
+  }
 
-    public Type templateType() {
-        return templateType;
-    }
+  public Type templateType() {
+    return templateType;
+  }
 
-    /**
-     * @since 1.0.0
-     */
-    public enum Type {
-        GENERIC,
-        RECEIPT,
-        BUTTON,
-        LIST,
-        OPEN_GRAPH
-    }
+  /** @since 1.0.0 */
+  public enum Type {
+    GENERIC,
+    RECEIPT,
+    BUTTON,
+    LIST,
+    OPEN_GRAPH
+  }
 }

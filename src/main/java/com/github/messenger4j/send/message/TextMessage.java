@@ -17,23 +17,26 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public final class TextMessage extends Message {
 
-    private final String text;
+  private final String text;
 
-    public static TextMessage create(@NonNull String text) {
-        return create(text, empty(), empty());
-    }
+  private TextMessage(
+      String text, Optional<List<QuickReply>> quickReplies, Optional<String> metadata) {
+    super(quickReplies, metadata);
+    this.text = text;
+  }
 
-    public static TextMessage create(@NonNull String text, @NonNull Optional<List<QuickReply>> quickReplies,
-                                     @NonNull Optional<String> metadata) {
-        return new TextMessage(text, quickReplies, metadata);
-    }
+  public static TextMessage create(@NonNull String text) {
+    return create(text, empty(), empty());
+  }
 
-    private TextMessage(String text, Optional<List<QuickReply>> quickReplies, Optional<String> metadata) {
-        super(quickReplies, metadata);
-        this.text = text;
-    }
+  public static TextMessage create(
+      @NonNull String text,
+      @NonNull Optional<List<QuickReply>> quickReplies,
+      @NonNull Optional<String> metadata) {
+    return new TextMessage(text, quickReplies, metadata);
+  }
 
-    public String text() {
-        return text;
-    }
+  public String text() {
+    return text;
+  }
 }

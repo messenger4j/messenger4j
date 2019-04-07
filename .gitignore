@@ -1,3 +1,8 @@
+.java-version
 .idea
 *.iml
+.project
+.settings
+.classpath
 target
+.DS_Store

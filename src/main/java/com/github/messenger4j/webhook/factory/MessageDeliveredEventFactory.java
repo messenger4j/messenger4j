@@ -27,31 +27,36 @@ import java.util.Optional;
  */
 final class MessageDeliveredEventFactory implements BaseEventFactory<MessageDeliveredEvent> {
 
-    @Override
-    public boolean isResponsible(JsonObject messagingEvent) {
-        return hasProperty(messagingEvent, PROP_DELIVERY);
-    }
+  @Override
+  public boolean isResponsible(JsonObject messagingEvent) {
+    return hasProperty(messagingEvent, PROP_DELIVERY);
+  }
 
-    @Override
-    public MessageDeliveredEvent createEventFromJson(JsonObject messagingEvent) {
-        final String senderId = getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
-                .orElseThrow(IllegalArgumentException::new);
-        final String recipientId = getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
-                .orElseThrow(IllegalArgumentException::new);
-        final Instant timestamp = getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP).orElse(Instant.now());
-        final Instant watermark = getPropertyAsInstant(messagingEvent, PROP_DELIVERY, PROP_WATERMARK)
-                .orElseThrow(IllegalArgumentException::new);
-        final Optional<List<String>> messageIds = getPropertyAsJsonArray(messagingEvent, PROP_DELIVERY, PROP_MIDS)
-                .map(this::getMessageIdsFromJsonArray);
+  @Override
+  public MessageDeliveredEvent createEventFromJson(JsonObject messagingEvent) {
+    final String senderId =
+        getPropertyAsString(messagingEvent, PROP_SENDER, PROP_ID)
+            .orElseThrow(IllegalArgumentException::new);
+    final String recipientId =
+        getPropertyAsString(messagingEvent, PROP_RECIPIENT, PROP_ID)
+            .orElseThrow(IllegalArgumentException::new);
+    final Instant timestamp =
+        getPropertyAsInstant(messagingEvent, PROP_TIMESTAMP).orElse(Instant.now());
+    final Instant watermark =
+        getPropertyAsInstant(messagingEvent, PROP_DELIVERY, PROP_WATERMARK)
+            .orElseThrow(IllegalArgumentException::new);
+    final Optional<List<String>> messageIds =
+        getPropertyAsJsonArray(messagingEvent, PROP_DELIVERY, PROP_MIDS)
+            .map(this::getMessageIdsFromJsonArray);
 
-        return new MessageDeliveredEvent(senderId, recipientId, timestamp, watermark, messageIds);
-    }
+    return new MessageDeliveredEvent(senderId, recipientId, timestamp, watermark, messageIds);
+  }
 
-    private List<String> getMessageIdsFromJsonArray(JsonArray jsonArray) {
-        final List<String> messageIdList = new ArrayList<>(jsonArray.size());
-        for (JsonElement messageIdJsonElement : jsonArray) {
-            messageIdList.add(messageIdJsonElement.getAsString());
-        }
-        return messageIdList;
+  private List<String> getMessageIdsFromJsonArray(JsonArray jsonArray) {
+    final List<String> messageIdList = new ArrayList<>(jsonArray.size());
+    for (JsonElement messageIdJsonElement : jsonArray) {
+      messageIdList.add(messageIdJsonElement.getAsString());
     }
+    return messageIdList;
+  }
 }

@@ -13,11 +13,12 @@ import java.math.BigDecimal;
  */
 final class FloatSerializer implements JsonSerializer<Float> {
 
-    @Override
-    public JsonElement serialize(Float floatValue, Type type, JsonSerializationContext jsonSerializationContext) {
-        if (floatValue.isNaN() || floatValue.isInfinite()) {
-            return null;
-        }
-        return new JsonPrimitive(new BigDecimal(floatValue).setScale(2, BigDecimal.ROUND_HALF_UP));
+  @Override
+  public JsonElement serialize(
+      Float floatValue, Type type, JsonSerializationContext jsonSerializationContext) {
+    if (floatValue.isNaN() || floatValue.isInfinite()) {
+      return null;
     }
+    return new JsonPrimitive(new BigDecimal(floatValue).setScale(2, BigDecimal.ROUND_HALF_UP));
+  }
 }
