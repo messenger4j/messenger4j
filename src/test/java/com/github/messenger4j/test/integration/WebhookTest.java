@@ -2,11 +2,11 @@ package com.github.messenger4j.test.integration;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -33,8 +33,8 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -42,14 +42,14 @@ import org.skyscreamer.jsonassert.JSONAssert;
  * @author Max Grabenhorst
  * @since 1.0.0
  */
-public class WebhookTest {
+class WebhookTest {
 
     @SuppressWarnings("unchecked")
     private final Consumer<Event> mockEventHandler = (Consumer<Event>) mock(Consumer.class);
     private final Messenger messenger = Messenger.create("test", "60efff025951cddde78c8d03de52cc90", "CUSTOM_VERIFY_TOKEN");
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionIfObjectTypeIsNotPage() throws Exception {
+    @Test
+    void shouldThrowExceptionIfObjectTypeIsNotPage() {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"testValue\",\n" +
@@ -76,13 +76,15 @@ public class WebhookTest {
                 "}";
 
         //when
-        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
+        Assertions.assertThrows(IllegalArgumentException.class, () ->
+                messenger.onReceiveEvents(payload, empty(), mockEventHandler)
+        );
 
         //then - throw exception
     }
 
     @Test
-    public void shouldHandleAttachmentMessageEvent() throws Exception {
+    void shouldHandleAttachmentMessageEvent() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -169,7 +171,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleOptInEventWithSenderId() throws Exception {
+    void shouldHandleOptInEventWithSenderId() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -208,7 +210,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleOptInEventWithUserRef() throws Exception {
+    void shouldHandleOptInEventWithUserRef() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -243,16 +245,11 @@ public class WebhookTest {
         assertThat(optInEvent.userRefPayload().isPresent(), is(true));
         assertThat(optInEvent.userRefPayload().get(), equalTo("REF_FROM_CHECKBOX_PLUGIN"));
 
-        try {
-            optInEvent.senderId();
-            Assert.fail("UnsupportedOperationException expected.");
-        } catch (UnsupportedOperationException e) {
-            // Expected exception if senderId is not present.
-        }
+        Assertions.assertThrows(UnsupportedOperationException.class, optInEvent::senderId);
     }
 
     @Test
-    public void shouldHandleTextEchoMessageEvent() throws Exception {
+    void shouldHandleTextEchoMessageEvent() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -297,7 +294,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleTemplateEchoMessageEvent() throws Exception {
+    void shouldHandleTemplateEchoMessageEvent() throws Exception {
         //given
         final String payload = "{\"object\":\"page\",\"entry\":[{\"id\":\"171999997131834678\",\"time\":1480120722215," +
                 "\"messaging\":[{\"sender\":{\"id\":\"17175299999834678\"},\"recipient\":{\"id\":\"1256299999730577\"}," +
@@ -335,7 +332,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleQuickReplyMessageEvent() throws Exception {
+    void shouldHandleQuickReplyMessageEvent() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -387,7 +384,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleTextMessageEvent() throws Exception {
+    void shouldHandleTextMessageEvent() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -429,7 +426,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleTextMessageEventWithPriorMessage() throws Exception {
+    void shouldHandleTextMessageEventWithPriorMessage() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -478,7 +475,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleTextMessageEventWithNlp() throws Exception {
+    void shouldHandleTextMessageEventWithNlp() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -542,7 +539,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandlePostbackEvent() throws Exception {
+    void shouldHandlePostbackEvent() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -602,7 +599,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandlePostbackEventWithoutReferral() throws Exception {
+    void shouldHandlePostbackEventWithoutReferral() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -643,7 +640,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleMeLinkReferralEvent() throws Exception {
+    void shouldHandleMeLinkReferralEvent() throws Exception {
         //given
         final String payload = "{\n" +
                 "  \"object\":\"page\",\n" +
@@ -689,7 +686,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleAdReferralEvent() throws Exception {
+    void shouldHandleAdReferralEvent() throws Exception {
         //given
         final String payload = "{\n" +
                 "  \"object\":\"page\",\n" +
@@ -737,7 +734,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleParametricMessengerCodeReferralEvent() throws Exception {
+    void shouldHandleParametricMessengerCodeReferralEvent() throws Exception {
         //given
         final String payload = "{\n" +
                 "  \"object\":\"page\",\n" +
@@ -783,7 +780,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleDiscoverTabReferralEvent() throws Exception {
+    void shouldHandleDiscoverTabReferralEvent() throws Exception {
         //given
         final String payload = "{\n" +
                 "  \"object\":\"page\",\n" +
@@ -827,7 +824,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleAccountLinkingEventWithStatusLinked() throws Exception {
+    void shouldHandleAccountLinkingEventWithStatusLinked() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -867,7 +864,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleAccountLinkingEventWithStatusUnlinked() throws Exception {
+    void shouldHandleAccountLinkingEventWithStatusUnlinked() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -906,7 +903,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleMessageReadEvent() throws Exception {
+    void shouldHandleMessageReadEvent() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -944,7 +941,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleMessageDeliveredEventWithMids() throws Exception {
+    void shouldHandleMessageDeliveredEventWithMids() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -986,7 +983,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleMessageDeliveredEventWithoutMids() throws Exception {
+    void shouldHandleMessageDeliveredEventWithoutMids() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -1023,7 +1020,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleEventTypeThatIsUnsupported() throws Exception {
+    void shouldHandleEventTypeThatIsUnsupported() throws Exception {
         //given
         final String payload = "{\n" +
                 "    \"object\": \"page\",\n" +
@@ -1070,7 +1067,7 @@ public class WebhookTest {
     }
 
     @Test
-    public void shouldHandleInstantGameEvent() throws Exception {
+    void shouldHandleInstantGameEvent() throws Exception {
         //given
         final String payload = "{\n" +
                 "   \"object\":\"page\",\n" +
@@ -1119,19 +1116,20 @@ public class WebhookTest {
         assertThat(messageReadEvent.payload(), equalTo(of("PAYLOAD")));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowExceptionIfNoPayloadProvided() throws Exception {
-        //given
-        final String payload = null;
+    @Test
+    void shouldThrowExceptionIfNoPayloadProvided() {
+        //given - null payload
 
         //when
-        messenger.onReceiveEvents(payload, empty(), mockEventHandler);
+        Assertions.assertThrows(IllegalArgumentException.class, () ->
+            messenger.onReceiveEvents(null, empty(), mockEventHandler)
+        );
 
         //then - throw exception
     }
 
     @Test
-    public void shouldVerifyTheGivenSignature() throws Exception {
+    void shouldVerifyTheGivenSignature() throws Exception {
         //given
         final String payload = "{\"object\":\"page\",\"entry\":[{\"id\":\"1717527131834678\",\"time\":1475942721780," +
                 "\"messaging\":[{\"sender\":{\"id\":\"1256217357730577\"},\"recipient\":{\"id\":\"1717527131834678\"}," +
@@ -1150,8 +1148,8 @@ public class WebhookTest {
         assertThat(event.asTextMessageEvent().text(), is(equalTo("34wrr3wr")));
     }
 
-    @Test(expected = MessengerVerificationException.class)
-    public void shouldThrowExceptionIfSignatureIsInvalid() throws Exception {
+    @Test
+    void shouldThrowExceptionIfSignatureIsInvalid() {
         //given
         final String payload = "{\"object\":\"page\",\"entry\":[{\"id\":\"1717527131834678\",\"time\":1475942721780," +
                 "\"messaging\":[{\"sender\":{\"id\":\"1256217357730577\"},\"recipient\":{\"id\":\"1717527131834678\"}," +
@@ -1160,13 +1158,15 @@ public class WebhookTest {
         final String signature = "sha1=3daa41999293ff66c3eb313e04bcf77861bb0276";
 
         //when
-        messenger.onReceiveEvents(payload, of(signature), mockEventHandler);
+        Assertions.assertThrows(MessengerVerificationException.class, () ->
+                messenger.onReceiveEvents(payload, of(signature), mockEventHandler)
+        );
 
         //then - throw exception
     }
 
     @Test
-    public void shouldVerifyTheWebhook() throws Exception {
+    void shouldVerifyTheWebhook() throws Exception {
         final String mode = "subscribe";
         final String verifyToken = "CUSTOM_VERIFY_TOKEN";
 
@@ -1178,26 +1178,30 @@ public class WebhookTest {
         assertThat(true, is(true));
     }
 
-    @Test(expected = MessengerVerificationException.class)
-    public void shouldThrowExceptionIfVerifyModeIsInvalid() throws Exception {
+    @Test
+    void shouldThrowExceptionIfVerifyModeIsInvalid() {
         //given
         final String mode = "INVALID_MODE";
         final String verifyToken = "CUSTOM_VERIFY_TOKEN";
 
         //when
-        messenger.verifyWebhook(mode, verifyToken);
+        Assertions.assertThrows(MessengerVerificationException.class, () ->
+            messenger.verifyWebhook(mode, verifyToken)
+        );
 
         //then - throw exception
     }
 
-    @Test(expected = MessengerVerificationException.class)
-    public void shouldThrowExceptionIfVerifyTokenIsInvalid() throws Exception {
+    @Test
+    void shouldThrowExceptionIfVerifyTokenIsInvalid() {
         //given
         final String mode = "subscribe";
         final String verifyToken = "INVALID_VERIFY_TOKEN";
 
         //when
-        messenger.verifyWebhook(mode, verifyToken);
+        Assertions.assertThrows(MessengerVerificationException.class, () ->
+            messenger.verifyWebhook(mode, verifyToken)
+        );
 
         //then - throw exception
     }

@@ -2,10 +2,10 @@ package com.github.messenger4j.test.integration;
 
 import static com.github.messenger4j.spi.MessengerHttpClient.HttpMethod.GET;
 import static java.util.Optional.of;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
@@ -19,13 +19,13 @@ import com.github.messenger4j.spi.MessengerHttpClient;
 import com.github.messenger4j.spi.MessengerHttpClient.HttpResponse;
 import com.github.messenger4j.userprofile.UserProfile;
 import java.util.Optional;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * @author Max Grabenhorst
  * @since 1.0.0
  */
-public class UserProfileTest {
+class UserProfileTest {
 
     private static final String FB_GRAPH_API_URL = "https://graph.facebook.com/v3.2/%s?fields=first_name," +
             "last_name,profile_pic,locale,timezone,gender&access_token=%s";
@@ -35,7 +35,7 @@ public class UserProfileTest {
     private final Messenger messenger = Messenger.create(PAGE_ACCESS_TOKEN, "test", "test", of(mockHttpClient));
 
     @Test
-    public void shouldQueryUserProfile() throws Exception {
+    void shouldQueryUserProfile() throws Exception {
         final String userId = "USER_ID";
         final HttpResponse successfulResponse = new HttpResponse(200, "{\n" +
                 "  \"first_name\": \"Peter\",\n" +
@@ -74,7 +74,7 @@ public class UserProfileTest {
     }
 
     @Test
-    public void shouldHandleEmptyResponse() throws Exception {
+    void shouldHandleEmptyResponse() throws Exception {
         final HttpResponse emptyResponse = new HttpResponse(200, "{}");
         when(mockHttpClient.execute(eq(GET), anyString(), isNull())).thenReturn(emptyResponse);
 
@@ -93,7 +93,7 @@ public class UserProfileTest {
     }
 
     @Test
-    public void shouldHandleErrorResponse() throws Exception {
+    void shouldHandleErrorResponse() throws Exception {
         final HttpResponse errorResponse = new HttpResponse(401, "{\n" +
                 "  \"error\": {\n" +
                 "    \"message\": \"Invalid OAuth access token.\",\n" +

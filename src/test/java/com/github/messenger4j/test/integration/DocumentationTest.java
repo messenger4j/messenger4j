@@ -1,9 +1,9 @@
 package com.github.messenger4j.test.integration;
 
 import static java.util.Optional.of;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 
 import com.github.messenger4j.Messenger;
 import com.github.messenger4j.exception.MessengerApiException;
@@ -17,12 +17,11 @@ import com.github.messenger4j.webhook.event.TextMessageEvent;
 import com.github.messenger4j.webhook.event.attachment.Attachment;
 import com.github.messenger4j.webhook.event.attachment.LocationAttachment;
 import com.github.messenger4j.webhook.event.attachment.RichMediaAttachment;
-import java.io.IOException;
 import java.net.URL;
 import java.time.Instant;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * README.adoc examples.
@@ -31,10 +30,10 @@ import org.junit.Test;
  * @since 1.0.0
  */
 @Slf4j
-public class DocumentationTest {
+class DocumentationTest {
 
     @Test
-    public void shouldInstantiateMessenger() throws Exception {
+    void shouldInstantiateMessenger() {
         // tag::doc-Create[]
         final Messenger messenger = Messenger.create("PAGE_ACCESS_TOKEN", "APP_SECRET", "VERIFY_TOKEN");
         // end::doc-Create[]
@@ -44,13 +43,13 @@ public class DocumentationTest {
 
     private final static class MyCustomMessengerHttpClient implements MessengerHttpClient {
         @Override
-        public HttpResponse execute(HttpMethod httpMethod, String url, String jsonBody) throws IOException {
+        public HttpResponse execute(HttpMethod httpMethod, String url, String jsonBody) {
             return null;
         }
     }
 
     @Test
-    public void shouldInstantiateMessengerCustomHttpClient() throws Exception {
+    void shouldInstantiateMessengerCustomHttpClient() {
         // tag::doc-CreateCustomHttp[]
         final MyCustomMessengerHttpClient customHttpClient = new MyCustomMessengerHttpClient();
         final Messenger messenger = Messenger.create("PAGE_ACCESS_TOKEN", "APP_SECRET",
@@ -61,7 +60,7 @@ public class DocumentationTest {
     }
 
     @Test
-    public void shouldProcessReceivedEventsText() throws Exception {
+    void shouldProcessReceivedEventsText() throws Exception {
         final Messenger messenger = Messenger.create("test", "60efff025951cddde78c8d03de52cc90", "test");
 
         // tag::doc-ReceiveEventsText[]
@@ -88,7 +87,7 @@ public class DocumentationTest {
     }
 
     @Test
-    public void shouldProcessReceivedEventsAttachments() throws Exception {
+    void shouldProcessReceivedEventsAttachments() throws Exception {
         final Messenger messenger = Messenger.create("test", "test", "test");
 
         // tag::doc-ReceiveEventsAttachment[]
@@ -159,7 +158,7 @@ public class DocumentationTest {
     }
 
     @Test
-    public void echoExample() throws Exception {
+    void echoExample() throws Exception {
         // tag::doc-EchoExample[]
         final String payload = "{\n" +
                 "  \"object\": \"page\",\n" +

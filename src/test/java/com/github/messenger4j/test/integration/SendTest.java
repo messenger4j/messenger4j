@@ -5,10 +5,10 @@ import static com.github.messenger4j.spi.MessengerHttpClient.HttpMethod.POST;
 import static java.util.Collections.singletonList;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.endsWith;
@@ -72,8 +72,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -82,7 +82,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
  * @since 1.0.0
  */
 @Slf4j
-public class SendTest {
+class SendTest {
 
     private static final String PAGE_ACCESS_TOKEN = "PAGE_ACCESS_TOKEN";
 
@@ -94,13 +94,13 @@ public class SendTest {
 
     private final Messenger messenger = Messenger.create(PAGE_ACCESS_TOKEN, "test", "test", of(mockHttpClient));
 
-    @Before
-    public void beforeEach() throws Exception {
+    @BeforeEach
+    void beforeEach() throws Exception {
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(fakeResponse);
     }
 
     @Test
-    public void shouldSendSenderAction() throws Exception {
+    void shouldSendSenderAction() throws Exception {
         // tag::send-SenderAction[]
         final String recipientId = "USER_ID";
         final SenderAction senderAction = SenderAction.MARK_SEEN;
@@ -118,7 +118,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendTextMessage() throws Exception {
+    void shouldSendTextMessage() throws Exception {
         // tag::send-TextMessage[]
         final String recipientId = "USER_ID";
         final String text = "Hello Messenger Platform";
@@ -138,7 +138,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendTextMessageWithPhoneNumberRecipientWithName() throws Exception {
+    void shouldSendTextMessageWithPhoneNumberRecipientWithName() throws Exception {
         final Recipient recipient = PhoneNumberRecipient.create("+1 (555) 857-6309", "Jenny", "Doe");
         final String text = "Your package has arrived in Lobby 2.";
 
@@ -157,7 +157,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendTextMessageWithPhoneNumberRecipientWithoutName() throws Exception {
+    void shouldSendTextMessageWithPhoneNumberRecipientWithoutName() throws Exception {
         final Recipient recipient = PhoneNumberRecipient.create("+1 (555) 857-6309");
         final String text = "Your package has arrived in Lobby 2.";
 
@@ -175,7 +175,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendTextMessageWithUserRefRecipient() throws Exception {
+    void shouldSendTextMessageWithUserRefRecipient() throws Exception {
         final Recipient recipient = UserRefRecipient.create("<UNIQUE_REF_PARAM>");
         final String text = "hello, world!";
 
@@ -199,7 +199,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendTextMessageWithNotificationTypeAndMessageTag() throws Exception {
+    void shouldSendTextMessageWithNotificationTypeAndMessageTag() throws Exception {
         // tag::send-TextMessageNotificationTypeMessageTag[]
         final Recipient recipient = IdRecipient.create("USER_ID");
         final TextMessage message = TextMessage.create("Hello Messenger Platform");
@@ -223,7 +223,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendTextMessageWithQuickReplies() throws Exception {
+    void shouldSendTextMessageWithQuickReplies() throws Exception {
         // tag::send-TextMessageQuickReplies[]
         final IdRecipient recipient = IdRecipient.create("<PSID>");
 
@@ -273,7 +273,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendTextMessageWithEmailAndPhoneNumberQuickReplies() throws Exception {
+    void shouldSendTextMessageWithEmailAndPhoneNumberQuickReplies() throws Exception {
         final IdRecipient recipient = IdRecipient.create("<PSID>");
 
         final String text = "Please send us your email or phone number.";
@@ -311,7 +311,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendTextMessageWithMetadata() throws Exception {
+    void shouldSendTextMessageWithMetadata() throws Exception {
         // tag::send-TextMessageMetadata[]
         final IdRecipient recipient = IdRecipient.create("USER_ID");
         final NotificationType notificationType = NotificationType.SILENT_PUSH;
@@ -338,7 +338,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendImageAttachmentMessageWithUrl() throws Exception {
+    void shouldSendImageAttachmentMessageWithUrl() throws Exception {
         // tag::send-ImageMessageUrl[]
         final String recipientId = "USER_ID";
         final String imageUrl = "https://petersapparel.com/img/shirt.png";
@@ -363,7 +363,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendReusableImageAttachmentMessageWithUrl() throws Exception {
+    void shouldSendReusableImageAttachmentMessageWithUrl() throws Exception {
         // tag::send-ImageMessageUrlReusable[]
         final IdRecipient recipient = IdRecipient.create("USER_ID");
         final NotificationType notificationType = NotificationType.NO_PUSH;
@@ -390,7 +390,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendImageAttachmentMessageWithAttachmentId() throws Exception {
+    void shouldSendImageAttachmentMessageWithAttachmentId() throws Exception {
         // tag::send-ImageMessageAttachmentId[]
         final IdRecipient recipient = IdRecipient.create("USER_ID");
         final NotificationType notificationType = NotificationType.NO_PUSH;
@@ -417,7 +417,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendButtonTemplateMessage() throws Exception {
+    void shouldSendButtonTemplateMessage() throws Exception {
         // tag::send-ButtonTemplate[]
         final String recipientId = "USER_ID";
 
@@ -450,7 +450,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendGenericTemplateMessageWithButtons() throws Exception {
+    void shouldSendGenericTemplateMessageWithButtons() throws Exception {
         // tag::send-GenericTemplateButtons[]
         final String recipientId = "USER_ID";
 
@@ -532,7 +532,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendGenericTemplateMessageWithLogInAndLogOutButtons() throws Exception {
+    void shouldSendGenericTemplateMessageWithLogInAndLogOutButtons() throws Exception {
         // tag::send-GenericTemplateLoginLogoutButtons[]
         final String recipientId = "USER_ID";
 
@@ -563,7 +563,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendGenericTemplateMessageWithShareButton() throws Exception {
+    void shouldSendGenericTemplateMessageWithShareButton() throws Exception {
         final String recipientId = "<PSID>";
         final Element element = Element.create("Breaking News: Record Thunderstorms",
                 of("The local area is due for record thunderstorms over the weekend."),
@@ -609,7 +609,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendGenericTemplateMessageWithShareButtonWithShareContents() throws Exception {
+    void shouldSendGenericTemplateMessageWithShareButtonWithShareContents() throws Exception {
         final String recipientId = "<PSID>";
 
         final GenericTemplate shareGenericTemplate = GenericTemplate.create(
@@ -688,7 +688,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendReceiptTemplateMessage() throws Exception {
+    void shouldSendReceiptTemplateMessage() throws Exception {
         // tag::send-ReceiptTemplate[]
         final String recipientId = "USER_ID";
 
@@ -738,7 +738,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendListTemplateMessage() throws Exception {
+    void shouldSendListTemplateMessage() throws Exception {
         // tag::send-ListTemplate[]
         final String recipientId = "USER_ID";
 
@@ -811,7 +811,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendOpenGraphTemplateMessage() throws Exception {
+    void shouldSendOpenGraphTemplateMessage() throws Exception {
         // tag::send-OpenGraphTemplate[]
         final String recipientId = "USER_ID";
 
@@ -856,7 +856,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldSendButtonTemplateMessageWithUrlButtonWithWebviewShareButtonState() throws Exception {
+    void shouldSendButtonTemplateMessageWithUrlButtonWithWebviewShareButtonState() throws Exception {
         final String recipientId = "USER_ID";
 
         final UrlButton buttonA = UrlButton.create("Show Website", new URL("https://petersapparel.parseapp.com"));
@@ -917,7 +917,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldHandleSuccessResponse() throws Exception {
+    void shouldHandleSuccessResponse() throws Exception {
         final HttpResponse successfulResponse = new HttpResponse(200, "{\n" +
                 "  \"recipient_id\": \"USER_ID\",\n" +
                 "  \"message_id\": \"mid.1473372944816:94f72b88c597657974\",\n" +
@@ -945,7 +945,7 @@ public class SendTest {
     }
 
     @Test
-    public void shouldHandleErrorResponse() throws Exception {
+    void shouldHandleErrorResponse() throws Exception {
         final HttpResponse errorResponse = new HttpResponse(401, "{\n" +
                 "  \"error\": {\n" +
                 "    \"message\": \"Invalid OAuth access token.\",\n" +

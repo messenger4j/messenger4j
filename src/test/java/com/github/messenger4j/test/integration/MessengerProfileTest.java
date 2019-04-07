@@ -4,10 +4,10 @@ import static com.github.messenger4j.spi.MessengerHttpClient.HttpMethod.DELETE;
 import static com.github.messenger4j.spi.MessengerHttpClient.HttpMethod.POST;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.endsWith;
@@ -44,8 +44,8 @@ import com.github.messenger4j.spi.MessengerHttpClient.HttpResponse;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.skyscreamer.jsonassert.JSONAssert;
 
@@ -54,7 +54,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
  * @author Max Grabenhorst
  * @since 1.0.0
  */
-public class MessengerProfileTest {
+class MessengerProfileTest {
 
     private static final String PAGE_ACCESS_TOKEN = "PAGE_ACCESS_TOKEN";
 
@@ -63,13 +63,13 @@ public class MessengerProfileTest {
 
     private final Messenger messenger = Messenger.create(PAGE_ACCESS_TOKEN, "test", "test", of(mockHttpClient));
 
-    @Before
-    public void beforeEach() throws Exception {
+    @BeforeEach
+    void beforeEach() throws Exception {
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), any())).thenReturn(fakeResponse);
     }
 
     @Test
-    public void shouldSetupStartButton() throws Exception {
+    void shouldSetupStartButton() throws Exception {
         // tag::setup-StartButton[]
         final MessengerSettings messengerSettings = MessengerSettings.create(of(StartButton.create("Button pressed")),
                 empty(), empty(), empty(), empty(), empty(), empty());
@@ -88,7 +88,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldDeleteStartButton() throws Exception {
+    void shouldDeleteStartButton() throws Exception {
         // tag::setup-DeleteStartButton[]
         messenger.deleteSettings(MessengerSettingProperty.START_BUTTON);
         // end::setup-DeleteStartButton[]
@@ -104,7 +104,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldSetupGreetingText() throws Exception {
+    void shouldSetupGreetingText() throws Exception {
         // tag::setup-GreetingText[]
         final Greeting greeting = Greeting.create("Hello!", LocalizedGreeting.create(SupportedLocale.en_US,
                 "Timeless apparel for the masses."));
@@ -132,7 +132,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldDeleteGreetingText() throws Exception {
+    void shouldDeleteGreetingText() throws Exception {
         // tag::setup-DeleteGreetingText[]
         messenger.deleteSettings(MessengerSettingProperty.GREETING);
         // end::setup-DeleteGreetingText[]
@@ -148,7 +148,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldSetupPersistentMenu() throws Exception {
+    void shouldSetupPersistentMenu() throws Exception {
         // tag::setup-PersistentMenu[]
         final PostbackCallToAction callToActionAA = PostbackCallToAction.create("Pay Bill", "PAYBILL_PAYLOAD");
         final PostbackCallToAction callToActionAB = PostbackCallToAction.create("History", "HISTORY_PAYLOAD");
@@ -218,7 +218,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldDeletePersistentMenu() throws Exception {
+    void shouldDeletePersistentMenu() throws Exception {
         // tag::setup-DeletePersistentMenu[]
         messenger.deleteSettings(MessengerSettingProperty.PERSISTENT_MENU);
         // end::setup-DeletePersistentMenu[]
@@ -234,7 +234,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldSetupWhitelistedDomains() throws Exception {
+    void shouldSetupWhitelistedDomains() throws Exception {
         // tag::setup-WhitelistedDomains[]
         final List<URL> whitelistedDomains = Arrays.asList(
                 new URL("http://example.url"),
@@ -260,7 +260,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldDeleteWhitelistedDomains() throws Exception {
+    void shouldDeleteWhitelistedDomains() throws Exception {
         // tag::setup-DeleteWhitelistedDomains[]
         messenger.deleteSettings(MessengerSettingProperty.WHITELISTED_DOMAINS);
         // end::setup-DeleteWhitelistedDomains[]
@@ -276,7 +276,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldSetupAccountLinkingUrl() throws Exception {
+    void shouldSetupAccountLinkingUrl() throws Exception {
         // tag::setup-AccountLinkingUrl[]
         final MessengerSettings messengerSettings = MessengerSettings.create(empty(), empty(),
                 empty(), empty(), of(new URL("http://example.url")), empty(), empty());
@@ -294,7 +294,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldDeleteAccountLinkingUrl() throws Exception {
+    void shouldDeleteAccountLinkingUrl() throws Exception {
         // tag::setup-DeleteAccountLinkingUrl[]
         messenger.deleteSettings(MessengerSettingProperty.ACCOUNT_LINKING_URL);
         // end::setup-DeleteAccountLinkingUrl[]
@@ -310,7 +310,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldSetupHomeUrl() throws Exception {
+    void shouldSetupHomeUrl() throws Exception {
         // tag::setup-HomeUrl[]
         final HomeUrl homeUrl = HomeUrl.create(new URL("http://example.url"), true, of(WebviewShareButtonState.HIDE));
 
@@ -335,7 +335,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldDeleteHomeUrl() throws Exception {
+    void shouldDeleteHomeUrl() throws Exception {
         // tag::setup-DeleteHomeUrl[]
         messenger.deleteSettings(MessengerSettingProperty.HOME_URL);
         // end::setup-DeleteHomeUrl[]
@@ -351,7 +351,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldSetupTargetAudienceCustomWhitelist() throws Exception {
+    void shouldSetupTargetAudienceCustomWhitelist() throws Exception {
         // tag::setup-TargetAudienceCustomWhitelist[]
         final WhitelistTargetAudience whitelistTargetAudience = WhitelistTargetAudience.create(
                 Arrays.asList(SupportedCountry.US, SupportedCountry.CA));
@@ -377,7 +377,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldSetupTargetAudienceCustomBlacklist() throws Exception {
+    void shouldSetupTargetAudienceCustomBlacklist() throws Exception {
         // tag::setup-TargetAudienceCustomBlacklist[]
         final BlacklistTargetAudience blacklistTargetAudience = BlacklistTargetAudience.create(
                 Arrays.asList(SupportedCountry.US, SupportedCountry.CA));
@@ -403,7 +403,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldSetupTargetAudienceAll() throws Exception {
+    void shouldSetupTargetAudienceAll() throws Exception {
         // tag::setup-TargetAudienceAll[]
         final AllTargetAudience allTargetAudience = AllTargetAudience.create();
 
@@ -425,7 +425,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldSetupTargetAudienceNone() throws Exception {
+    void shouldSetupTargetAudienceNone() throws Exception {
         // tag::setup-TargetAudienceNone[]
         final NoneTargetAudience noneTargetAudience = NoneTargetAudience.create();
 
@@ -447,7 +447,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldDeleteTargetAudience() throws Exception {
+    void shouldDeleteTargetAudience() throws Exception {
         // tag::setup-DeleteTargetAudience[]
         messenger.deleteSettings(MessengerSettingProperty.TARGET_AUDIENCE);
         // end::setup-DeleteTargetAudience[]
@@ -463,7 +463,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldHandleUpdateSuccessResponse() throws Exception {
+    void shouldHandleUpdateSuccessResponse() throws Exception {
         final HttpResponse successfulResponse = new HttpResponse(200, "{\"result\": \"success\"}");
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(successfulResponse);
 
@@ -476,7 +476,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldHandleUpdateErrorResponse() throws Exception {
+    void shouldHandleUpdateErrorResponse() throws Exception {
         final HttpResponse errorResponse = new HttpResponse(401, "{\n" +
                 "  \"error\": {\n" +
                 "    \"message\": \"Invalid OAuth access token.\",\n" +
@@ -504,7 +504,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldHandleDeleteSuccessResponse() throws Exception {
+    void shouldHandleDeleteSuccessResponse() throws Exception {
         final HttpResponse successfulResponse = new HttpResponse(200, "{\"result\": \"success\"}");
         when(mockHttpClient.execute(any(HttpMethod.class), anyString(), anyString())).thenReturn(successfulResponse);
 
@@ -515,7 +515,7 @@ public class MessengerProfileTest {
     }
 
     @Test
-    public void shouldHandleDeleteErrorResponse() throws Exception {
+    void shouldHandleDeleteErrorResponse() throws Exception {
         final HttpResponse errorResponse = new HttpResponse(401, "{\n" +
                 "  \"error\": {\n" +
                 "    \"message\": \"Invalid OAuth access token.\",\n" +
