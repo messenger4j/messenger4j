@@ -46,9 +46,24 @@ git commit -am "Set release version $RELEASE_VERSION" || {
   exit 2
 }
 
+echo "= Delombok and replace existing source code ="
+mvn org.projectlombok:lombok-maven-plugin:delombok -f ../pom.xml \
+&& rm -rf ../src/main/java \
+&& mv ../src/main/delombok ../src/main/java \
+&& mvn fmt:format -f ../pom.xml || {
+  echo "Unable to delombok and replace existing source code"
+  exit 2
+}
+
 echo "= Execute build and deploy artifact ="
 mvn clean deploy -P release,ossrh -f ../pom.xml || {
   echo "Build and deploy failed"
+  exit 2
+}
+
+echo "= Reset delomboked files to origin version ="
+git reset --hard || {
+  echo "Unable to reset delomboked files to origin version"
   exit 2
 }
 

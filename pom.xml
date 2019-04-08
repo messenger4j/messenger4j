@@ -54,6 +54,23 @@
     </properties>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.projectlombok</groupId>
+                    <artifactId>lombok-maven-plugin</artifactId>
+                    <version>1.18.6.0</version>
+                    <configuration>
+                        <sourceDirectory>
+                            ${project.basedir}/src/main/java
+                        </sourceDirectory>
+                        <outputDirectory>
+                            ${project.basedir}/src/main/delombok
+                        </outputDirectory>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
